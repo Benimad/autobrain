@@ -1,0 +1,173 @@
+<resources>
+    <!-- App Name -->
+    <string name="app_name">AutoBrain</string>
+    <string name="app_tagline">Automotive Intelligence</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_scan_history">History</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home Screen -->
+    <string name="greeting_hello">Hello, %s</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="recent_diagnostics">Recent Diagnostics</string>
+    <string name="smart_logbook">Smart Logbook</string>
+    <string name="next_service_in">Next service in %d days / %d km</string>
+    <string name="risk_level">Risk level: %s</string>
+
+    <!-- AI Features -->
+    <string name="ai_score">AI Score</string>
+    <string name="ai_diagnostics">AI Diagnostics</string>
+    <string name="ai_pricing">Price Estimation</string>
+    <string name="smart_carlog">Smart Carlog</string>
+    <string name="trust_report">Trust Report</string>
+
+    <!-- Diagnostics -->
+    <string name="diagnostic_audio">Audio\nDiagnostic</string>
+    <string name="diagnostic_video">Video\nDiagnostic</string>
+    <string name="diagnostic_complete">Complete\nAI Diagnostic</string>
+    <string name="start_diagnostic">Start Diagnostic</string>
+    <string name="analyzing">Analyzing...</string>
+    <string name="analysis_complete">Analysis Complete</string>
+
+    <!-- Audio Diagnostics -->
+    <string name="record_sound">Record Sound</string>
+    <string name="recording">Recording...</string>
+    <string name="stop_recording">Stop</string>
+    <string name="audio_analysis">Audio Analysis</string>
+    <string name="engine_sound_analysis">Engine Sound Analysis</string>
+
+    <!-- Video Diagnostics -->
+    <string name="record_video">Record Video</string>
+    <string name="video_analysis">Video Analysis</string>
+    <string name="smoke_detection">Smoke Detection</string>
+    <string name="vibration_analysis">Vibration Analysis</string>
+
+    <!-- Price Estimation -->
+    <string name="price_estimation">Price Estimation</string>
+    <string name="calculate_price">Calculate Price</string>
+    <string name="estimated_price">Estimated Price</string>
+    <string name="price_range">$%s - $%s</string>
+    <string name="average_price">Average Price: $%s</string>
+    <string name="confidence">Confidence: %d%%</string>
+    <string name="share_estimation">Share Estimation</string>
+    <string name="new_estimation">New Estimation</string>
+
+    <!-- Car Details -->
+    <string name="car_brand">Brand</string>
+    <string name="car_model">Model</string>
+    <string name="car_year">Year</string>
+    <string name="car_mileage">Mileage</string>
+    <string name="car_condition">Condition</string>
+    <string name="condition_excellent">Excellent</string>
+    <string name="condition_good">Good</string>
+    <string name="condition_fair">Fair</string>
+    <string name="condition_poor">Poor</string>
+
+    <!-- Maintenance -->
+    <string name="maintenance_records">Maintenance Records</string>
+    <string name="add_maintenance">Add Maintenance</string>
+    <string name="maintenance_type">Maintenance Type</string>
+    <string name="maintenance_date">Date</string>
+    <string name="maintenance_cost">Cost</string>
+    <string name="service_provider">Service Provider</string>
+
+    <!-- Authentication -->
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="full_name">Full Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="forgot_password">Forgot Password?</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="my_cars">My Cars</string>
+    <string name="account_settings">Account Settings</string>
+
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="preferences">Preferences</string>
+    <string name="language">Language</string>
+    <string name="select_language">Select Language</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="notifications">Notifications</string>
+    <string name="privacy_legal">Privacy &amp; Legal</string>
+    <string name="data_controls">Data Controls</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="privacy_policy">Privacy Policy</string>
+
+    <!-- Trust Report -->
+    <string name="trust_level_high">HIGH</string>
+    <string name="trust_level_medium">MEDIUM</string>
+    <string name="trust_level_low">LOW</string>
+    <string name="scan_score">Scan Score</string>
+    <string name="red_flags">Red Flags</string>
+    <string name="warnings">Warnings</string>
+    <string name="positive_findings">Positive Findings</string>
+    <string name="buyer_advice">Buyer Advice</string>
+    <string name="view_full_report">View Full Report</string>
+
+    <!-- Actions -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="share">Share</string>
+    <string name="download">Download</string>
+    <string name="upload">Upload</string>
+    <string name="retry">Retry</string>
+    <string name="continue_text">Continue</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="finish">Finish</string>
+
+    <!-- Messages -->
+    <string name="loading">Loading...</string>
+    <string name="processing">Processing...</string>
+    <string name="success">Success!</string>
+    <string name="error_generic">An error occurred</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="try_again">Please try again</string>
+    <string name="no_data">No data available</string>
+
+    <!-- Permissions -->
+    <string name="permission_camera">Camera permission required</string>
+    <string name="permission_microphone">Microphone permission required</string>
+    <string name="permission_storage">Storage permission required</string>
+    <string name="grant_permission">Grant Permission</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">Welcome to AutoBrain</string>
+    <string name="onboarding_title_1">Smart AI Diagnostics</string>
+    <string name="onboarding_desc_1">Analyze your car with artificial intelligence</string>
+    <string name="onboarding_title_2">Price Estimation</string>
+    <string name="onboarding_desc_2">Get the fair price for your vehicle</string>
+    <string name="onboarding_title_3">Car Logbook</string>
+    <string name="onboarding_desc_3">Track maintenance and car history</string>
+    <string name="get_started">Get Started</string>
+    <string name="skip">Skip</string>
+
+    <!-- Data Controls -->
+    <string name="download_my_data">Download My Data</string>
+    <string name="delete_account">Delete My Account</string>
+    <string name="delete_account_confirm">This action is irreversible. All your data will be permanently deleted.</string>
+    <string name="permissions">Permissions</string>
+
+    <!-- Market Analysis -->
+    <string name="market_analysis">Market Analysis</string>
+    <string name="factors">Factors</string>
+    <string name="positive_factors">Positive Factors</string>
+    <string name="negative_factors">Negative Factors</string>
+    <string name="market_demand">Market Demand</string>
+
+    <!-- Currency -->
+    <string name="currency_usd">$</string>
+    <string name="currency_code">USD</string>
+</resources>

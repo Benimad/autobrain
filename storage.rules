@@ -1,0 +1,288 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // =============================================================================
+    // HELPER FUNCTIONS
+    // =============================================================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check file size (max 50MB for videos, 10MB for images, 5MB for audio)
+    function isValidFileSize(maxSizeMB) {
+      return request.resource.size < maxSizeMB * 1024 * 1024;
+    }
+    
+    // Check if file is an image
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    // Check if file is a video
+    function isVideo() {
+      return request.resource.contentType.matches('video/.*');
+    }
+    
+    // Check if file is audio
+    function isAudio() {
+      return request.resource.contentType.matches('audio/.*');
+    }
+    
+    // Check if file is PDF
+    function isPDF() {
+      return request.resource.contentType == 'application/pdf';
+    }
+    
+    // =============================================================================
+    // PROFILE IMAGES
+    // =============================================================================
+    
+    match /profile_images/{userId}/{fileName} {
+      // Read: All authenticated users
+      allow read: if isAuthenticated();
+      
+      // Write: Own profile images only
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      isImage() &&
+                      isValidFileSize(10); // Max 10MB
+      
+      // Delete: Own images only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // DIAGNOSTICS FILES (Audio Analysis)
+    // =============================================================================
+    
+    match /diagnostics/audio/{userId}/{ts}/{fileName} {
+      // Read: Own files only
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == userId;
+      
+      // Write: Own files, audio only, max 5MB
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      isAudio() &&
+                      isValidFileSize(5); // Max 5MB
+      
+      // Delete: Own files only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // DIAGNOSTICS FILES (Video Analysis)
+    // =============================================================================
+    
+    match /diagnostics/video/{userId}/{ts}/{fileName} {
+      // Read: Own files only
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == userId;
+      
+      // Write: Own files, video only, max 50MB
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      isVideo() &&
+                      isValidFileSize(50); // Max 50MB
+      
+      // Delete: Own files only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // DIAGNOSTICS THUMBNAILS
+    // =============================================================================
+    
+    match /diagnostics/thumbnails/{userId}/{ts}/{fileName} {
+      // Read: Own thumbnails only
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == userId;
+      
+      // Write: Own thumbnails, image only, max 2MB
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      isImage() &&
+                      isValidFileSize(2); // Max 2MB
+      
+      // Delete: Own thumbnails only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // AI ANALYSIS REPORTS (PDF)
+    // =============================================================================
+    
+    match /reports/{userId}/{reportId}/{fileName} {
+      // Read: Own reports only
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == userId;
+      
+      // Write: Own reports, PDF only, max 10MB
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      isPDF() &&
+                      isValidFileSize(10); // Max 10MB
+      
+      // Delete: Own reports only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // CAR LOG ATTACHMENTS
+    // =============================================================================
+    
+    match /car_logs/{userId}/{logId}/{fileName} {
+      // Read: Own attachments only
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == userId;
+      
+      // Write: Own attachments, images/videos/PDFs, max 20MB
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      (isImage() || isVideo() || isPDF()) &&
+                      isValidFileSize(20); // Max 20MB
+      
+      // Delete: Own attachments only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // MAINTENANCE RECORDS ATTACHMENTS
+    // =============================================================================
+    
+    match /maintenance/{userId}/{recordId}/{fileName} {
+      // Read: Own attachments only
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == userId;
+      
+      // Write: Own attachments, images/PDFs, max 10MB
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      (isImage() || isPDF()) &&
+                      isValidFileSize(10); // Max 10MB
+      
+      // Delete: Own attachments only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // SERVICE PROVIDER IMAGES
+    // =============================================================================
+    
+    match /service_providers/{providerId}/{fileName} {
+      // Read: All authenticated users
+      allow read: if isAuthenticated();
+      
+      // Write: Provider owner only, images only, max 10MB
+      allow write: if isAuthenticated() &&
+                      isImage() &&
+                      isValidFileSize(10); // Max 10MB
+      
+      // Delete: Provider owner only
+      allow delete: if isAuthenticated();
+    }
+    
+    // =============================================================================
+    // SERVICE PROVIDER GALLERY
+    // =============================================================================
+    
+    match /service_providers/{providerId}/gallery/{fileName} {
+      // Read: All authenticated users
+      allow read: if isAuthenticated();
+      
+      // Write: Provider owner only, images only, max 10MB
+      allow write: if isAuthenticated() &&
+                      isImage() &&
+                      isValidFileSize(10); // Max 10MB
+      
+      // Delete: Provider owner only
+      allow delete: if isAuthenticated();
+    }
+    
+    // =============================================================================
+    // CHAT ATTACHMENTS (Images/Videos shared in conversations)
+    // =============================================================================
+    
+    match /chat_attachments/{conversationId}/{messageId}/{fileName} {
+      // Read: Users in conversation (requires Firestore check)
+      allow read: if isAuthenticated();
+      
+      // Write: Authenticated users, images/videos/audio, max 20MB
+      allow write: if isAuthenticated() &&
+                      (isImage() || isVideo() || isAudio()) &&
+                      isValidFileSize(20); // Max 20MB
+      
+      // Delete: Message sender only
+      allow delete: if isAuthenticated();
+    }
+    
+    // =============================================================================
+    // TEMPORARY FILES (Auto-deleted after 24h by Cloud Functions)
+    // =============================================================================
+    
+    match /temp/{userId}/{fileName} {
+      // Read: Own temp files only
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == userId;
+      
+      // Write: Own temp files, any type, max 100MB
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      isValidFileSize(100); // Max 100MB
+      
+      // Delete: Own temp files only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // BACKUP FILES (For data export)
+    // =============================================================================
+    
+    match /backups/{userId}/{backupId}/{fileName} {
+      // Read: Own backups only
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == userId;
+      
+      // Write: Own backups, JSON/ZIP only, max 50MB
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      (request.resource.contentType == 'application/json' ||
+                       request.resource.contentType == 'application/zip') &&
+                      isValidFileSize(50); // Max 50MB
+      
+      // Delete: Own backups only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // CACHE FILES (For offline sync)
+    // =============================================================================
+    
+    match /cache/{userId}/{fileName} {
+      // Read: Own cache only
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == userId;
+      
+      // Write: Own cache, any type, max 50MB
+      allow write: if isAuthenticated() && 
+                      request.auth.uid == userId &&
+                      isValidFileSize(50); // Max 50MB
+      
+      // Delete: Own cache only
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == userId;
+    }
+  }
+}

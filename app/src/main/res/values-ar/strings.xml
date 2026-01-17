@@ -1,0 +1,173 @@
+<resources>
+    <!-- App Name -->
+    <string name="app_name">أوتوبراين</string>
+    <string name="app_tagline">الذكاء السيارات</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_scan_history">السجل</string>
+    <string name="nav_profile">الملف الشخصي</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <!-- Home Screen -->
+    <string name="greeting_hello">مرحبا، %s</string>
+    <string name="quick_actions">إجراءات سريعة</string>
+    <string name="recent_diagnostics">التشخيصات الأخيرة</string>
+    <string name="smart_logbook">دفتر السيارة</string>
+    <string name="next_service_in">الصيانة القادمة في %d أيام / %d كم</string>
+    <string name="risk_level">مستوى المخاطر: %s</string>
+
+    <!-- AI Features -->
+    <string name="ai_score">نقاط الذكاء الاصطناعي</string>
+    <string name="ai_diagnostics">تشخيص ذكي</string>
+    <string name="ai_pricing">تقدير السعر</string>
+    <string name="smart_carlog">دفتر ذكي</string>
+    <string name="trust_report">تقرير الثقة</string>
+
+    <!-- Diagnostics -->
+    <string name="diagnostic_audio">تشخيص\nصوتي</string>
+    <string name="diagnostic_video">تشخيص\nفيديو</string>
+    <string name="diagnostic_complete">تشخيص\nكامل</string>
+    <string name="start_diagnostic">بدء التشخيص</string>
+    <string name="analyzing">جاري التحليل...</string>
+    <string name="analysis_complete">اكتمل التحليل</string>
+
+    <!-- Audio Diagnostics -->
+    <string name="record_sound">تسجيل الصوت</string>
+    <string name="recording">جاري التسجيل...</string>
+    <string name="stop_recording">إيقاف</string>
+    <string name="audio_analysis">تحليل صوتي</string>
+    <string name="engine_sound_analysis">تحليل صوت المحرك</string>
+
+    <!-- Video Diagnostics -->
+    <string name="record_video">تسجيل فيديو</string>
+    <string name="video_analysis">تحليل الفيديو</string>
+    <string name="smoke_detection">كشف الدخان</string>
+    <string name="vibration_analysis">تحليل الاهتزاز</string>
+
+    <!-- Price Estimation -->
+    <string name="price_estimation">تقدير السعر</string>
+    <string name="calculate_price">احسب السعر</string>
+    <string name="estimated_price">السعر المقدر</string>
+    <string name="price_range">%s - %s درهم</string>
+    <string name="average_price">متوسط السعر: %s درهم</string>
+    <string name="confidence">الثقة: %d%%</string>
+    <string name="share_estimation">مشاركة التقدير</string>
+    <string name="new_estimation">تقدير جديد</string>
+
+    <!-- Car Details -->
+    <string name="car_brand">العلامة</string>
+    <string name="car_model">الموديل</string>
+    <string name="car_year">السنة</string>
+    <string name="car_mileage">المسافة المقطوعة</string>
+    <string name="car_condition">الحالة</string>
+    <string name="condition_excellent">ممتاز</string>
+    <string name="condition_good">جيد</string>
+    <string name="condition_fair">متوسط</string>
+    <string name="condition_poor">سيئ</string>
+
+    <!-- Maintenance -->
+    <string name="maintenance_records">سجل الصيانة</string>
+    <string name="add_maintenance">إضافة صيانة</string>
+    <string name="maintenance_type">نوع الصيانة</string>
+    <string name="maintenance_date">التاريخ</string>
+    <string name="maintenance_cost">التكلفة</string>
+    <string name="service_provider">مقدم الخدمة</string>
+
+    <!-- Authentication -->
+    <string name="sign_in">تسجيل الدخول</string>
+    <string name="sign_up">إنشاء حساب</string>
+    <string name="sign_out">تسجيل الخروج</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة المرور</string>
+    <string name="confirm_password">تأكيد كلمة المرور</string>
+    <string name="full_name">الاسم الكامل</string>
+    <string name="phone_number">رقم الهاتف</string>
+    <string name="forgot_password">نسيت كلمة المرور؟</string>
+
+    <!-- Profile -->
+    <string name="profile">الملف الشخصي</string>
+    <string name="edit_profile">تعديل الملف</string>
+    <string name="my_cars">سياراتي</string>
+    <string name="account_settings">إعدادات الحساب</string>
+
+    <!-- Settings -->
+    <string name="settings">الإعدادات</string>
+    <string name="preferences">التفضيلات</string>
+    <string name="language">اللغة</string>
+    <string name="select_language">اختر اللغة</string>
+    <string name="dark_mode">الوضع الداكن</string>
+    <string name="notifications">الإشعارات</string>
+    <string name="privacy_legal">الخصوصية والقانون</string>
+    <string name="data_controls">التحكم في البيانات</string>
+    <string name="terms_of_service">شروط الخدمة</string>
+    <string name="privacy_policy">سياسة الخصوصية</string>
+
+    <!-- Trust Report -->
+    <string name="trust_level_high">عالي</string>
+    <string name="trust_level_medium">متوسط</string>
+    <string name="trust_level_low">منخفض</string>
+    <string name="scan_score">نتيجة المسح</string>
+    <string name="red_flags">علامات تحذير</string>
+    <string name="warnings">تحذيرات</string>
+    <string name="positive_findings">نقاط إيجابية</string>
+    <string name="buyer_advice">نصائح للمشتري</string>
+    <string name="view_full_report">عرض التقرير الكامل</string>
+
+    <!-- Actions -->
+    <string name="save">حفظ</string>
+    <string name="cancel">إلغاء</string>
+    <string name="delete">حذف</string>
+    <string name="edit">تعديل</string>
+    <string name="share">مشاركة</string>
+    <string name="download">تحميل</string>
+    <string name="upload">رفع</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="continue_text">متابعة</string>
+    <string name="back">رجوع</string>
+    <string name="next">التالي</string>
+    <string name="finish">إنهاء</string>
+
+    <!-- Messages -->
+    <string name="loading">جاري التحميل...</string>
+    <string name="processing">جاري المعالجة...</string>
+    <string name="success">نجح!</string>
+    <string name="error_generic">حدث خطأ</string>
+    <string name="no_internet">لا يوجد اتصال بالإنترنت</string>
+    <string name="try_again">يرجى المحاولة مرة أخرى</string>
+    <string name="no_data">لا توجد بيانات متاحة</string>
+
+    <!-- Permissions -->
+    <string name="permission_camera">إذن الكاميرا مطلوب</string>
+    <string name="permission_microphone">إذن الميكروفون مطلوب</string>
+    <string name="permission_storage">إذن التخزين مطلوب</string>
+    <string name="grant_permission">منح الإذن</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">مرحبا بك في أوتوبراين</string>
+    <string name="onboarding_title_1">تشخيص ذكي</string>
+    <string name="onboarding_desc_1">حلل سيارتك بالذكاء الاصطناعي</string>
+    <string name="onboarding_title_2">تقدير السعر</string>
+    <string name="onboarding_desc_2">احصل على السعر العادل لسيارتك</string>
+    <string name="onboarding_title_3">دفتر السيارة</string>
+    <string name="onboarding_desc_3">تتبع الصيانة وتاريخ سيارتك</string>
+    <string name="get_started">ابدأ الآن</string>
+    <string name="skip">تخطي</string>
+
+    <!-- Data Controls -->
+    <string name="download_my_data">تحميل بياناتي</string>
+    <string name="delete_account">حذف حسابي</string>
+    <string name="delete_account_confirm">هذا الإجراء لا رجعة فيه. سيتم حذف جميع بياناتك نهائيًا.</string>
+    <string name="permissions">الأذونات</string>
+
+    <!-- Market Analysis -->
+    <string name="market_analysis">تحليل السوق</string>
+    <string name="factors">العوامل</string>
+    <string name="positive_factors">عوامل إيجابية</string>
+    <string name="negative_factors">عوامل سلبية</string>
+    <string name="market_demand">طلب السوق</string>
+
+    <!-- Currency -->
+    <string name="currency_usd">$</string>
+    <string name="currency_code">USD</string>
+</resources>
