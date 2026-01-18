@@ -15,9 +15,10 @@ import com.example.autobrain.data.local.entity.*
         AIScoreEntity::class,
         ReminderEntity::class,
         AudioDiagnosticEntity::class,
-        VideoDiagnosticEntity::class
+        VideoDiagnosticEntity::class,
+        CarImageEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(ListStringConverter::class, MapStringConverter::class)
@@ -28,6 +29,7 @@ abstract class AutoBrainDatabase : RoomDatabase() {
     abstract fun reminderDao(): ReminderDao
     abstract fun audioDiagnosticDao(): AudioDiagnosticDao
     abstract fun videoDiagnosticDao(): VideoDiagnosticDao
+    abstract fun carImageDao(): CarImageDao
 
     companion object {
         const val DATABASE_NAME = "autobrain_database"

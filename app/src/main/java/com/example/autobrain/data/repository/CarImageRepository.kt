@@ -1,9 +1,10 @@
 package com.example.autobrain.data.repository
 
 import android.util.Log
-import com.example.autobrain.data.remote.FreeCarImageService
-import com.example.autobrain.data.remote.ImaginStudioCarImageService
-import com.example.autobrain.data.remote.SerperDevImageService
+import com.example.autobrain.data.local.dao.CarImageDao
+import com.example.autobrain.data.local.entity.CarImageEntity
+import com.example.autobrain.data.remote.BackgroundRemovalService
+import com.example.autobrain.data.remote.GeminiCarImageService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -11,13 +12,12 @@ import javax.inject.Singleton
 
 @Singleton
 class CarImageRepository @Inject constructor(
-    private val serperDevService: SerperDevImageService,
-    private val freeCarImageService: FreeCarImageService,
-    private val imaginStudioService: ImaginStudioCarImageService
+    private val carImageDao: CarImageDao,
+    private val geminiCarImageService: GeminiCarImageService,
+    private val backgroundRemovalService: BackgroundRemovalService
 ) {
     private val TAG = "CarImageRepository"
-    
-    private val exactCarAngles = listOf("01", "29", "13", "33")
+    private val CACHE_EXPIRY_DAYS = 30L
     
     suspend fun fetchCarImageUrl(
         make: String,
@@ -31,115 +31,113 @@ class CarImageRepository @Inject constructor(
             
             Log.d(TAG, "🎯 Fetching car image for: $year $make $model")
             
-            // PRIORITY 1: FREE Jsoup (Unsplash/Pexels)
-            try {
-                Log.d(TAG, "📡 Calling FREE image service...")
-                val freeResult = freeCarImageService.fetchCarImage(make, model, year)
-                if (freeResult.isSuccess && freeResult.getOrNull()?.isNotBlank() == true) {
-                    val url = freeResult.getOrNull()!!
-                    Log.d(TAG, "✅ FREE car image: $url")
-                    return@withContext Result.success(url)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "❌ Free service error: ${e.message}")
+            // Check Room cache first
+            val carKey = CarImageDao.generateCarKey(make, model, year)
+            val cachedImage = carImageDao.getCarImage(carKey)
+            
+            if (cachedImage != null && !isCacheExpired(cachedImage)) {
+                Log.d(TAG, "✅ Using cached image from Room: ${cachedImage.imageUrl}")
+                carImageDao.updateLastAccessed(carKey)
+                return@withContext Result.success(cachedImage.imageUrl)
             }
             
-            // PRIORITY 2: Serper.dev (Paid backup)
-            try {
-                Log.d(TAG, "📡 Calling Serper.dev API...")
-                val serperResult = serperDevService.fetchCarImageWithFallbacks(make, model, year)
-                if (serperResult.isSuccess && serperResult.getOrNull()?.isNotBlank() == true) {
-                    val url = serperResult.getOrNull()!!
-                    Log.d(TAG, "✅ REALISTIC car image from Serper.dev: $url")
-                    Log.d(TAG, "🏎️ This is the REAL $year $make $model from Google Images!")
-                    return@withContext Result.success(url)
-                } else {
-                    Log.w(TAG, "⚠️ Serper.dev returned no results")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "❌ Serper.dev API error: ${e.message}", e)
+            // Fetch from network
+            val imageUrl = fetchFromNetwork(make, model, year)
+            
+            // Cache the result
+            if (imageUrl != null) {
+                cacheImage(make, model, year, imageUrl)
             }
             
-            // PRIORITY 2: Wikimedia/Google Custom Search (Free APIs)
-            Log.d(TAG, "🔄 Serper.dev failed, trying free APIs...")
-            val cleanedModel = ImaginStudioCarImageService.cleanModelName(model)
-            val exactCarResult = imaginStudioService.fetchExactCarImageUrl(
-                make = make,
-                model = model,
-                year = year,
-                options = ImaginStudioCarImageService.CarImageOptions(
-                    angle = "01",
-                    width = 1920,
-                    height = 1280,
-                    background = "transparent",
-                    quality = 100
-                )
-            )
-            
-            if (exactCarResult.isSuccess && exactCarResult.getOrNull()?.isNotBlank() == true) {
-                val url = exactCarResult.getOrNull()!!
-                Log.d(TAG, "✅ Car image from free API: $url")
-                return@withContext Result.success(url)
-            }
-            
-            // PRIORITY 3: Static fallback URLs
-            Log.w(TAG, "⚠️ All APIs failed, using fallback sources")
-            val fallbackUrl = generateFallbackImageUrl(make, model, year, 0)
-            Log.d(TAG, "🔄 Using fallback: $fallbackUrl")
-            Result.success(fallbackUrl)
+            Result.success(imageUrl ?: generateFallbackImageUrl(make, model, year, 0))
             
         } catch (e: Exception) {
             Log.e(TAG, "❌ Error fetching car image: ${e.message}", e)
             val fallbackUrl = generateFallbackImageUrl(make, model, year, 0)
-            Log.d(TAG, "🔄 Using fallback due to error: $fallbackUrl")
             Result.success(fallbackUrl)
         }
     }
     
+    private suspend fun fetchFromNetwork(make: String, model: String, year: Int): String? {
+        // Use Gemini AI to find the best car image
+        try {
+            Log.d(TAG, "🤖 Using Gemini AI to find car image...")
+            val geminiResult = geminiCarImageService.fetchCarImageUrl(make, model, year)
+            if (geminiResult.isSuccess && geminiResult.getOrNull()?.isNotBlank() == true) {
+                var imageUrl = geminiResult.getOrNull()!!
+                Log.d(TAG, "✅ Gemini found: $imageUrl")
+                
+                // Apply background removal for professional look
+                try {
+                    val bgRemovalResult = backgroundRemovalService.removeBackground(imageUrl)
+                    if (bgRemovalResult.isSuccess) {
+                        imageUrl = bgRemovalResult.getOrNull() ?: imageUrl
+                        Log.d(TAG, "🎨 Background removed")
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "⚠️ Background removal failed: ${e.message}")
+                }
+                
+                return imageUrl
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Gemini error: ${e.message}")
+        }
+        
+        Log.w(TAG, "⚠️ Gemini failed, using fallback")
+        return null
+    }
+    
+    private suspend fun cacheImage(make: String, model: String, year: Int, imageUrl: String) {
+        try {
+            val carKey = CarImageDao.generateCarKey(make, model, year)
+            val entity = CarImageEntity(
+                carKey = carKey,
+                make = make,
+                model = model,
+                year = year,
+                imageUrl = imageUrl,
+                isTransparent = imageUrl.contains("freeiconspng") || imageUrl.contains(".png"),
+                source = when {
+                    imageUrl.contains("freeiconspng") -> "freeiconspng"
+                    imageUrl.contains("unsplash") -> "unsplash"
+                    imageUrl.contains("pexels") -> "pexels"
+                    imageUrl.contains("serper") -> "serper"
+                    else -> "other"
+                }
+            )
+            carImageDao.insertCarImage(entity)
+            Log.d(TAG, "💾 Cached image in Room database")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Cache error: ${e.message}")
+        }
+    }
+    
+    private fun isCacheExpired(cachedImage: CarImageEntity): Boolean {
+        val expiryTime = cachedImage.cachedAt + (CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000)
+        return System.currentTimeMillis() > expiryTime
+    }
+    
+    suspend fun clearExpiredCache() {
+        try {
+            val expiryTime = System.currentTimeMillis() - (CACHE_EXPIRY_DAYS * 24 * 60 * 60 * 1000)
+            carImageDao.deleteExpiredImages(expiryTime)
+            Log.d(TAG, "🧹 Cleared expired cache")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Clear cache error: ${e.message}")
+        }
+    }
+    
     fun generateFallbackImageUrl(make: String, model: String, year: Int, attemptIndex: Int = 0): String {
-        val cleanedModelName = ImaginStudioCarImageService.cleanModelName(model)
         val cleanMake = make.trim().lowercase().replace(" ", "-")
-        val cleanModel = cleanedModelName.trim().lowercase().replace(" ", "-")
-        val makeUpper = make.trim().uppercase().replace(" ", "+")
-        val modelUpper = cleanedModelName.trim().uppercase().replace(" ", "+")
+        val cleanModel = model.trim().lowercase().replace(" ", "-")
         
         val fallbackSources = listOf(
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/${year}_${makeUpper}_${modelUpper}.jpg/1920px-${year}_${makeUpper}_${modelUpper}.jpg",
             "https://cdn.wheel-size.com/automobile/body/audi-rs6-2024-1700830821.7616775.jpg",
             "https://www.cstatic-images.com/car-pictures/xl/$cleanMake-$cleanModel-${year}_main.png",
-            "https://platform.cstatic-images.com/xlarge/in/v2/stock_photos/$cleanMake/$cleanModel/$year/${year}-$cleanMake-$cleanModel-frontview.png",
-            "https://media.ed.edmunds-media.com/$cleanMake/$cleanModel/$year/oem/${year}_${cleanMake}_${cleanModel}_sedan_fq_oem_1_1600.jpg",
             "android.resource://com.example.autobrain/" + com.example.autobrain.R.drawable.car_placeholder_gradient
         )
         
-        val selectedUrl = fallbackSources.getOrElse(attemptIndex % fallbackSources.size) {
-            fallbackSources[0]
-        }
-        
-        Log.d(TAG, "🔄 Fallback URL #$attemptIndex: $selectedUrl")
-        return selectedUrl
-    }
-    
-    suspend fun fetchCarImageWithMultipleAngles(
-        make: String,
-        model: String,
-        year: Int
-    ): Result<List<String>> = withContext(Dispatchers.IO) {
-        try {
-            val result = imaginStudioService.fetchCarImageWithMultipleAngles(make, model, year)
-            
-            if (result.isSuccess) {
-                Log.d(TAG, "✅ Fetched multiple angle images for exact car")
-                result
-            } else {
-                val fallbackUrls = exactCarAngles.mapIndexed { index, _ ->
-                    generateFallbackImageUrl(make, model, year, index)
-                }
-                Result.success(fallbackUrls)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "❌ Error fetching multiple angles: ${e.message}", e)
-            Result.failure(e)
-        }
+        return fallbackSources.getOrElse(attemptIndex % fallbackSources.size) { fallbackSources[0] }
     }
 }

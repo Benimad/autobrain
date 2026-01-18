@@ -57,6 +57,26 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
     }
 }
 
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS car_images (
+                carKey TEXT PRIMARY KEY NOT NULL,
+                make TEXT NOT NULL,
+                model TEXT NOT NULL,
+                year INTEGER NOT NULL,
+                imageUrl TEXT NOT NULL,
+                isTransparent INTEGER NOT NULL DEFAULT 0,
+                source TEXT NOT NULL,
+                cachedAt INTEGER NOT NULL,
+                lastAccessedAt INTEGER NOT NULL
+            )
+            """.trimIndent()
+        )
+    }
+}
+
 val MIGRATION_5_6 = object : Migration(5, 6) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL(

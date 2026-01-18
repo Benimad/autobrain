@@ -769,23 +769,33 @@ private fun CarImageSection(
         }
     }
     
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(adaptiveImageSize(380.dp)),
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+            .padding(horizontal = AdaptiveSpacing.large()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(280.dp)
+                .clip(RoundedCornerShape(adaptiveCornerRadius(24.dp)))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF1a1d29),
+                            Color(0xFF0f1117)
+                        )
+                    )
+                ),
             contentAlignment = Alignment.Center
         ) {
             GlideImage(
                 model = currentImageUrl,
                 contentDescription = "$carMake $carModel $carYear",
                 modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .fillMaxHeight(0.85f),
+                    .fillMaxWidth()
+                    .height(220.dp),
                 contentScale = ContentScale.Fit
             ) {
                 it.error(com.example.autobrain.R.drawable.ic_launcher_foreground)
@@ -799,7 +809,6 @@ private fun CarImageSection(
                             isFirstResource: Boolean
                         ): Boolean {
                             isImageLoading = false
-                            Log.d("CarImageSection", "✅ Image loaded successfully")
                             return false
                         }
                         
@@ -809,7 +818,6 @@ private fun CarImageSection(
                             target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
                             isFirstResource: Boolean
                         ): Boolean {
-                            Log.e("CarImageSection", "❌ Image load failed: ${e?.message}")
                             imageLoadFailed = true
                             isImageLoading = false
                             return false
@@ -818,81 +826,43 @@ private fun CarImageSection(
             }
             
             if (isImageLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MidnightBlack.copy(alpha = 0.8f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            color = ElectricTeal,
-                            modifier = Modifier.size(56.dp),
-                            strokeWidth = 4.dp
-                        )
-                        Text(
-                            text = "Loading your car...",
-                            color = ElectricTeal,
-                            fontSize = (14.sp.value * adaptiveTextScale()).sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-            
-            
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(24.dp)
-            ) {
-                Text(
-                    text = carMake.uppercase(),
-                    fontSize = (11.sp.value * adaptiveTextScale()).sp,
-                    fontWeight = FontWeight.Black,
+                CircularProgressIndicator(
                     color = ElectricTeal,
-                    letterSpacing = 3.sp
+                    modifier = Modifier.size(40.dp),
+                    strokeWidth = 3.dp
                 )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = carModel.uppercase(),
-                    fontSize = (38.sp.value * adaptiveTextScale()).sp,
-                    fontWeight = FontWeight.Black,
-                    color = MidnightBlack,
-                    lineHeight = (40.sp.value * adaptiveTextScale()).sp,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    letterSpacing = 0.5.sp
-                )
-                Spacer(modifier = Modifier.height(14.dp))
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = ElectricTeal,
-                    shadowElevation = 4.dp
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 18.dp, vertical = 9.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CalendarToday,
-                            contentDescription = null,
-                            tint = MidnightBlack,
-                            modifier = Modifier.size(adaptiveIconSize(16.dp))
-                        )
-                        Text(
-                            text = "$carYear",
-                            fontSize = (17.sp.value * adaptiveTextScale()).sp,
-                            color = MidnightBlack,
-                            fontWeight = FontWeight.Black
-                        )
-                    }
-                }
             }
+        }
+        
+        Spacer(modifier = Modifier.height(AdaptiveSpacing.medium()))
+        
+        Text(
+            text = "${carModel.uppercase()} ${carMake.uppercase()} $carYear",
+            fontSize = (24.sp.value * adaptiveTextScale()).sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            letterSpacing = 1.sp
+        )
+        
+        Spacer(modifier = Modifier.height(AdaptiveSpacing.medium()))
+        
+        Button(
+            onClick = { /* Navigate to change vehicle */ },
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .height(adaptiveButtonHeight()),
+            shape = RoundedCornerShape(adaptiveCornerRadius()),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ElectricTeal,
+                contentColor = MidnightBlack
+            )
+        ) {
+            Text(
+                text = "Change Vehicle",
+                fontSize = (16.sp.value * adaptiveTextScale()).sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -903,135 +873,114 @@ private fun NoCarImagePlaceholder(
     carModel: String,
     carYear: Int
 ) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(adaptiveImageSize(360.dp))
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        DeepNavy.copy(alpha = 0.5f),
-                        DeepNavy.copy(alpha = 0.9f),
-                        MidnightBlack
-                    )
-                )
-            ),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = AdaptiveSpacing.large()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(AdaptiveSpacing.extraLarge())
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(280.dp)
+                .clip(RoundedCornerShape(adaptiveCornerRadius(24.dp)))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF1a1d29),
+                            Color(0xFF0f1117)
+                        )
+                    )
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.DirectionsCar,
-                contentDescription = null,
-                tint = ElectricTeal.copy(alpha = 0.4f),
-                modifier = Modifier.size(adaptiveIconSize(120.dp))
-            )
-            Spacer(modifier = Modifier.height(AdaptiveSpacing.extraLarge()))
-            Text(
-                text = carMake.uppercase(),
-                fontSize = (14.sp.value * adaptiveTextScale()).sp,
-                fontWeight = FontWeight.Bold,
-                color = ElectricTeal.copy(alpha = 0.9f),
-                letterSpacing = 2.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = carModel,
-                fontSize = (32.sp.value * adaptiveTextScale()).sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = ElectricTeal.copy(alpha = 0.2f)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CalendarToday,
-                        contentDescription = null,
-                        tint = ElectricTeal,
-                        modifier = Modifier.size(adaptiveIconSize(16.dp))
-                    )
-                    Text(
-                        text = "$carYear",
-                        fontSize = (16.sp.value * adaptiveTextScale()).sp,
-                        color = ElectricTeal,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(AdaptiveSpacing.extraLarge()))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(adaptiveIconSize(20.dp)),
-                    color = ElectricTeal,
-                    strokeWidth = 2.5.dp
+                Icon(
+                    imageVector = Icons.Default.DirectionsCar,
+                    contentDescription = null,
+                    tint = ElectricTeal.copy(alpha = 0.3f),
+                    modifier = Modifier.size(80.dp)
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = ElectricTeal,
+                    strokeWidth = 2.dp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Fetching your car image...",
-                    fontSize = (14.sp.value * adaptiveTextScale()).sp,
+                    text = "Fetching image...",
+                    fontSize = (12.sp.value * adaptiveTextScale()).sp,
                     color = TextSecondary,
                     fontWeight = FontWeight.Medium
                 )
             }
         }
+        
+        Spacer(modifier = Modifier.height(AdaptiveSpacing.medium()))
+        
+        Text(
+            text = "${carModel.uppercase()} ${carMake.uppercase()} $carYear",
+            fontSize = (24.sp.value * adaptiveTextScale()).sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            letterSpacing = 1.sp
+        )
     }
 }
 
 @Composable
 private fun NoCarDataPlaceholder() {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(adaptiveImageSize(360.dp))
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        DeepNavy.copy(alpha = 0.4f),
-                        DeepNavy.copy(alpha = 0.9f),
-                        MidnightBlack
-                    )
-                )
-            ),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = AdaptiveSpacing.large()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(AdaptiveSpacing.extraLarge())
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(280.dp)
+                .clip(RoundedCornerShape(adaptiveCornerRadius(24.dp)))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF1a1d29),
+                            Color(0xFF0f1117)
+                        )
+                    )
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.DirectionsCar,
-                contentDescription = null,
-                tint = ElectricTeal.copy(alpha = 0.3f),
-                modifier = Modifier.size(adaptiveIconSize(120.dp))
-            )
-            Spacer(modifier = Modifier.height(AdaptiveSpacing.extraLarge()))
-            Text(
-                text = "No Car Added",
-                fontSize = (28.sp.value * adaptiveTextScale()).sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "Add your car details in My Cars\nto see your vehicle image here",
-                fontSize = (15.sp.value * adaptiveTextScale()).sp,
-                color = TextSecondary,
-                textAlign = TextAlign.Center,
-                lineHeight = (22.sp.value * adaptiveTextScale()).sp
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DirectionsCar,
+                    contentDescription = null,
+                    tint = ElectricTeal.copy(alpha = 0.3f),
+                    modifier = Modifier.size(80.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "No Car Added",
+                    fontSize = (18.sp.value * adaptiveTextScale()).sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Add your car in My Cars",
+                    fontSize = (13.sp.value * adaptiveTextScale()).sp,
+                    color = TextSecondary,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

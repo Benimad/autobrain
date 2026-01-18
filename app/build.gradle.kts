@@ -35,6 +35,7 @@ android {
         }
         buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY", "")}\"")
         buildConfigField("String", "IMAGIN_STUDIO_API_KEY", "\"${properties.getProperty("IMAGIN_STUDIO_API_KEY", "")}\"")
+        buildConfigField("String", "REMOVE_BG_API_KEY", "\"${properties.getProperty("REMOVE_BG_API_KEY", "")}\"")
     }
 
     buildTypes {

@@ -8,7 +8,9 @@ import com.example.autobrain.data.local.AutoBrainDatabase
 import com.example.autobrain.data.local.MIGRATION_4_5
 import com.example.autobrain.data.local.MIGRATION_5_6
 import com.example.autobrain.data.local.MIGRATION_6_7
+import com.example.autobrain.data.local.MIGRATION_7_8
 import com.example.autobrain.data.local.dao.*
+import com.example.autobrain.data.remote.BackgroundRemovalService
 import com.example.autobrain.data.remote.ImaginStudioCarImageService
 import com.example.autobrain.data.remote.SerperDevImageService
 import com.google.firebase.auth.FirebaseAuth
@@ -63,7 +65,7 @@ object AppModule {
             AutoBrainDatabase::class.java,
             AutoBrainDatabase.DATABASE_NAME
         )
-            .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+            .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
             .build()
     }
 
@@ -105,6 +107,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideCarImageDao(database: AutoBrainDatabase): CarImageDao {
+        return database.carImageDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideWorkManager(
         @ApplicationContext context: Context
     ): WorkManager {
@@ -136,6 +144,12 @@ object AppModule {
     @Singleton
     fun provideImaginStudioCarImageService(okHttpClient: OkHttpClient): ImaginStudioCarImageService {
         return ImaginStudioCarImageService(okHttpClient)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideBackgroundRemovalService(okHttpClient: OkHttpClient): BackgroundRemovalService {
+        return BackgroundRemovalService(okHttpClient)
     }
     
     // Note: GeminiAiRepository and GeminiCarnetRepository

@@ -50,22 +50,56 @@ class FreeCarImageService @Inject constructor() {
     
     private fun fetchFromFreeIconsPng(make: String, model: String): String? {
         return try {
-            val query = "$make $model car".replace(" ", "+")
-            val url = "https://www.freeiconspng.com/search.html?q=$query&tip=icon"
+            val query = "$make $model car png"
+            val encodedQuery = java.net.URLEncoder.encode(query, "UTF-8")
+            val url = "https://www.freeiconspng.com/search.html?q=$encodedQuery"
+            
+            Log.d(TAG, "🔍 Searching FreeIconsPNG: $url")
             
             val doc = Jsoup.connect(url)
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .referrer("https://www.google.com")
                 .timeout(15000)
+                .followRedirects(true)
                 .get()
             
-            doc.select("div.search-result-box img[src*=freeiconspng]").firstOrNull()?.attr("src")
-                ?.replace("/thumbs/", "/uploads/")
-                ?.replace("-thumb.png", ".png")
-                ?.let { imgUrl ->
-                    if (imgUrl.startsWith("http")) imgUrl else "https://www.freeiconspng.com$imgUrl"
+            // Try multiple selectors for better results
+            val imageSelectors = listOf(
+                "div.search-result-item img",
+                "div.search-result-box img",
+                "img[src*=freeiconspng]",
+                "a.search-result-link img",
+                "div.icon-preview img"
+            )
+            
+            for (selector in imageSelectors) {
+                val imgElement = doc.select(selector).firstOrNull()
+                if (imgElement != null) {
+                    val imgSrc = imgElement.attr("src").ifEmpty { imgElement.attr("data-src") }
+                    if (imgSrc.isNotBlank()) {
+                        val fullUrl = when {
+                            imgSrc.startsWith("http") -> imgSrc
+                            imgSrc.startsWith("//") -> "https:$imgSrc"
+                            else -> "https://www.freeiconspng.com$imgSrc"
+                        }
+                        
+                        // Convert thumbnail to full-size image
+                        val highResUrl = fullUrl
+                            .replace("/thumbs/", "/uploads/")
+                            .replace("-thumb.png", ".png")
+                            .replace("-thumb.jpg", ".png")
+                            .replace("_thumb", "")
+                        
+                        Log.d(TAG, "✅ Found image: $highResUrl")
+                        return highResUrl
+                    }
                 }
+            }
+            
+            Log.w(TAG, "⚠️ No images found with any selector")
+            null
         } catch (e: Exception) {
-            Log.e(TAG, "FreeIconsPNG error: ${e.message}")
+            Log.e(TAG, "❌ FreeIconsPNG error: ${e.message}", e)
             null
         }
     }
