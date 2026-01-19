@@ -43,13 +43,7 @@ class ProfileViewModel @Inject constructor(
                             user.carDetails.make.isNotBlank() && 
                             user.carDetails.model.isNotBlank() &&
                             (user.carDetails.carImageUrl.isBlank() || 
-                             user.carDetails.carImageUrl.contains("unsplash.com") ||
-                             user.carDetails.carImageUrl.contains("source.unsplash") ||
-                             user.carDetails.carImageUrl.contains("wikimedia.org") ||
-                             user.carDetails.carImageUrl.contains("wheel-size.com") ||
-                             user.carDetails.carImageUrl.contains("cstatic-images.com") ||
-                             user.carDetails.carImageUrl.contains("edmunds-media.com") ||
-                             user.carDetails.carImageUrl.contains("android.resource"))
+                             !user.carDetails.carImageUrl.contains("firebasestorage.googleapis.com"))
                         
                         if (needsImageUpdate) {
                             Log.d(TAG, "Car image needs update, fetching new image...")
@@ -149,6 +143,27 @@ class ProfileViewModel @Inject constructor(
     
     fun getFallbackImageUrl(make: String, model: String, year: Int, attemptIndex: Int): String {
         return carImageRepository.generateFallbackImageUrl(make, model, year, attemptIndex)
+    }
+    
+    fun forceRefreshCarImage() {
+        viewModelScope.launch {
+            val currentState = _profileState.value
+            if (currentState is ProfileState.Success) {
+                currentState.user.carDetails?.let { carDetails ->
+                    Log.d(TAG, "🔄 Force refreshing car image with background removal...")
+                    
+                    // Clear cache to force new fetch
+                    carImageRepository.clearCarImageCache(
+                        make = carDetails.make,
+                        model = carDetails.model,
+                        year = carDetails.year
+                    )
+                    
+                    // Fetch new image with background removal
+                    fetchAndUpdateCarImage(currentState.user)
+                }
+            }
+        }
     }
 }
 

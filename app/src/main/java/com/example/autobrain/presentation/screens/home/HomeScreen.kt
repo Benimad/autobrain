@@ -66,7 +66,7 @@ fun HomeScreen(
                         0 -> { /* Already on Home */ }
                         1 -> navController.navigate(Screen.AIDiagnostics.route)
                         2 -> navController.navigate(Screen.CarLogbook.route)
-                        3 -> navController.navigate(Screen.Profile.route)
+                        3 -> navController.navigate(Screen.AIAssistant.route)
                     }
                 }
             )

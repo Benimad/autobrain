@@ -31,25 +31,29 @@ class CarImageRepository @Inject constructor(
             
             Log.d(TAG, "🎯 Fetching car image for: $year $make $model")
             
-            // Check Room cache first
+            // Check Room cache first - skip cache if image doesn't have transparent background
             val carKey = CarImageDao.generateCarKey(make, model, year)
             val cachedImage = carImageDao.getCarImage(carKey)
             
             if (cachedImage != null && !isCacheExpired(cachedImage)) {
-                Log.d(TAG, "✅ Using cached image from Room: ${cachedImage.imageUrl}")
-                carImageDao.updateLastAccessed(carKey)
-                return@withContext Result.success(cachedImage.imageUrl)
+                // Only use cache if it's a Firebase Storage URL (already processed)
+                if (cachedImage.imageUrl.contains("firebasestorage.googleapis.com")) {
+                    Log.d(TAG, "✅ Using cached processed image from Room: ${cachedImage.imageUrl}")
+                    carImageDao.updateLastAccessed(carKey)
+                    return@withContext Result.success(cachedImage.imageUrl)
+                } else {
+                    Log.d(TAG, "🔄 Cache found but not processed, fetching with background removal...")
+                    carImageDao.deleteCarImage(carKey)
+                }
             }
             
-            // Fetch from network
+            // Fetch from network (always returns a URL, either from Gemini or fallback with BG removal)
             val imageUrl = fetchFromNetwork(make, model, year)
             
             // Cache the result
-            if (imageUrl != null) {
-                cacheImage(make, model, year, imageUrl)
-            }
+            cacheImage(make, model, year, imageUrl)
             
-            Result.success(imageUrl ?: generateFallbackImageUrl(make, model, year, 0))
+            Result.success(imageUrl)
             
         } catch (e: Exception) {
             Log.e(TAG, "❌ Error fetching car image: ${e.message}", e)
@@ -58,34 +62,49 @@ class CarImageRepository @Inject constructor(
         }
     }
     
-    private suspend fun fetchFromNetwork(make: String, model: String, year: Int): String? {
-        // Use Gemini AI to find the best car image
+    private suspend fun fetchFromNetwork(make: String, model: String, year: Int): String {
         try {
-            Log.d(TAG, "🤖 Using Gemini AI to find car image...")
+            Log.d(TAG, "🚀 Fetching professional car image using Gemini 2.5 Flash...")
             val geminiResult = geminiCarImageService.fetchCarImageUrl(make, model, year)
+            
             if (geminiResult.isSuccess && geminiResult.getOrNull()?.isNotBlank() == true) {
                 var imageUrl = geminiResult.getOrNull()!!
-                Log.d(TAG, "✅ Gemini found: $imageUrl")
+                Log.d(TAG, "✅ Gemini found professional image: $imageUrl")
                 
-                // Apply background removal for professional look
-                try {
-                    val bgRemovalResult = backgroundRemovalService.removeBackground(imageUrl)
-                    if (bgRemovalResult.isSuccess) {
-                        imageUrl = bgRemovalResult.getOrNull() ?: imageUrl
-                        Log.d(TAG, "🎨 Background removed")
-                    }
-                } catch (e: Exception) {
-                    Log.w(TAG, "⚠️ Background removal failed: ${e.message}")
-                }
-                
-                return imageUrl
+                // Apply background removal
+                return applyBackgroundRemoval(imageUrl)
+            } else {
+                Log.w(TAG, "⚠️ Gemini couldn't find suitable professional image")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Gemini error: ${e.message}")
+            Log.e(TAG, "❌ Network fetch error: ${e.message}", e)
         }
         
-        Log.w(TAG, "⚠️ Gemini failed, using fallback")
-        return null
+        Log.w(TAG, "📦 Using fallback image with background removal")
+        // Apply background removal to fallback image too
+        val fallbackUrl = generateFallbackImageUrl(make, model, year, 0)
+        return applyBackgroundRemoval(fallbackUrl)
+    }
+    
+    private suspend fun applyBackgroundRemoval(imageUrl: String): String {
+        if (backgroundRemovalService.shouldRemoveBackground(imageUrl)) {
+            Log.d(TAG, "🎨 Applying background removal for studio quality...")
+            try {
+                val bgRemovalResult = backgroundRemovalService.removeBackground(imageUrl)
+                if (bgRemovalResult.isSuccess && bgRemovalResult.getOrNull()?.isNotBlank() == true) {
+                    val processedUrl = bgRemovalResult.getOrNull()!!
+                    Log.d(TAG, "✨ Professional image ready with transparent background")
+                    return processedUrl
+                } else {
+                    Log.w(TAG, "⚠️ Background removal failed, using original image")
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "⚠️ Background removal error: ${e.message}, using original")
+            }
+        } else {
+            Log.d(TAG, "✓ Image already has clean background")
+        }
+        return imageUrl
     }
     
     private suspend fun cacheImage(make: String, model: String, year: Int, imageUrl: String) {
@@ -97,17 +116,21 @@ class CarImageRepository @Inject constructor(
                 model = model,
                 year = year,
                 imageUrl = imageUrl,
-                isTransparent = imageUrl.contains("freeiconspng") || imageUrl.contains(".png"),
+                isTransparent = imageUrl.endsWith(".png") || imageUrl.contains("transparent"),
                 source = when {
-                    imageUrl.contains("freeiconspng") -> "freeiconspng"
-                    imageUrl.contains("unsplash") -> "unsplash"
-                    imageUrl.contains("pexels") -> "pexels"
-                    imageUrl.contains("serper") -> "serper"
-                    else -> "other"
+                    imageUrl.contains("firebase") -> "gemini+firebase"
+                    imageUrl.contains("wikimedia") -> "gemini+wikimedia"
+                    imageUrl.contains("audi-mediacenter") -> "gemini+manufacturer"
+                    imageUrl.contains("media.bmw") -> "gemini+manufacturer"
+                    imageUrl.contains("motortrend") -> "gemini+press"
+                    imageUrl.contains("caranddriver") -> "gemini+press"
+                    imageUrl.contains("unsplash") -> "gemini+stock"
+                    imageUrl.contains("pexels") -> "gemini+stock"
+                    else -> "gemini"
                 }
             )
             carImageDao.insertCarImage(entity)
-            Log.d(TAG, "💾 Cached image in Room database")
+            Log.d(TAG, "💾 Cached image in Room database (source: ${entity.source})")
         } catch (e: Exception) {
             Log.e(TAG, "❌ Cache error: ${e.message}")
         }
@@ -128,14 +151,26 @@ class CarImageRepository @Inject constructor(
         }
     }
     
+    suspend fun clearCarImageCache(make: String, model: String, year: Int) {
+        try {
+            val carKey = CarImageDao.generateCarKey(make, model, year)
+            carImageDao.deleteCarImage(carKey)
+            Log.d(TAG, "🗑️ Cleared cache for: $year $make $model")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Clear specific cache error: ${e.message}")
+        }
+    }
+    
     fun generateFallbackImageUrl(make: String, model: String, year: Int, attemptIndex: Int = 0): String {
         val cleanMake = make.trim().lowercase().replace(" ", "-")
         val cleanModel = model.trim().lowercase().replace(" ", "-")
         
         val fallbackSources = listOf(
-            "https://cdn.wheel-size.com/automobile/body/audi-rs6-2024-1700830821.7616775.jpg",
-            "https://www.cstatic-images.com/car-pictures/xl/$cleanMake-$cleanModel-${year}_main.png",
-            "android.resource://com.example.autobrain/" + com.example.autobrain.R.drawable.car_placeholder_gradient
+            "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=1920&h=1080&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1920&h=1080&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1920&h=1080&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1580414068984-6bc2c0eedeeb?w=1920&h=1080&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1920&h=1080&fit=crop&q=80"
         )
         
         return fallbackSources.getOrElse(attemptIndex % fallbackSources.size) { fallbackSources[0] }

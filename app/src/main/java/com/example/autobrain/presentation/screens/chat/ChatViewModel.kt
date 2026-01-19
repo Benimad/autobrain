@@ -39,17 +39,15 @@ class ChatViewModel @Inject constructor(
 
     fun sendMessage(customMessage: String? = null) {
         val messageText = customMessage ?: _uiState.value.currentMessage
-        if (messageText.isBlank()) return
-
-        val userMessage = ChatMessage(
-            id = UUID.randomUUID().toString(),
-            content = messageText,
-            isUser = true
-        )
+        android.util.Log.d("ChatViewModel", "sendMessage called with: $messageText")
+        
+        if (messageText.isBlank()) {
+            android.util.Log.w("ChatViewModel", "Message is blank, returning")
+            return
+        }
 
         _uiState.update {
             it.copy(
-                messages = it.messages + userMessage,
                 currentMessage = "",
                 isLoading = true
             )
@@ -57,22 +55,15 @@ class ChatViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = chatRepository.sendMessage(messageText)
+                android.util.Log.d("ChatViewModel", "Calling repository.sendMessage")
+                chatRepository.sendMessage(messageText)
                 
-                val aiMessage = ChatMessage(
-                    id = UUID.randomUUID().toString(),
-                    content = response.content,
-                    isUser = false,
-                    riskLevel = response.riskLevel
-                )
-
+                android.util.Log.d("ChatViewModel", "Message sent successfully")
                 _uiState.update {
-                    it.copy(
-                        messages = it.messages + aiMessage,
-                        isLoading = false
-                    )
+                    it.copy(isLoading = false)
                 }
             } catch (e: Exception) {
+                android.util.Log.e("ChatViewModel", "Error sending message", e)
                 _uiState.update {
                     it.copy(
                         error = e.message,
@@ -90,9 +81,11 @@ class ChatViewModel @Inject constructor(
     }
 
     fun clearChat() {
-        viewModelScope.launch {
-            chatRepository.clearChat()
-            _uiState.update { it.copy(messages = emptyList()) }
-        }
+        chatRepository.clearChat()
+        _uiState.update { it.copy(messages = emptyList()) }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
     }
 }

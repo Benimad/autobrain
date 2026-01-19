@@ -803,16 +803,22 @@ val autoBrainNavItems = listOf(
         route = "home"
     ),
     NavItem(
-        label = "Scan History",
-        icon = Icons.Outlined.History,
-        selectedIcon = Icons.Filled.History,
-        route = "scan_history"
+        label = "Diagnostics",
+        icon = Icons.Outlined.Search,
+        selectedIcon = Icons.Filled.Search,
+        route = "ai_diagnostics"
     ),
     NavItem(
-        label = "Profile",
-        icon = Icons.Outlined.Person,
-        selectedIcon = Icons.Filled.Person,
-        route = "profile"
+        label = "Carnet",
+        icon = Icons.Outlined.DirectionsCar,
+        selectedIcon = Icons.Filled.DirectionsCar,
+        route = "car_logbook"
+    ),
+    NavItem(
+        label = "AI Assistant",
+        icon = Icons.Outlined.Psychology,
+        selectedIcon = Icons.Filled.Psychology,
+        route = "ai_assistant"
     )
 )
 

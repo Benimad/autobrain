@@ -5,14 +5,17 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,6 +30,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -42,6 +46,7 @@ import com.example.autobrain.presentation.theme.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -56,6 +61,18 @@ fun ChatScreen(
     
     val cameraPermission = rememberPermissionState(Manifest.permission.CAMERA)
     val audioPermission = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
+    
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { error ->
+            snackbarHostState.showSnackbar(
+                message = error,
+                duration = SnackbarDuration.Long
+            )
+            viewModel.clearError()
+        }
+    }
     
     val videoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CaptureVideo()
@@ -83,6 +100,7 @@ fun ChatScreen(
 
     Scaffold(
         containerColor = MidnightBlack,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -234,37 +252,76 @@ private fun WelcomeScreen(
         val infiniteTransition = rememberInfiniteTransition(label = "glow")
         val glowAlpha by infiniteTransition.animateFloat(
             initialValue = 0.3f,
-            targetValue = 0.8f,
+            targetValue = 0.9f,
             animationSpec = infiniteRepeatable(
                 animation = tween(2000, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse
             ),
             label = "glow"
         )
+        
+        val glowSize by infiniteTransition.animateFloat(
+            initialValue = 95f,
+            targetValue = 110f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(3000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "size"
+        )
+        
+        val iconRotation by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 360f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(20000, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "rotation"
+        )
 
         Box(
-            modifier = Modifier.size(120.dp),
+            modifier = Modifier.size(140.dp),
             contentAlignment = Alignment.Center
         ) {
+            // Outer glow
             Box(
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(glowSize.dp)
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                ElectricTeal.copy(alpha = glowAlpha),
+                                ElectricTeal.copy(alpha = glowAlpha * 0.6f),
+                                ElectricTeal.copy(alpha = glowAlpha * 0.3f),
                                 Color.Transparent
                             )
                         ),
                         shape = CircleShape
                     )
             )
+            // Inner gradient circle
             Box(
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(85.dp)
                     .background(
                         brush = Brush.linearGradient(
-                            colors = listOf(ElectricTeal, Color(0xFF14B8A6))
+                            colors = listOf(
+                                ElectricTeal, 
+                                Color(0xFF14B8A6),
+                                ElectricTeal
+                            ),
+                            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                            end = androidx.compose.ui.geometry.Offset(100f, 100f)
+                        ),
+                        shape = CircleShape
+                    )
+                    .border(
+                        width = 2.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.3f),
+                                Color.Transparent
+                            )
                         ),
                         shape = CircleShape
                     ),
@@ -274,7 +331,7 @@ private fun WelcomeScreen(
                     imageVector = Icons.Filled.Psychology,
                     contentDescription = "AI Assistant",
                     tint = MidnightBlack,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(44.dp)
                 )
             }
         }
@@ -307,30 +364,42 @@ private fun WelcomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        val quickActions = remember {
+            listOf(
+                Triple(Icons.Outlined.Mic, "Analyser un bruit moteur", "Je voudrais analyser un bruit de moteur anormal"),
+                Triple(Icons.Outlined.Videocam, "Diagnostic vidéo", "J'ai filmé un problème avec ma voiture"),
+                Triple(Icons.Outlined.Build, "Historique d'entretien", "Peux-tu vérifier mon historique d'entretien?"),
+                Triple(Icons.Outlined.Help, "Poser une question", "J'ai une question sur ma voiture")
+            )
+        }
+        
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            QuickActionChip(
-                icon = Icons.Outlined.Mic,
-                text = "Analyser un bruit moteur",
-                onClick = { onQuickAction("Je voudrais analyser un bruit de moteur anormal") }
-            )
-            QuickActionChip(
-                icon = Icons.Outlined.Videocam,
-                text = "Diagnostic vidéo",
-                onClick = { onQuickAction("J'ai filmé un problème avec ma voiture") }
-            )
-            QuickActionChip(
-                icon = Icons.Outlined.Build,
-                text = "Historique d'entretien",
-                onClick = { onQuickAction("Peux-tu vérifier mon historique d'entretien?") }
-            )
-            QuickActionChip(
-                icon = Icons.Outlined.Help,
-                text = "Poser une question",
-                onClick = { onQuickAction("J'ai une question sur ma voiture") }
-            )
+            quickActions.forEachIndexed { index, (icon, text, action) ->
+                var isVisible by remember { mutableStateOf(false) }
+                
+                LaunchedEffect(Unit) {
+                    delay(300L + (index * 100L))
+                    isVisible = true
+                }
+                
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(400)) +
+                            slideInVertically(
+                                animationSpec = tween(500, easing = FastOutSlowInEasing),
+                                initialOffsetY = { it / 3 }
+                            )
+                ) {
+                    QuickActionChip(
+                        icon = icon,
+                        text = text,
+                        onClick = { onQuickAction(action) }
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -348,33 +417,82 @@ private fun QuickActionChip(
     text: String,
     onClick: () -> Unit
 ) {
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "scale"
+    )
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+            .scale(scale)
+            .clickable(
+                onClick = {
+                    android.util.Log.d("QuickActionChip", "Button clicked: $text")
+                    isPressed = true
+                    onClick()
+                },
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
             containerColor = DeepNavy
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            DeepNavy,
+                            DeepNavy.copy(alpha = 0.8f)
+                        )
+                    )
+                )
+                .padding(18.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = ElectricTeal,
-                modifier = Modifier.size(24.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = ElectricTeal.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(10.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = ElectricTeal,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Medium
+                ),
                 color = TextPrimary
             )
+        }
+    }
+    
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            kotlinx.coroutines.delay(100)
+            isPressed = false
         }
     }
 }
@@ -383,69 +501,121 @@ private fun QuickActionChip(
 private fun MessageBubble(
     message: ChatMessage
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start
-    ) {
-        if (!message.isUser) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(ElectricTeal, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Psychology,
-                    contentDescription = "AI",
-                    tint = MidnightBlack,
-                    modifier = Modifier.size(20.dp)
+    var isVisible by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(message.id) {
+        isVisible = true
+    }
+    
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(animationSpec = tween(300)) + 
+                slideInVertically(
+                    animationSpec = tween(400, easing = FastOutSlowInEasing),
+                    initialOffsetY = { it / 4 }
                 )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-
-        Card(
-            modifier = Modifier.widthIn(max = 280.dp),
-            shape = RoundedCornerShape(
-                topStart = if (message.isUser) 16.dp else 4.dp,
-                topEnd = if (message.isUser) 4.dp else 16.dp,
-                bottomStart = 16.dp,
-                bottomEnd = 16.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = if (message.isUser) ElectricTeal else DeepNavy
-            )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start
         ) {
-            Column(
-                modifier = Modifier.padding(12.dp)
-            ) {
-                Text(
-                    text = message.content,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (message.isUser) MidnightBlack else TextPrimary
+            if (!message.isUser) {
+                val infiniteTransition = rememberInfiniteTransition(label = "avatar_glow")
+                val glowSize by infiniteTransition.animateFloat(
+                    initialValue = 32f,
+                    targetValue = 36f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(2000, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "size"
                 )
                 
-                message.riskLevel?.let { risk ->
-                    Spacer(modifier = Modifier.height(8.dp))
-                    RiskBadge(risk = risk)
+                Box(
+                    modifier = Modifier
+                        .size(glowSize.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    ElectricTeal.copy(alpha = 0.4f),
+                                    ElectricTeal
+                                )
+                            ),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Psychology,
+                        contentDescription = "AI",
+                        tint = MidnightBlack,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+
+            Card(
+                modifier = Modifier
+                    .widthIn(max = 280.dp)
+                    .animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        )
+                    ),
+                shape = RoundedCornerShape(
+                    topStart = if (message.isUser) 20.dp else 4.dp,
+                    topEnd = if (message.isUser) 4.dp else 20.dp,
+                    bottomStart = 20.dp,
+                    bottomEnd = 20.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (message.isUser) ElectricTeal else DeepNavy
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = if (message.isUser) 2.dp else 4.dp
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(14.dp)
+                ) {
+                    Text(
+                        text = message.content,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            lineHeight = 22.sp
+                        ),
+                        color = if (message.isUser) MidnightBlack else TextPrimary
+                    )
+                    
+                    message.riskLevel?.let { risk ->
+                        Spacer(modifier = Modifier.height(10.dp))
+                        RiskBadge(risk = risk)
+                    }
                 }
             }
-        }
 
-        if (message.isUser) {
-            Spacer(modifier = Modifier.width(8.dp))
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(DarkNavy, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = "User",
-                    tint = ElectricTeal,
-                    modifier = Modifier.size(20.dp)
-                )
+            if (message.isUser) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(DarkNavy, DeepNavy)
+                            ),
+                            shape = CircleShape
+                        )
+                        .border(1.dp, ElectricTeal.copy(alpha = 0.3f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "User",
+                        tint = ElectricTeal,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
         }
     }
@@ -453,24 +623,47 @@ private fun MessageBubble(
 
 @Composable
 private fun RiskBadge(risk: String) {
-    val (color, text) = when (risk.uppercase()) {
-        "LOW" -> SuccessGreen to "FAIBLE"
-        "MEDIUM" -> WarningAmber to "MOYEN"
-        "HIGH" -> ErrorRed to "ÉLEVÉ"
-        else -> TextMuted to risk
+    val (color, text, icon) = when (risk.uppercase()) {
+        "LOW" -> Triple(SuccessGreen, "FAIBLE", Icons.Outlined.CheckCircle)
+        "MEDIUM" -> Triple(WarningAmber, "MOYEN", Icons.Outlined.Warning)
+        "HIGH" -> Triple(ErrorRed, "ÉLEVÉ", Icons.Outlined.Error)
+        else -> Triple(TextMuted, risk, Icons.Outlined.Info)
     }
+    
+    val infiniteTransition = rememberInfiniteTransition(label = "risk_pulse")
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.15f,
+        targetValue = if (risk.uppercase() == "HIGH") 0.3f else 0.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alpha"
+    )
 
     Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = color.copy(alpha = 0.15f)
+        shape = RoundedCornerShape(12.dp),
+        color = color.copy(alpha = pulseAlpha),
+        border = BorderStroke(1.dp, color.copy(alpha = 0.4f))
     ) {
-        Text(
-            text = "Risque: $text",
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall,
-            color = color,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(14.dp)
+            )
+            Text(
+                text = "Risque: $text",
+                style = MaterialTheme.typography.labelSmall,
+                color = color,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
@@ -592,16 +785,19 @@ private fun ChatInputField(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 TextField(
                     value = message,
                     onValueChange = onMessageChange,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .animateContentSize(),
                     placeholder = {
                         Text(
-                            text = "Posez votre question...",
-                            color = TextMuted
+                            text = "Posez votre question sur votre véhicule...",
+                            color = TextMuted,
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     },
                     colors = TextFieldDefaults.colors(
@@ -613,32 +809,59 @@ private fun ChatInputField(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
-                    shape = RoundedCornerShape(24.dp),
-                    enabled = !isLoading
+                    shape = RoundedCornerShape(28.dp),
+                    enabled = !isLoading,
+                    textStyle = MaterialTheme.typography.bodyMedium
+                )
+
+                val buttonRotation by animateFloatAsState(
+                    targetValue = if (isLoading) 360f else 0f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
+                    ),
+                    label = "rotation"
+                )
+                
+                val buttonScale by animateFloatAsState(
+                    targetValue = if (message.isNotBlank() && !isLoading) 1.1f else 1f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    ),
+                    label = "scale"
                 )
 
                 FloatingActionButton(
                     onClick = onSendClick,
-                    containerColor = ElectricTeal,
+                    containerColor = if (message.isNotBlank()) ElectricTeal else DarkNavy,
                     contentColor = MidnightBlack,
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier
+                        .size(56.dp)
+                        .scale(buttonScale),
                     shape = CircleShape,
                     elevation = FloatingActionButtonDefaults.elevation(
-                        defaultElevation = 4.dp
+                        defaultElevation = if (message.isNotBlank()) 6.dp else 2.dp
                     )
                 ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MidnightBlack,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Send,
-                            contentDescription = "Send",
-                            modifier = Modifier.size(24.dp)
-                        )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(26.dp),
+                                color = MidnightBlack,
+                                strokeWidth = 3.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Send,
+                                contentDescription = "Send",
+                                modifier = Modifier.size(24.dp),
+                                tint = if (message.isNotBlank()) MidnightBlack else TextMuted
+                            )
+                        }
                     }
                 }
             }

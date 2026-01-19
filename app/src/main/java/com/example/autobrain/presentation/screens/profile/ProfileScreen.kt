@@ -778,90 +778,117 @@ private fun CarImageSection(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(280.dp)
-                .clip(RoundedCornerShape(adaptiveCornerRadius(24.dp)))
+                .height(320.dp)
+                .clip(RoundedCornerShape(adaptiveCornerRadius(20.dp)))
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF1a1d29),
-                            Color(0xFF0f1117)
-                        )
+                            Color(0xFF2A3441),
+                            Color(0xFF1C2330),
+                            Color(0xFF141821)
+                        ),
+                        startY = 0f,
+                        endY = 1000f
                     )
                 ),
             contentAlignment = Alignment.Center
         ) {
-            GlideImage(
-                model = currentImageUrl,
-                contentDescription = "$carMake $carModel $carYear",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp),
-                contentScale = ContentScale.Fit
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                it.error(com.example.autobrain.R.drawable.ic_launcher_foreground)
-                    .placeholder(com.example.autobrain.R.drawable.ic_launcher_foreground)
-                    .addListener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
-                        override fun onResourceReady(
-                            resource: android.graphics.drawable.Drawable,
-                            model: Any,
-                            target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
-                            dataSource: com.bumptech.glide.load.DataSource,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            isImageLoading = false
-                            return false
-                        }
-                        
-                        override fun onLoadFailed(
-                            e: com.bumptech.glide.load.engine.GlideException?,
-                            model: Any?,
-                            target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            imageLoadFailed = true
-                            isImageLoading = false
-                            return false
-                        }
-                    })
-            }
-            
-            if (isImageLoading) {
-                CircularProgressIndicator(
-                    color = ElectricTeal,
-                    modifier = Modifier.size(40.dp),
-                    strokeWidth = 3.dp
-                )
+                GlideImage(
+                    model = currentImageUrl,
+                    contentDescription = "$carYear $carMake $carModel",
+                    modifier = Modifier
+                        .fillMaxWidth(0.95f)
+                        .height(240.dp),
+                    contentScale = ContentScale.Fit
+                ) {
+                    it.error(com.example.autobrain.R.drawable.ic_launcher_foreground)
+                        .placeholder(com.example.autobrain.R.drawable.ic_launcher_foreground)
+                        .addListener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                            override fun onResourceReady(
+                                resource: android.graphics.drawable.Drawable,
+                                model: Any,
+                                target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                                dataSource: com.bumptech.glide.load.DataSource,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                isImageLoading = false
+                                return false
+                            }
+                            
+                            override fun onLoadFailed(
+                                e: com.bumptech.glide.load.engine.GlideException?,
+                                model: Any?,
+                                target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                imageLoadFailed = true
+                                isImageLoading = false
+                                return false
+                            }
+                        })
+                }
+                
+                if (isImageLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = ElectricTeal,
+                            modifier = Modifier.size(48.dp),
+                            strokeWidth = 3.dp
+                        )
+                    }
+                }
             }
         }
         
-        Spacer(modifier = Modifier.height(AdaptiveSpacing.medium()))
+        Spacer(modifier = Modifier.height(AdaptiveSpacing.large()))
         
         Text(
-            text = "${carModel.uppercase()} ${carMake.uppercase()} $carYear",
-            fontSize = (24.sp.value * adaptiveTextScale()).sp,
-            fontWeight = FontWeight.Bold,
+            text = "$carModel $carMake",
+            fontSize = (28.sp.value * adaptiveTextScale()).sp,
+            fontWeight = FontWeight.ExtraBold,
             color = Color.White,
             textAlign = TextAlign.Center,
-            letterSpacing = 1.sp
+            letterSpacing = 0.5.sp
         )
         
-        Spacer(modifier = Modifier.height(AdaptiveSpacing.medium()))
+        Text(
+            text = carYear.toString().uppercase(),
+            fontSize = (18.sp.value * adaptiveTextScale()).sp,
+            fontWeight = FontWeight.Medium,
+            color = ElectricTeal,
+            textAlign = TextAlign.Center,
+            letterSpacing = 2.sp
+        )
+        
+        Spacer(modifier = Modifier.height(AdaptiveSpacing.large()))
         
         Button(
             onClick = { /* Navigate to change vehicle */ },
             modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .height(adaptiveButtonHeight()),
-            shape = RoundedCornerShape(adaptiveCornerRadius()),
+                .fillMaxWidth(0.75f)
+                .height(56.dp),
+            shape = RoundedCornerShape(adaptiveCornerRadius(16.dp)),
             colors = ButtonDefaults.buttonColors(
                 containerColor = ElectricTeal,
                 contentColor = MidnightBlack
+            ),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 4.dp,
+                pressedElevation = 8.dp
             )
         ) {
             Text(
                 text = "Change Vehicle",
                 fontSize = (16.sp.value * adaptiveTextScale()).sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp
             )
         }
     }

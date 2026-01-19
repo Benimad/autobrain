@@ -11,8 +11,6 @@ import com.example.autobrain.data.local.MIGRATION_6_7
 import com.example.autobrain.data.local.MIGRATION_7_8
 import com.example.autobrain.data.local.dao.*
 import com.example.autobrain.data.remote.BackgroundRemovalService
-import com.example.autobrain.data.remote.ImaginStudioCarImageService
-import com.example.autobrain.data.remote.SerperDevImageService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -136,22 +134,13 @@ object AppModule {
     
     @Provides
     @Singleton
-    fun provideSerperDevImageService(okHttpClient: OkHttpClient): SerperDevImageService {
-        return SerperDevImageService(okHttpClient)
+    fun provideBackgroundRemovalService(
+        okHttpClient: OkHttpClient,
+        firebaseStorage: FirebaseStorage
+    ): BackgroundRemovalService {
+        return BackgroundRemovalService(okHttpClient, firebaseStorage)
     }
     
-    @Provides
-    @Singleton
-    fun provideImaginStudioCarImageService(okHttpClient: OkHttpClient): ImaginStudioCarImageService {
-        return ImaginStudioCarImageService(okHttpClient)
-    }
-    
-    @Provides
-    @Singleton
-    fun provideBackgroundRemovalService(okHttpClient: OkHttpClient): BackgroundRemovalService {
-        return BackgroundRemovalService(okHttpClient)
-    }
-    
-    // Note: GeminiAiRepository and GeminiCarnetRepository
+    // Note: GeminiAiRepository, GeminiCarnetRepository, and GeminiCarImageService
     // are provided by GeminiModule.kt to keep AI dependencies organized
 }

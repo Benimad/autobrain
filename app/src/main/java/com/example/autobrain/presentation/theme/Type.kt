@@ -4,7 +4,10 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
+import com.example.autobrain.R
 
 /**
  * AutoBrain Typography System
@@ -16,15 +19,35 @@ import androidx.compose.ui.unit.sp
  * - Minimal text, maximum clarity
  *
  * Font Choice:
- * - Sans Serif: Modern, clean, professional for body text
- * - Default: Tech-focused, distinctive for headings
+ * - Inter: Modern, clean, professional for body text (Google Fonts)
+ * - Space Grotesk: Tech-focused, distinctive for headings (Google Fonts)
  */
 
-val InterFontFamily = FontFamily.SansSerif
+// Google Fonts Provider
+private val provider = GoogleFont.Provider(
+    providerAuthority = "com.google.android.gms.fonts",
+    providerPackage = "com.google.android.gms",
+    certificates = R.array.com_google_android_gms_fonts_certs
+)
 
-val SpaceGroteskFontFamily = FontFamily.Default
+// Inter Font from Google Fonts
+private val interGoogleFont = GoogleFont("Inter")
+val InterFontFamily = FontFamily(
+    Font(googleFont = interGoogleFont, fontProvider = provider, weight = FontWeight.Normal),
+    Font(googleFont = interGoogleFont, fontProvider = provider, weight = FontWeight.Medium),
+    Font(googleFont = interGoogleFont, fontProvider = provider, weight = FontWeight.SemiBold),
+    Font(googleFont = interGoogleFont, fontProvider = provider, weight = FontWeight.Bold)
+)
 
-val AutoBrainFontFamily = FontFamily.SansSerif
+// Space Grotesk Font from Google Fonts
+private val spaceGroteskGoogleFont = GoogleFont("Space Grotesk")
+val SpaceGroteskFontFamily = FontFamily(
+    Font(googleFont = spaceGroteskGoogleFont, fontProvider = provider, weight = FontWeight.Medium),
+    Font(googleFont = spaceGroteskGoogleFont, fontProvider = provider, weight = FontWeight.SemiBold),
+    Font(googleFont = spaceGroteskGoogleFont, fontProvider = provider, weight = FontWeight.Bold)
+)
+
+val AutoBrainFontFamily = InterFontFamily
 
 // Premium Typography Scale
 val AutoBrainTypography = Typography(

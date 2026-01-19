@@ -37,6 +37,23 @@ service firebase.storage {
     }
     
     // =============================================================================
+    // CAR IMAGES (AI-processed with transparent backgrounds)
+    // =============================================================================
+    
+    match /car_images/{imageId} {
+      // Read: Public access for all users
+      allow read: if true;
+      
+      // Write: Authenticated users, images only, max 5MB
+      allow write: if isAuthenticated() &&
+                      isImage() &&
+                      isValidFileSize(5); // Max 5MB
+      
+      // Delete: Authenticated users only
+      allow delete: if isAuthenticated();
+    }
+    
+    // =============================================================================
     // PROFILE IMAGES
     // =============================================================================
     

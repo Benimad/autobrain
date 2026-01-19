@@ -25,6 +25,9 @@ interface CarImageDao {
     @Query("DELETE FROM car_images WHERE cachedAt < :expiryTime")
     suspend fun deleteExpiredImages(expiryTime: Long)
     
+    @Query("DELETE FROM car_images WHERE carKey = :carKey")
+    suspend fun deleteCarImage(carKey: String)
+    
     @Query("DELETE FROM car_images")
     suspend fun clearAll()
     

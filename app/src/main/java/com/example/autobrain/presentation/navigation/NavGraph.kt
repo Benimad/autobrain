@@ -290,5 +290,12 @@ fun NavGraph(
         composable(Screen.About.route) {
             // TODO: AboutScreen
         }
+
+        // =====================================================================
+        // AI ASSISTANT CHATBOT
+        // =====================================================================
+        composable(Screen.AIAssistant.route) {
+            com.example.autobrain.presentation.screens.chat.ChatScreen(navController = navController)
+        }
     }
 }

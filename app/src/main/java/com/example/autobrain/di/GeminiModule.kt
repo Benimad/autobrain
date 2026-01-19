@@ -5,8 +5,15 @@ import com.example.autobrain.BuildConfig
 import com.example.autobrain.data.ai.GeminiAiRepository
 import com.example.autobrain.data.ai.GeminiCarnetRepository
 import com.example.autobrain.data.remote.GeminiCarImageService
+import com.example.autobrain.data.repository.AudioDiagnosticRepository
+import com.example.autobrain.data.repository.GeminiChatRepository
+import com.example.autobrain.data.repository.VideoDiagnosticRepository
+import com.example.autobrain.domain.repository.AIScoreRepository
+import com.example.autobrain.domain.repository.CarLogRepository
+import com.example.autobrain.domain.repository.UserRepository
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.generationConfig
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,13 +49,13 @@ object GeminiModule {
     @Singleton
     fun provideGenerativeModel(): GenerativeModel {
         return GenerativeModel(
-            modelName = "gemini-2.0-flash-lite-001",
+            modelName = "models/gemini-2.5-flash",
             apiKey = BuildConfig.GEMINI_API_KEY,
             generationConfig = generationConfig {
                 temperature = 1.0f
-                topK = 40
+                topK = 64
                 topP = 0.95f
-                maxOutputTokens = 8192
+                maxOutputTokens = 65536
             }
         )
     }
@@ -56,8 +63,31 @@ object GeminiModule {
     @Provides
     @Singleton
     fun provideGeminiCarImageService(
-        generativeModel: GenerativeModel
+        generativeModel: GenerativeModel,
+        okHttpClient: okhttp3.OkHttpClient
     ): GeminiCarImageService {
-        return GeminiCarImageService(generativeModel)
+        return GeminiCarImageService(generativeModel, okHttpClient)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideGeminiChatRepository(
+        geminiModel: GenerativeModel,
+        userRepository: UserRepository,
+        carLogRepository: CarLogRepository,
+        aiScoreRepository: AIScoreRepository,
+        audioDiagnosticRepository: AudioDiagnosticRepository,
+        videoDiagnosticRepository: VideoDiagnosticRepository,
+        auth: FirebaseAuth
+    ): GeminiChatRepository {
+        return GeminiChatRepository(
+            geminiModel = geminiModel,
+            userRepository = userRepository,
+            carLogRepository = carLogRepository,
+            aiScoreRepository = aiScoreRepository,
+            audioDiagnosticRepository = audioDiagnosticRepository,
+            videoDiagnosticRepository = videoDiagnosticRepository,
+            auth = auth
+        )
     }
 }

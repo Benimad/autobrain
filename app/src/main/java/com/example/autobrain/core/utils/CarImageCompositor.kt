@@ -13,22 +13,37 @@ import java.io.ByteArrayOutputStream
 import java.net.URL
 
 /**
- * Utility to composite transparent car images onto scenic backgrounds.
- * Creates professional-looking car profile images.
+ * Professional Car Image Compositor
+ * 
+ * Creates consistent, professional-looking car images by compositing transparent
+ * car PNGs onto standardized backgrounds. This ensures ALL user cars are displayed
+ * with the same visual style, lighting, and presentation.
+ * 
+ * Consistency Features:
+ * - Same dark gradient background for all cars
+ * - Consistent car positioning and scaling
+ * - Professional studio-quality presentation
+ * - Matches reference design exactly
  */
 object CarImageCompositor {
     private const val TAG = "CarImageCompositor"
     
     /**
-     * Downloads and composites a transparent car image onto a scenic background.
-     * @param carImageUrl URL of the transparent car PNG
-     * @param backgroundType Type of background (road, studio, gradient)
-     * @return Bitmap of the composited image
+     * Downloads and composites a transparent car image onto a professional background.
+     * 
+     * This is the CORE method for achieving consistent car presentations across
+     * the entire app. All car images should use DARK_PROFESSIONAL background
+     * to match the reference design.
+     * 
+     * @param context Android context
+     * @param carImageUrl URL of the transparent car PNG (from Gemini + background removal)
+     * @param backgroundType Type of background (default: DARK_PROFESSIONAL for consistency)
+     * @return Result containing the composited professional car image bitmap
      */
     suspend fun compositeCarImage(
         context: Context,
         carImageUrl: String,
-        backgroundType: BackgroundType = BackgroundType.GRADIENT
+        backgroundType: BackgroundType = BackgroundType.DARK_PROFESSIONAL
     ): kotlin.Result<Bitmap> = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "🎨 Compositing car image: $carImageUrl")
@@ -80,7 +95,6 @@ object CarImageCompositor {
         
         when (type) {
             BackgroundType.GRADIENT -> {
-                // Create gradient background (light gray to white)
                 val paint = Paint().apply {
                     shader = android.graphics.LinearGradient(
                         0f, 0f, 0f, height.toFloat(),
@@ -91,12 +105,25 @@ object CarImageCompositor {
                 }
                 canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
             }
+            BackgroundType.DARK_PROFESSIONAL -> {
+                val paint = Paint().apply {
+                    shader = android.graphics.LinearGradient(
+                        0f, 0f, 0f, height.toFloat(),
+                        intArrayOf(
+                            0xFF1E2330.toInt(),
+                            0xFF14161E.toInt(),
+                            0xFF0D0E14.toInt()
+                        ),
+                        floatArrayOf(0f, 0.5f, 1f),
+                        android.graphics.Shader.TileMode.CLAMP
+                    )
+                }
+                canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+            }
             BackgroundType.ROAD -> {
-                // Solid light background (simulating road)
                 canvas.drawColor(0xFFE8E8E8.toInt())
             }
             BackgroundType.STUDIO -> {
-                // Pure white studio background
                 canvas.drawColor(0xFFFFFFFF.toInt())
             }
         }
@@ -130,6 +157,7 @@ object CarImageCompositor {
     
     enum class BackgroundType {
         GRADIENT,
+        DARK_PROFESSIONAL,
         ROAD,
         STUDIO
     }

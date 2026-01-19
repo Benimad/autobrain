@@ -141,6 +141,11 @@ sealed class Screen(val route: String) {
     object DataControls : Screen("data_controls")
     object Help : Screen("help")
     object About : Screen("about")
+
+    // =========================================================================
+    // AI ASSISTANT CHATBOT
+    // =========================================================================
+    object AIAssistant : Screen("ai_assistant")
 }
 
 /**
