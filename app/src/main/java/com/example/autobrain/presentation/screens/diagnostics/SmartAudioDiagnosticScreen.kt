@@ -132,7 +132,7 @@ fun SmartAudioDiagnosticScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = "Retour",
+                            contentDescription = "Back",
                             tint = PremiumCyan
                         )
                     }
@@ -369,7 +369,7 @@ private fun IdleReadyState(
         
         // Title with gradient effect
         Text(
-            text = "Enregistrer le Son",
+            text = "Record Sound",
             style = if (isCompactScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.headlineMedium,
             color = TextPrimary,
             textAlign = TextAlign.Center
@@ -378,7 +378,7 @@ private fun IdleReadyState(
         Spacer(modifier = Modifier.height(6.dp))
         
         Text(
-            text = "du Moteur",
+            text = "Engine",
             style = if (isCompactScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.headlineMedium,
             color = PremiumCyan,
             textAlign = TextAlign.Center
@@ -388,7 +388,7 @@ private fun IdleReadyState(
         
         // Subtitle
         Text(
-            text = "Analyse 100% locale • Sans cloud",
+            text = "100% Local Analysis • No cloud",
             style = MaterialTheme.typography.labelMedium,
             color = TextSecondary,
             textAlign = TextAlign.Center,
@@ -404,7 +404,7 @@ private fun IdleReadyState(
         
         // Premium Start Button
         PremiumActionButton(
-            text = if (hasPermission) "Commencer l'Enregistrement" else "Activer le Microphone",
+            text = if (hasPermission) "Start Recording" else "Enable Microphone",
             icon = if (hasPermission) Icons.Rounded.PlayArrow else Icons.Rounded.Lock,
             onClick = if (hasPermission) onStartDiagnostic else onRequestPermission
         )

@@ -687,7 +687,7 @@ private fun ErrorStateEnhanced(
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(
-                text = "Erreur",
+                text = "Error",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -715,7 +715,7 @@ private fun ErrorStateEnhanced(
                     contentColor = Color.Black
                 )
             ) {
-                Text("Réessayer", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text("Retry", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

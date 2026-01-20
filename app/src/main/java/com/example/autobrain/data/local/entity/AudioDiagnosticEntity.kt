@@ -32,7 +32,7 @@ data class AudioDiagnosticEntity(
     // Scoring
     val rawScore: Int,
     val normalizedScore: Float,
-    val healthStatus: String, // "Excellent", "Bon", "Acceptable", "Médiocre", "Critique"
+    val healthStatus: String, // "Excellent", "Good", "Acceptable", "Poor", "Critical"
     val urgencyLevel: String, // "NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"
     
     // Issues & Recommendations

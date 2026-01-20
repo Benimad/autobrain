@@ -61,7 +61,7 @@ You are AutoBrain, an AI-powered diagnostic assistant for car owners, powered by
 5. Offer recommendations.
 6. Conclude with a specific next step.
 
-IMPORTANT: Always respond in French. When assessing risk, explicitly state it as "RISQUE: LOW", "RISQUE: MEDIUM", or "RISQUE: HIGH" in your response.
+IMPORTANT: Always respond in English. When assessing risk, explicitly state it as "RISK: LOW", "RISK: MEDIUM", or "RISK: HIGH" in your response.
 """.trimIndent()
 
     suspend fun sendMessage(message: String): AiResponse {
@@ -85,20 +85,20 @@ IMPORTANT: Always respond in French. When assessing risk, explicitly state it as
                 """
 $systemPrompt
 
-=== DONNÉES DU VÉHICULE ET DE L'UTILISATEUR ===
+=== VEHICLE AND USER DATA ===
 $carContext
 
-=== PREMIÈRE QUESTION DE L'UTILISATEUR ===
+=== FIRST USER QUESTION ===
 $message
 
-Maintenant, analyse les données ci-dessus et réponds à la question de l'utilisateur de manière intelligente. Si tu détectes des problèmes dans les données (faible score AI, entretien en retard, diagnostics récents), mentionne-les dans ta réponse.
+Now, analyze the data above and respond to the user's question intelligently. If you detect problems in the data (low AI score, overdue maintenance, recent diagnostics), mention them in your response.
                 """.trimIndent()
             } else {
                 """
-Contexte actuel du véhicule:
+Current vehicle context:
 $carContext
 
-Question de l'utilisateur: $message
+User question: $message
                 """.trimIndent()
             }
 
@@ -131,7 +131,7 @@ Question de l'utilisateur: $message
             )
         } catch (e: Exception) {
             android.util.Log.e("GeminiChatRepository", "Error in sendMessage", e)
-            throw Exception("Erreur de connexion avec Gemini AI: ${e.message}")
+            throw Exception("Error connecting to Gemini AI: ${e.message}")
         }
     }
 
@@ -146,27 +146,27 @@ Question de l'utilisateur: $message
             }
             
             user?.let {
-                contextBuilder.append("**INFORMATIONS UTILISATEUR:**\n")
-                contextBuilder.append("- Nom: ${it.name}\n")
+                contextBuilder.append("**USER INFORMATION:**\n")
+                contextBuilder.append("- Name: ${it.name}\n")
                 it.carDetails?.let { car ->
-                    contextBuilder.append("- Véhicule: ${car.make} ${car.model} (${car.year})\n")
-                    contextBuilder.append("- Plaque: ${car.licensePlate}\n")
-                    contextBuilder.append("- Couleur: ${car.color}\n")
+                    contextBuilder.append("- Vehicle: ${car.make} ${car.model} (${car.year})\n")
+                    contextBuilder.append("- Plate: ${car.licensePlate}\n")
+                    contextBuilder.append("- Color: ${car.color}\n")
                 }
                 contextBuilder.append("\n")
             }
             
             val latestAiScore = aiScoreRepository.getLatestAIScore(userId).firstOrNull()
             latestAiScore?.let { score ->
-                contextBuilder.append("**SCORE AI ACTUEL:**\n")
-                contextBuilder.append("- Score global: ${score.score}/100\n")
+                contextBuilder.append("**CURRENT AI SCORE:**\n")
+                contextBuilder.append("- Overall score: ${score.score}/100\n")
                 contextBuilder.append("- Condition: ${score.condition}\n")
-                contextBuilder.append("- Score moteur: ${score.engineScore}\n")
-                contextBuilder.append("- Score transmission: ${score.transmissionScore}\n")
-                contextBuilder.append("- Score châssis: ${score.chassisScore}\n")
-                contextBuilder.append("- Niveau de risque: ${score.riskLevel}\n")
+                contextBuilder.append("- Engine score: ${score.engineScore}\n")
+                contextBuilder.append("- Transmission score: ${score.transmissionScore}\n")
+                contextBuilder.append("- Chassis score: ${score.chassisScore}\n")
+                contextBuilder.append("- Risk level: ${score.riskLevel}\n")
                 if (score.redFlags.isNotEmpty()) {
-                    contextBuilder.append("- Alertes: ${score.redFlags.joinToString(", ")}\n")
+                    contextBuilder.append("- Alerts: ${score.redFlags.joinToString(", ")}\n")
                 }
                 contextBuilder.append("\n")
             }
@@ -177,7 +177,7 @@ Question de l'utilisateur: $message
             }
             
             if (maintenanceRecords.isNotEmpty()) {
-                contextBuilder.append("**HISTORIQUE D'ENTRETIEN:**\n")
+                contextBuilder.append("**MAINTENANCE HISTORY:**\n")
                 maintenanceRecords.take(5).forEach { record ->
                     contextBuilder.append("- ${record.type}: ${record.description} (${record.date})\n")
                 }
@@ -190,9 +190,9 @@ Question de l'utilisateur: $message
             }
             
             if (upcomingReminders.isNotEmpty()) {
-                contextBuilder.append("**RAPPELS D'ENTRETIEN À VENIR:**\n")
+                contextBuilder.append("**UPCOMING MAINTENANCE REMINDERS:**\n")
                 upcomingReminders.forEach { reminder ->
-                    contextBuilder.append("- ${reminder.title}: ${reminder.description} (échéance: ${reminder.dueDate})\n")
+                    contextBuilder.append("- ${reminder.title}: ${reminder.description} (due: ${reminder.dueDate})\n")
                 }
                 contextBuilder.append("\n")
             }
@@ -202,14 +202,14 @@ Question de l'utilisateur: $message
                 else -> emptyList()
             }
             if (recentAudioDiagnostics.isNotEmpty()) {
-                contextBuilder.append("**DIAGNOSTICS AUDIO RÉCENTS:**\n")
+                contextBuilder.append("**RECENT AUDIO DIAGNOSTICS:**\n")
                 recentAudioDiagnostics.forEach { diagnostic ->
-                    val date = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.FRENCH)
+                    val date = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.ENGLISH)
                         .format(java.util.Date(diagnostic.createdAt))
                     contextBuilder.append("- $date: ${diagnostic.healthStatus}\n")
                     contextBuilder.append("  Score: ${diagnostic.rawScore}/100\n")
                     diagnostic.detectedIssues.take(2).forEach { issue ->
-                        contextBuilder.append("  • ${issue.description} (sévérité: ${issue.severity})\n")
+                        contextBuilder.append("  • ${issue.description} (severity: ${issue.severity})\n")
                     }
                 }
                 contextBuilder.append("\n")
@@ -220,25 +220,25 @@ Question de l'utilisateur: $message
                 else -> emptyList()
             }
             if (recentVideoDiagnostics.isNotEmpty()) {
-                contextBuilder.append("**DIAGNOSTICS VIDÉO RÉCENTS:**\n")
+                contextBuilder.append("**RECENT VIDEO DIAGNOSTICS:**\n")
                 recentVideoDiagnostics.forEach { diagnostic ->
-                    val date = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.FRENCH)
+                    val date = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.ENGLISH)
                         .format(java.util.Date(diagnostic.createdAt))
                     contextBuilder.append("- $date: ${diagnostic.healthStatus}\n")
                     contextBuilder.append("  Score: ${diagnostic.finalScore}/100\n")
                     diagnostic.detectedIssues.take(2).forEach { issue ->
-                        contextBuilder.append("  • ${issue.description} (sévérité: ${issue.severity})\n")
+                        contextBuilder.append("  • ${issue.description} (severity: ${issue.severity})\n")
                     }
                 }
                 contextBuilder.append("\n")
             }
             
         } catch (_: Exception) {
-            contextBuilder.append("Note: Impossible de charger certaines données du véhicule.\n")
+            contextBuilder.append("Note: Unable to load some vehicle data.\n")
         }
         
         return if (contextBuilder.isEmpty()) {
-            "Aucune donnée disponible pour ce véhicule. Pose des questions à l'utilisateur pour mieux comprendre sa situation."
+            "No vehicle data available. Ask the user questions to better understand their situation."
         } else {
             contextBuilder.toString()
         }
@@ -246,11 +246,14 @@ Question de l'utilisateur: $message
 
     private fun extractRiskLevel(text: String): String? {
         return when {
-            text.contains("RISQUE: HIGH", ignoreCase = true) || 
+            text.contains("RISK: HIGH", ignoreCase = true) || 
+            text.contains("RISQUE: HIGH", ignoreCase = true) ||
             text.contains("RISQUE: ÉLEVÉ", ignoreCase = true) -> "HIGH"
-            text.contains("RISQUE: MEDIUM", ignoreCase = true) || 
+            text.contains("RISK: MEDIUM", ignoreCase = true) ||
+            text.contains("RISQUE: MEDIUM", ignoreCase = true) ||
             text.contains("RISQUE: MOYEN", ignoreCase = true) -> "MEDIUM"
-            text.contains("RISQUE: LOW", ignoreCase = true) || 
+            text.contains("RISK: LOW", ignoreCase = true) ||
+            text.contains("RISQUE: LOW", ignoreCase = true) ||
             text.contains("RISQUE: FAIBLE", ignoreCase = true) -> "LOW"
             else -> null
         }

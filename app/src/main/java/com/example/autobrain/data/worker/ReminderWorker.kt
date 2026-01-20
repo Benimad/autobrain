@@ -85,14 +85,14 @@ class ReminderWorker @AssistedInject constructor(
             } catch (e: Exception) {
                 // Fallback message
                 if (isOverdue) {
-                    "Attention: ${reminder.title} est en retard de ${-daysLeft} jours!"
+                    "Attention: ${reminder.title} is ${-daysLeft} days overdue!"
                 } else {
-                    "Rappel: ${reminder.title} est dû dans $daysLeft jours."
+                    "Reminder: ${reminder.title} is due in $daysLeft days."
                 }
             }
 
             showNotification(
-                title = if (isOverdue) "⚠️ ALERTE ENTRETIEN" else "📅 RAPPEL AUTO",
+                title = if (isOverdue) "⚠️ MAINTENANCE ALERT" else "📅 VEHICLE REMINDER",
                 body = geminiMessage,
                 reminderId = reminder.id
             )

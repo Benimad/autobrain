@@ -3,6 +3,8 @@
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.autobrain.core.utils.Result
+import com.example.autobrain.data.ai.GeminiCarDetails
+import com.example.autobrain.data.ai.MaintenanceRecordData
 import com.example.autobrain.data.local.entity.Reminder
 import com.example.autobrain.data.local.entity.ReminderPriority
 import com.example.autobrain.data.local.entity.ReminderType
@@ -67,7 +69,7 @@ class AddReminderViewModel @Inject constructor(
                     }
                 }
                 else -> {
-                    _uiState.value = AddReminderUiState.Error("Utilisateur non connecté")
+                    _uiState.value = AddReminderUiState.Error("User not logged in")
                 }
             }
         }
@@ -116,7 +118,7 @@ class AddReminderViewModel @Inject constructor(
                 
             } catch (e: Exception) {
                 android.util.Log.e("AddReminderVM", "Calculation error: ${e.message}", e)
-                _calculationState.value = CalculationState.Error("Erreur de calcul: ${e.message}")
+                _calculationState.value = CalculationState.Error("Calculation error: ${e.message}")
             }
         }
     }
@@ -163,7 +165,7 @@ class AddReminderViewModel @Inject constructor(
                     onSuccess = { analysis ->
                         _geminiSuggestions.value = GeminiSuggestionsState.Success(
                             suggestions = listOf(
-                                "Score santé: ${analysis.overallScore}/100",
+                                "Health score: ${analysis.overallScore}/100",
                                 "Estimation: ${calculation.estimatedCost.first.toInt()}-$${calculation.estimatedCost.second.toInt()}",
                                 "Urgence: ${calculation.urgencyScore}/100"
                             ) + analysis.recommendedNextSteps.take(3)
@@ -171,13 +173,13 @@ class AddReminderViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _geminiSuggestions.value = GeminiSuggestionsState.Error(
-                            error.message ?: "Erreur Gemini"
+                            error.message ?: "Gemini error"
                         )
                     }
                 )
             } catch (e: Exception) {
                 android.util.Log.e("AddReminderVM", "Gemini error: ${e.message}", e)
-                _geminiSuggestions.value = GeminiSuggestionsState.Error("Erreur: ${e.message}")
+                _geminiSuggestions.value = GeminiSuggestionsState.Error("Error: ${e.message}")
             }
         }
     }
@@ -201,14 +203,14 @@ class AddReminderViewModel @Inject constructor(
             try {
                 val userId = currentUserId
                 if (userId == null) {
-                    _uiState.value = AddReminderUiState.Error("Utilisateur non connecté")
+                    _uiState.value = AddReminderUiState.Error("User not logged in")
                     return@launch
                 }
                 
                 // Get calculation (should already be calculated)
                 val calculation = (_calculationState.value as? CalculationState.Success)?.calculation
                 if (calculation == null) {
-                    _uiState.value = AddReminderUiState.Error("Veuillez d'abord calculer le rappel")
+                    _uiState.value = AddReminderUiState.Error("Please calculate the reminder first")
                     return@launch
                 }
                 
@@ -219,7 +221,7 @@ class AddReminderViewModel @Inject constructor(
                         maintenanceHistory
                     )) {
                     _uiState.value = AddReminderUiState.Warning(
-                        "Attention: Ce service a été effectué récemment. Voulez-vous vraiment créer un rappel?"
+                        "Attention: This service was recently performed. Do you really want to create a reminder?"
                     )
                     return@launch
                 }
@@ -265,14 +267,14 @@ class AddReminderViewModel @Inject constructor(
                         _uiState.value = AddReminderUiState.Success
                     }
                     is Result.Error -> {
-                        _uiState.value = AddReminderUiState.Error("Erreur de sauvegarde")
+                        _uiState.value = AddReminderUiState.Error("Save error")
                     }
                     else -> {}
                 }
                 
             } catch (e: Exception) {
                 android.util.Log.e("AddReminderVM", "Save error: ${e.message}", e)
-                _uiState.value = AddReminderUiState.Error("Erreur: ${e.message}")
+                _uiState.value = AddReminderUiState.Error("Error: ${e.message}")
             }
         }
     }
@@ -291,17 +293,17 @@ class AddReminderViewModel @Inject constructor(
     
     private fun getDefaultTitle(type: MaintenanceType): String {
         return when (type) {
-            MaintenanceType.OIL_CHANGE -> "Vidange d'huile"
-            MaintenanceType.TIRE_ROTATION -> "Rotation des pneus"
-            MaintenanceType.BRAKE_SERVICE -> "Service des freins"
-            MaintenanceType.ENGINE_TUNE_UP -> "Réglage moteur"
-            MaintenanceType.BATTERY_REPLACEMENT -> "Remplacement batterie"
-            MaintenanceType.AIR_FILTER -> "Changement filtre à air"
-            MaintenanceType.TRANSMISSION_SERVICE -> "Service transmission"
-            MaintenanceType.COOLANT_FLUSH -> "Vidange liquide refroidissement"
-            MaintenanceType.GENERAL_INSPECTION -> "Inspection générale"
-            MaintenanceType.REPAIR -> "Réparation"
-            MaintenanceType.OTHER -> "Autre entretien"
+            MaintenanceType.OIL_CHANGE -> "Oil change"
+            MaintenanceType.TIRE_ROTATION -> "Tire rotation"
+            MaintenanceType.BRAKE_SERVICE -> "Brake service"
+            MaintenanceType.ENGINE_TUNE_UP -> "Engine tune-up"
+            MaintenanceType.BATTERY_REPLACEMENT -> "Battery replacement"
+            MaintenanceType.AIR_FILTER -> "Air filter replacement"
+            MaintenanceType.TRANSMISSION_SERVICE -> "Transmission service"
+            MaintenanceType.COOLANT_FLUSH -> "Coolant flush"
+            MaintenanceType.GENERAL_INSPECTION -> "General inspection"
+            MaintenanceType.REPAIR -> "Repair"
+            MaintenanceType.OTHER -> "Other maintenance"
         }
     }
     

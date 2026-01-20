@@ -348,7 +348,7 @@ private fun WelcomeScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Votre assistant diagnostic automobile intelligent",
+            text = "Your intelligent car diagnostic assistant",
             style = MaterialTheme.typography.bodyMedium,
             color = TextSecondary
         )
@@ -356,7 +356,7 @@ private fun WelcomeScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Actions Rapides",
+            text = "Quick Actions",
             style = MaterialTheme.typography.titleSmall,
             color = TextMuted,
             fontWeight = FontWeight.SemiBold
@@ -366,10 +366,10 @@ private fun WelcomeScreen(
 
         val quickActions = remember {
             listOf(
-                Triple(Icons.Outlined.Mic, "Analyser un bruit moteur", "Je voudrais analyser un bruit de moteur anormal"),
-                Triple(Icons.Outlined.Videocam, "Diagnostic vidéo", "J'ai filmé un problème avec ma voiture"),
-                Triple(Icons.Outlined.Build, "Historique d'entretien", "Peux-tu vérifier mon historique d'entretien?"),
-                Triple(Icons.Outlined.Help, "Poser une question", "J'ai une question sur ma voiture")
+                Triple(Icons.Outlined.Mic, "Analyze engine noise", "I would like to analyze an abnormal engine noise"),
+                Triple(Icons.Outlined.Videocam, "Video diagnostic", "I filmed a problem with my car"),
+                Triple(Icons.Outlined.Build, "Maintenance history", "Can you check my maintenance history?"),
+                Triple(Icons.Outlined.Help, "Ask a question", "I have a question about my car")
             )
         }
         
@@ -624,9 +624,9 @@ private fun MessageBubble(
 @Composable
 private fun RiskBadge(risk: String) {
     val (color, text, icon) = when (risk.uppercase()) {
-        "LOW" -> Triple(SuccessGreen, "FAIBLE", Icons.Outlined.CheckCircle)
-        "MEDIUM" -> Triple(WarningAmber, "MOYEN", Icons.Outlined.Warning)
-        "HIGH" -> Triple(ErrorRed, "ÉLEVÉ", Icons.Outlined.Error)
+        "LOW" -> Triple(SuccessGreen, "LOW", Icons.Outlined.CheckCircle)
+        "MEDIUM" -> Triple(WarningAmber, "MEDIUM", Icons.Outlined.Warning)
+        "HIGH" -> Triple(ErrorRed, "HIGH", Icons.Outlined.Error)
         else -> Triple(TextMuted, risk, Icons.Outlined.Info)
     }
     
@@ -658,7 +658,7 @@ private fun RiskBadge(risk: String) {
                 modifier = Modifier.size(14.dp)
             )
             Text(
-                text = "Risque: $text",
+                text = "Risk: $text",
                 style = MaterialTheme.typography.labelSmall,
                 color = color,
                 fontWeight = FontWeight.Bold
@@ -795,7 +795,7 @@ private fun ChatInputField(
                         .animateContentSize(),
                     placeholder = {
                         Text(
-                            text = "Posez votre question sur votre véhicule...",
+                            text = "Ask your question about your vehicle...",
                             color = TextMuted,
                             style = MaterialTheme.typography.bodyMedium
                         )

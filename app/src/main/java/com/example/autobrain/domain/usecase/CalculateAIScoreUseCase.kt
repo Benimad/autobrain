@@ -59,7 +59,7 @@ class CalculateAIScoreUseCase @Inject constructor(
             val audioResult = engineSoundResult?.let { result ->
                 com.example.autobrain.data.ai.AudioAnalysisResult(
                     classifications = emptyList(), // Will be filled by actual TFLite data
-                    mainIssue = result.mainIssue.descriptionFr,
+                    mainIssue = result.mainIssue.descriptionEn,
                     possibleCauses = listOf(result.rawDescription),
                     recommendations = emptyList(),
                     healthScore = result.mainIssue.score
@@ -199,14 +199,14 @@ class CalculateAIScoreUseCase @Inject constructor(
         val oilChangeStatus = when {
             data.kmSinceLastOilChange < 10000 && data.monthsSinceLastOilChange < 12 -> {
                 totalPoints += 20
-                MaintenanceStatus(StatusLevel.GOOD, 20, "Vidange récente")
+                MaintenanceStatus(StatusLevel.GOOD, 20, "Recent oil change")
             }
             data.kmSinceLastOilChange < 15000 && data.monthsSinceLastOilChange < 18 -> {
                 totalPoints += 10
-                MaintenanceStatus(StatusLevel.WARNING, 10, "Vidange à prévoir bientôt")
+                MaintenanceStatus(StatusLevel.WARNING, 10, "Oil change due soon")
             }
             else -> {
-                MaintenanceStatus(StatusLevel.EXPIRED, 0, "Vidange en retard")
+                MaintenanceStatus(StatusLevel.EXPIRED, 0, "Oil change overdue")
             }
         }
         
@@ -214,23 +214,23 @@ class CalculateAIScoreUseCase @Inject constructor(
         val technicalStatus = when {
             data.monthsSinceTechnicalInspection < 0 -> { // Valid
                 totalPoints += 20
-                MaintenanceStatus(StatusLevel.GOOD, 20, "Contrôle technique valide")
+                MaintenanceStatus(StatusLevel.GOOD, 20, "Technical inspection valid")
             }
             data.monthsSinceTechnicalInspection < 3 -> { // Recently expired
                 totalPoints += 10
-                MaintenanceStatus(StatusLevel.WARNING, 10, "CT expiré récemment")
+                MaintenanceStatus(StatusLevel.WARNING, 10, "CT recently expired")
             }
             else -> {
-                MaintenanceStatus(StatusLevel.EXPIRED, 0, "CT expiré depuis plus de 3 mois")
+                MaintenanceStatus(StatusLevel.EXPIRED, 0, "CT expired over 3 months ago")
             }
         }
         
         // Insurance Status (max 10 points)
         val insuranceStatus = if (data.hasValidInsurance) {
             totalPoints += 10
-            MaintenanceStatus(StatusLevel.GOOD, 10, "Assurance à jour")
+            MaintenanceStatus(StatusLevel.GOOD, 10, "Insurance up to date")
         } else {
-            MaintenanceStatus(StatusLevel.EXPIRED, 0, "Assurance expirée")
+            MaintenanceStatus(StatusLevel.EXPIRED, 0, "Insurance expired")
         }
         
         // Mileage Consistency (max 20 points, can be negative)
@@ -252,7 +252,7 @@ class CalculateAIScoreUseCase @Inject constructor(
                 currentKm = data.currentKm,
                 expectedKmRange = data.expectedKmRange,
                 anomalyDetected = true,
-                anomalyDescription = "Kilométrage suspect - possible manipulation"
+                anomalyDescription = "Suspicious mileage - possible manipulation"
             )
         }
         
@@ -359,7 +359,7 @@ class CalculateAIScoreUseCase @Inject constructor(
             when (result.mainIssue.severity) {
                 DomainIssueSeverity.GRAVE -> grave.add(
                     Issue(
-                        title = result.mainIssue.descriptionFr,
+                        title = result.mainIssue.descriptionEn,
                         description = result.rawDescription,
                         severity = DomainIssueSeverity.GRAVE,
                         estimatedRepairCost = 20000..50000,
@@ -368,7 +368,7 @@ class CalculateAIScoreUseCase @Inject constructor(
                 )
                 DomainIssueSeverity.MEDIUM -> medium.add(
                     Issue(
-                        title = result.mainIssue.descriptionFr,
+                        title = result.mainIssue.descriptionEn,
                         description = result.rawDescription,
                         severity = DomainIssueSeverity.MEDIUM,
                         estimatedRepairCost = 5000..15000,
@@ -377,7 +377,7 @@ class CalculateAIScoreUseCase @Inject constructor(
                 )
                 DomainIssueSeverity.MINOR -> minor.add(
                     Issue(
-                        title = result.mainIssue.descriptionFr,
+                        title = result.mainIssue.descriptionEn,
                         description = result.rawDescription,
                         severity = DomainIssueSeverity.MINOR,
                         estimatedRepairCost = 500..3000,
@@ -394,8 +394,8 @@ class CalculateAIScoreUseCase @Inject constructor(
                 when (result.smokeType.severity) {
                     DomainIssueSeverity.GRAVE -> grave.add(
                         Issue(
-                            title = result.smokeType.descriptionFr,
-                            description = "Détecté dans l'analyse vidéo",
+                            title = result.smokeType.descriptionEn,
+                            description = "Detected in video analysis",
                             severity = DomainIssueSeverity.GRAVE,
                             estimatedRepairCost = 15000..40000,
                             source = IssueSource.VIDEO_ANALYSIS
@@ -403,8 +403,8 @@ class CalculateAIScoreUseCase @Inject constructor(
                     )
                     DomainIssueSeverity.MEDIUM -> medium.add(
                         Issue(
-                            title = result.smokeType.descriptionFr,
-                            description = "Détecté dans l'analyse vidéo",
+                            title = result.smokeType.descriptionEn,
+                            description = "Detected in video analysis",
                             severity = DomainIssueSeverity.MEDIUM,
                             estimatedRepairCost = 5000..15000,
                             source = IssueSource.VIDEO_ANALYSIS
@@ -412,8 +412,8 @@ class CalculateAIScoreUseCase @Inject constructor(
                     )
                     else -> minor.add(
                         Issue(
-                            title = result.smokeType.descriptionFr,
-                            description = "Observation mineure",
+                            title = result.smokeType.descriptionEn,
+                            description = "Minor observation",
                             severity = DomainIssueSeverity.MINOR,
                             estimatedRepairCost = null,
                             source = IssueSource.VIDEO_ANALYSIS
@@ -427,8 +427,8 @@ class CalculateAIScoreUseCase @Inject constructor(
         if (!maintenanceData.mileageIsConsistent) {
             grave.add(
                 Issue(
-                    title = "Kilométrage suspect",
-                    description = "Possible manipulation du compteur",
+                    title = "Suspicious mileage",
+                    description = "Possible odometer manipulation",
                     severity = DomainIssueSeverity.GRAVE,
                     estimatedRepairCost = null,
                     source = IssueSource.MAINTENANCE_LOG
@@ -439,11 +439,11 @@ class CalculateAIScoreUseCase @Inject constructor(
         // Add Gemini AI identified issues
         geminiAnalysis?.let { analysis ->
             analysis.majorIssues.forEach { issue ->
-                if (issue.lowercase() != "aucun") {
+                if (issue.lowercase() != "none") {
                     grave.add(
                         Issue(
                             title = issue,
-                            description = "Identifié par Gemini AI",
+                            description = "Identified by Gemini AI",
                             severity = DomainIssueSeverity.GRAVE,
                             estimatedRepairCost = 20000..50000,
                             source = IssueSource.LLM_ANALYSIS
@@ -455,7 +455,7 @@ class CalculateAIScoreUseCase @Inject constructor(
                 minor.add(
                     Issue(
                         title = issue,
-                        description = "Identifié par Gemini AI",
+                        description = "Identified by Gemini AI",
                         severity = DomainIssueSeverity.MINOR,
                         estimatedRepairCost = null,
                         source = IssueSource.LLM_ANALYSIS
@@ -491,7 +491,7 @@ class CalculateAIScoreUseCase @Inject constructor(
                 lowPrice = it.lowPrice,
                 highPrice = it.highPrice,
                 confidence = ConfidenceLevel.MEDIUM,
-                basedOn = listOf("Estimation locale"),
+                basedOn = listOf("Local estimation"),
                 lastUpdated = System.currentTimeMillis()
             )
         }
@@ -499,11 +499,11 @@ class CalculateAIScoreUseCase @Inject constructor(
     
     private fun getDefaultBuyerAdvice(score: Int, issues: IssuesList): String {
         return when {
-            score >= 90 -> "Acheter sans hésiter - Excellent état"
-            score >= 70 && !issues.hasGraveIssues() -> "Bon rapport qualité-prix, à vérifier chez un mécanicien"
-            score >= 50 && !issues.hasGraveIssues() -> "Négocier le prix en fonction des défauts constatés"
-            issues.hasGraveIssues() -> "Éviter cette voiture – risque élevé de réparation coûteuse"
-            else -> "Faire inspecter par un mécanicien avant toute décision"
+            score >= 90 -> "Buy without hesitation - Excellent condition"
+            score >= 70 && !issues.hasGraveIssues() -> "Good value for money, verify with a mechanic"
+            score >= 50 && !issues.hasGraveIssues() -> "Negotiate price based on detected defects"
+            issues.hasGraveIssues() -> "Avoid this car - high risk of expensive repairs"
+            else -> "Have inspected by a mechanic before any decision"
         }
     }
 }
@@ -539,10 +539,10 @@ data class GeminiAnalysisResult(
             aiScore = overallScore,
             scoreCategory = when {
                 overallScore >= 90 -> "Excellent"
-                overallScore >= 70 -> "Très bon état"
-                overallScore >= 50 -> "État moyen"
-                overallScore >= 30 -> "État médiocre"
-                else -> "À éviter"
+                overallScore >= 70 -> "Very good condition"
+                overallScore >= 50 -> "Average condition"
+                overallScore >= 30 -> "Poor condition"
+                else -> "Avoid"
             },
             graveIssues = majorIssues,
             mediumIssues = emptyList(), // Gemini uses major/minor only

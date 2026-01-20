@@ -106,7 +106,7 @@ class AudioDiagnosticViewModel @Inject constructor(
             _uiState.value = AudioDiagnosticState.Ready
         } else {
             _uiState.value = AudioDiagnosticState.Error(
-                "Permission microphone requise pour analyser le son du moteur"
+                "Microphone permission required to analyze engine sound"
             )
         }
     }
@@ -121,7 +121,7 @@ class AudioDiagnosticViewModel @Inject constructor(
         
         if (carId.isEmpty()) {
             _uiState.value = AudioDiagnosticState.Error(
-                "Veuillez d'abord configurer votre profil voiture"
+                "Please configure your car profile first"
             )
         } else {
             _uiState.value = AudioDiagnosticState.Ready
@@ -144,14 +144,14 @@ class AudioDiagnosticViewModel @Inject constructor(
     fun startDiagnostic(durationMs: Long = 12000L) {
         if (currentCarId.isEmpty()) {
             _uiState.value = AudioDiagnosticState.Error(
-                "Aucune voiture sélectionnée"
+                "No car selected"
             )
             return
         }
         
         if (!checkPermissions()) {
             _uiState.value = AudioDiagnosticState.Error(
-                "Permission microphone requise"
+                "Microphone permission required"
             )
             return
         }
@@ -188,7 +188,7 @@ class AudioDiagnosticViewModel @Inject constructor(
                     }
                     is Result.Error -> {
                         _uiState.value = AudioDiagnosticState.Error(
-                            result.exception.message ?: "Erreur lors du diagnostic"
+                            result.exception.message ?: "Diagnostic error"
                         )
                     }
                     is Result.Loading -> {
@@ -198,7 +198,7 @@ class AudioDiagnosticViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _uiState.value = AudioDiagnosticState.Error(
-                    e.message ?: "Erreur inconnue"
+                    e.message ?: "Unknown error"
                 )
             }
         }
@@ -273,10 +273,10 @@ class AudioDiagnosticViewModel @Inject constructor(
     
     private fun calculateTrend(avgScore: Float): String {
         return when {
-            avgScore >= 80 -> "Excellent état"
-            avgScore >= 60 -> "Bon état"
-            avgScore >= 40 -> "Nécessite attention"
-            else -> "État critique"
+            avgScore >= 80 -> "Excellent condition"
+            avgScore >= 60 -> "Good condition"
+            avgScore >= 40 -> "Needs attention"
+            else -> "Critical condition"
         }
     }
     
@@ -298,14 +298,14 @@ class AudioDiagnosticViewModel @Inject constructor(
             _isComprehensiveAnalyzing.value = true
             
             try {
-                _statusMessage.value = "⭐ Gemini: Analyse complète en cours..."
+                _statusMessage.value = "⭐ Gemini: Comprehensive analysis in progress..."
                 
                 val result = audioDiagnosticRepository.performComprehensiveAudioAnalysis(audioData)
                 
                 when (result) {
                     is Result.Success -> {
                         _comprehensiveDiagnostic.value = result.data
-                        _statusMessage.value = "✅ Analyse complète terminée!"
+                        _statusMessage.value = "✅ Comprehensive analysis complete!"
                         
                         android.util.Log.d(
                             "AudioDiagnostic",
@@ -313,7 +313,7 @@ class AudioDiagnosticViewModel @Inject constructor(
                         )
                     }
                     is Result.Error -> {
-                        _statusMessage.value = "❌ Erreur: ${result.exception.message}"
+                        _statusMessage.value = "❌ Error: ${result.exception.message}"
                         android.util.Log.e(
                             "AudioDiagnostic",
                             "Comprehensive analysis failed: ${result.exception.message}"

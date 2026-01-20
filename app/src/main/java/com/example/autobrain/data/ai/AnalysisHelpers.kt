@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 // =============================================================================
 
 /**
- * Format timestamp to readable French date
+ * Format timestamp to readable date
  */
 fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH)
@@ -63,7 +63,7 @@ fun getHoursSince(timestamp: Long): Long {
  */
 fun buildDetailedCarnetAnalysis(carLog: CarLog): String {
     val recentMaintenanceText = if (carLog.maintenanceRecords.isEmpty()) {
-        "  Aucun entretien enregistré ⚠️"
+        "  No maintenance recorded ⚠️"
     } else {
         carLog.maintenanceRecords.sortedByDescending { it.date }.take(5).joinToString("\n") {
             "  - ${formatDate(it.date)}: ${it.description} (${it.mileage} km) - $${it.cost.toInt()}"
@@ -71,34 +71,34 @@ fun buildDetailedCarnetAnalysis(carLog: CarLog): String {
     }
     
     val activeRemindersText = if (carLog.reminders.isEmpty()) {
-        "  Aucun rappel configuré"
+        "  No reminders configured"
     } else {
         carLog.reminders.filter { !it.isCompleted }.joinToString("\n") {
-            val status = if (it.dueDate < System.currentTimeMillis()) "⚠️ EN RETARD" else "✅ À venir"
+            val status = if (it.dueDate < System.currentTimeMillis()) "⚠️ OVERDUE" else "✅ UPCOMING"
             "  - ${it.title}: ${formatDateShort(it.dueDate)} $status"
         }
     }
     
     val documentsText = if (carLog.documents.isEmpty()) {
-        "  Aucun document enregistré"
+        "  No documents registered"
     } else {
         carLog.documents.joinToString("\n") {
-            val expiry = if (it.isExpired) "❌ EXPIRÉ" else "✅ Valide jusqu'au ${formatDateShort(it.expiryDate)}"
+            val expiry = if (it.isExpired) "❌ EXPIRED" else "✅ Valid until ${formatDateShort(it.expiryDate)}"
             "  - ${it.type.name}: $expiry"
         }
     }
     
     return """
-📋 **ENTRETIENS ENREGISTRÉS** (${carLog.maintenanceRecords.size}):
+📋 **RECORDED MAINTENANCE** (${carLog.maintenanceRecords.size}):
 $recentMaintenanceText
 
-🔔 **RAPPELS ACTIFS** (${carLog.reminders.filter { !it.isCompleted }.size}):
+🔔 **ACTIVE REMINDERS** (${carLog.reminders.filter { !it.isCompleted }.size}):
 $activeRemindersText
 
 📄 **DOCUMENTS**:
 $documentsText
 
-💸 **DÉPENSES TOTALES**: $${carLog.totalExpenses.toInt()}
+💸 **TOTAL EXPENSES**: ${carLog.totalExpenses.toInt()}
     """.trimIndent()
 }
 
@@ -180,7 +180,7 @@ fun hasRecentBrakeService(carLog: CarLog): Boolean {
  */
 fun buildMarketDataContext(marketData: MarketData, carDetails: CarDetails): String {
     val comparablesText = if (marketData.similarListings.isEmpty()) {
-        "  Aucune annonce comparable trouvée"
+        "  No comparable listings found"
     } else {
         marketData.similarListings.take(3).joinToString("\n") { listing ->
             "  - ${listing.vehicle} (${listing.year}, ${listing.mileage} km): $${listing.price.toInt()} - ${listing.location}"
@@ -188,11 +188,11 @@ fun buildMarketDataContext(marketData: MarketData, carDetails: CarDetails): Stri
     }
     
     return """
-📊 Prix Moyen Marché: $${marketData.averageMarketPrice.toInt()}
-📈 Fourchette: ${marketData.priceRange.first.toInt()} - $${marketData.priceRange.second.toInt()}
-🔢 Annonces similaires: ${marketData.similarListings.size}
-🏆 Popularité modèle: ${if (isPopularModel(carDetails.make)) "ÉLEVÉE" else "MOYENNE"}
-📅 Données à jour: ${formatDateShort(marketData.lastUpdated)}
+📊 Average Market Price: ${marketData.averageMarketPrice.toInt()}
+📈 Range: ${marketData.priceRange.first.toInt()} - ${marketData.priceRange.second.toInt()}
+🔢 Similar listings: ${marketData.similarListings.size}
+🏆 Model popularity: ${if (isPopularModel(carDetails.make)) "HIGH" else "MEDIUM"}
+📅 Data updated: ${formatDateShort(marketData.lastUpdated)}
 🌍 Tendance: ${marketData.marketTrend.uppercase()}
 
 **COMPARABLES**:
@@ -220,14 +220,14 @@ fun isPopularModel(make: String): Boolean {
  * Build audio diagnostic trend summary
  */
 fun buildAudioTrendSummary(diagnostics: List<AudioDiagnosticData>): String {
-    if (diagnostics.size < 2) return "Pas assez d'historique"
-    
+    if (diagnostics.size < 2) return "Not enough history"
+
     val scores = diagnostics.sortedBy { it.createdAt }.map { it.rawScore }
     val trend = when {
-        scores.last() < scores.first() - 10 -> "📉 Dégradation significative"
-        scores.last() < scores.first() -> "📉 Dégradation légère"
-        scores.last() > scores.first() + 10 -> "📈 Amélioration significative"
-        scores.last() > scores.first() -> "📈 Amélioration légère"
+        scores.last() < scores.first() - 10 -> "📉 Significant degradation"
+        scores.last() < scores.first() -> "📉 Slight degradation"
+        scores.last() > scores.first() + 10 -> "📈 Significant improvement"
+        scores.last() > scores.first() -> "📈 Slight improvement"
         else -> "➡️ Stable"
     }
     
@@ -238,14 +238,14 @@ fun buildAudioTrendSummary(diagnostics: List<AudioDiagnosticData>): String {
  * Build video diagnostic trend summary
  */
 fun buildVideoTrendSummary(diagnostics: List<VideoDiagnosticData>): String {
-    if (diagnostics.size < 2) return "Pas assez d'historique"
-    
+    if (diagnostics.size < 2) return "Not enough history"
+
     val scores = diagnostics.sortedBy { it.createdAt }.map { it.finalScore }
     val trend = when {
-        scores.last() < scores.first() - 10 -> "📉 Dégradation significative"
-        scores.last() < scores.first() -> "📉 Dégradation légère"
-        scores.last() > scores.first() + 10 -> "📈 Amélioration significative"
-        scores.last() > scores.first() -> "📈 Amélioration légère"
+        scores.last() < scores.first() - 10 -> "📉 Significant degradation"
+        scores.last() < scores.first() -> "📉 Slight degradation"
+        scores.last() > scores.first() + 10 -> "📈 Significant improvement"
+        scores.last() > scores.first() -> "📈 Slight improvement"
         else -> "➡️ Stable"
     }
     
@@ -322,18 +322,18 @@ fun calculateMileageDepreciation(mileage: Int): Int {
 // =============================================================================
 
 /**
- * Get Contrôle Technique (CT) status
+ * Get Technical Inspection status
  */
 fun getCtStatus(carLog: CarLog): String {
     val ct = carLog.documents.find { it.type.name.contains("TECHNICAL") }
     return ct?.let {
         if (it.isExpired) {
-            "EXPIRÉ depuis ${getDaysSince(it.expiryDate)} jours - Renouveler immédiatement"
+            "EXPIRED since ${getDaysSince(it.expiryDate)} days - Renew immediately"
         } else {
             val daysLeft = TimeUnit.MILLISECONDS.toDays(it.expiryDate - System.currentTimeMillis())
-            "Valide jusqu'au ${formatDateShort(it.expiryDate)} (${daysLeft} jours restants)"
+            "Valid until ${formatDateShort(it.expiryDate)} (${daysLeft} days remaining)"
         }
-    } ?: "Non renseigné - Vérifier immédiatement"
+    } ?: "Not provided - Check immediately"
 }
 
 /**
@@ -463,11 +463,11 @@ fun formatPercentage(value: Float): String {
  */
 fun formatConfidence(confidence: Float): String {
     return when {
-        confidence >= 0.9f -> "Très élevée (${formatPercentage(confidence)})"
-        confidence >= 0.7f -> "Élevée (${formatPercentage(confidence)})"
-        confidence >= 0.5f -> "Moyenne (${formatPercentage(confidence)})"
-        confidence >= 0.3f -> "Faible (${formatPercentage(confidence)})"
-        else -> "Très faible (${formatPercentage(confidence)})"
+        confidence >= 0.9f -> "Very high (${formatPercentage(confidence)})"
+        confidence >= 0.7f -> "High (${formatPercentage(confidence)})"
+        confidence >= 0.5f -> "Medium (${formatPercentage(confidence)})"
+        confidence >= 0.3f -> "Low (${formatPercentage(confidence)})"
+        else -> "Very low (${formatPercentage(confidence)})"
     }
 }
 
@@ -481,10 +481,10 @@ fun formatConfidence(confidence: Float): String {
 fun compareTwoScores(oldScore: Int, newScore: Int): String {
     val diff = newScore - oldScore
     return when {
-        diff > 10 -> "📈 Amélioration significative (+$diff pts)"
-        diff > 0 -> "📈 Légère amélioration (+$diff pts)"
-        diff < -10 -> "📉 Dégradation significative ($diff pts)"
-        diff < 0 -> "📉 Légère dégradation ($diff pts)"
+        diff > 10 -> "📈 Significant improvement (+$diff pts)"
+        diff > 0 -> "📈 Slight improvement (+$diff pts)"
+        diff < -10 -> "📉 Significant degradation ($diff pts)"
+        diff < 0 -> "📉 Slight degradation ($diff pts)"
         else -> "➡️ Stable"
     }
 }
@@ -501,13 +501,13 @@ fun getMostCriticalIssue(
     
     return when {
         audioScore < videoScore && audioScore < 50 -> {
-            audioData?.criticalWarning?.takeIf { it.isNotEmpty() } 
-                ?: "Problème moteur critique (Audio: $audioScore/100)"
+            audioData?.criticalWarning?.takeIf { it.isNotEmpty() }
+                ?: "Critical engine problem (Audio: $audioScore/100)"
         }
         videoScore < 50 -> {
-            videoData?.criticalWarning?.takeIf { it.isNotEmpty() } 
-                ?: "Problème visuel critique (Vidéo: $videoScore/100)"
+            videoData?.criticalWarning?.takeIf { it.isNotEmpty() }
+                ?: "Critical visual problem (Video: $videoScore/100)"
         }
-        else -> "Pas de problème critique détecté"
+        else -> "No critical problem detected"
     }
 }

@@ -88,70 +88,70 @@ $diagnosticTrend
 ║                  🎯 MISSION GEMINI AI - JSON OUTPUT                  ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
-Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
+Provide an ULTRA-DETAILED analysis in JSON with these MANDATORY fields:
 
 **1. enhanced_health_score** (0-100):
-   - Prendre en compte le score local (${audioData.rawScore})
-   - Ajuster selon l'historique des diagnostics
-   - Intégrer les pénalités du Carnet Intelligent
-   - Appliquer la logique de scoring avancée:
+   - Take local score into account (${audioData.rawScore})
+   - Adjust based on diagnostic history
+   - Include Smart Logbook penalties
+   - Apply advanced scoring logic:
      * Knocking > 70% confidence → MAX score 40
      * Grinding/Misfire → MAX score 45
      * Normal engine > 80% → MIN score 85
-     * Maintenance overdue → -10 à -25 points
+     * Maintenance overdue → -10 to -25 points
    
 **2. primary_diagnosis**: {
   "issue": "Primary issue description",
-  "technical_name": "Nom technique mécanique",
+  "technical_name": "Mechanical technical name",
   "confidence": 0.85,
   "severity": "CRITICAL|HIGH|MEDIUM|LOW",
-  "affected_components": ["Piston", "Bielle", "Vilebrequin"]
+  "affected_components": ["Piston", "Connecting rod", "Crankshaft"]
 }
 
 **3. secondary_issues**: [
   {
-    "issue": "Problème secondaire",
+    "issue": "Secondary problem",
     "confidence": 0.65,
     "severity": "MEDIUM",
-    "components": ["Courroie distribution"]
+    "components": ["Timing belt"]
   }
 ]
 
 **4. root_cause_analysis**: {
-  "most_likely_cause": "Usure des segments de piston",
+  "most_likely_cause": "Piston ring wear",
   "probability": 0.82,
   "alternative_causes": [
-    "Manque d'huile prolongé",
-    "Surchauffe moteur passée"
+    "Prolonged lack of oil",
+    "Past engine overheating"
   ],
   "evidence": [
-    "Cognement rythmique à 2Hz",
-    "Augmentation avec charge moteur",
-    "Pas d'entretien depuis ${getDaysSinceLastMaintenance(carLog)} jours"
+    "Rhythmic knocking at 2Hz",
+    "Increase with engine load",
+    "No maintenance for ${getDaysSinceLastMaintenance(carLog)} days"
   ]
 }
 
 **5. progressive_damage_prediction**: {
-  "current_stage": "Stade 2 sur 4",
-  "next_failure_timeline": "100-500 km sans réparation",
-  "final_failure_description": "Grippage piston → Casse moteur complète",
+  "current_stage": "Stage 2 of 4",
+  "next_failure_timeline": "100-500 km without repair",
+  "final_failure_description": "Piston seizure → Complete engine failure",
   "cascading_failures": [
-    "Usure vilebrequin (50 km)",
-    "Contamination huile métaux (immédiat)",
-    "Surchauffe par friction (200 km)"
+    "Crankshaft wear (50 km)",
+    "Metal contamination in oil (immediate)",
+    "Friction overheating (200 km)"
   ]
 }
 
 **6. detailed_repair_plan**: {
   "immediate_actions": [
-    "Arrêter la conduite immédiatement",
-    "Vérifier niveau huile moteur",
-    "Test pression huile au garage (coût: 200$)"
+    "Stop driving immediately",
+    "Check engine oil level",
+    "Test oil pressure at garage (cost: 200$)"
   ],
   "repair_scenarios": [
     {
-      "scenario": "Meilleur cas - Simple remplacement segments",
-      "steps": ["Dépose culasse", "Remplacement segments", "Rodage"],
+      "scenario": "Best case - Simple ring replacement",
+      "steps": ["Cylinder head removal", "Ring replacement", "Break-in period"],
       "parts_cost_usd": 3500,
       "labor_cost_usd": 4500,
       "total_cost_usd": 8000,
@@ -159,8 +159,8 @@ Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
       "probability": 0.15
     },
     {
-      "scenario": "Cas probable - Reconstruction moteur partielle",
-      "steps": ["Dépose moteur", "Rectification vilebrequin", "Remplacement pistons/bielles", "Remontage"],
+      "scenario": "Likely case - Partial engine rebuild",
+      "steps": ["Engine removal", "Crankshaft machining", "Pistons/connecting rods replacement", "Reassembly"],
       "parts_cost_usd": 12000,
       "labor_cost_usd": 8000,
       "total_cost_usd": 20000,
@@ -168,8 +168,8 @@ Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
       "probability": 0.65
     },
     {
-      "scenario": "Pire cas - Remplacement moteur complet",
-      "steps": ["Achat moteur occasion", "Échange standard", "Remontage"],
+      "scenario": "Worst case - Complete engine replacement",
+      "steps": ["Purchase used engine", "Standard exchange", "Reassembly"],
       "parts_cost_usd": 25000,
       "labor_cost_usd": 10000,
       "total_cost_usd": 35000,
@@ -177,8 +177,8 @@ Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
       "probability": 0.20
     }
   ],
-  "recommended_garage_type": "Atelier spécialisé moteur avec rectification vilebrequin",
-  "negotiation_tip": "Demander un devis détaillé AVANT démontage. Comparer 3 garages minimum."
+  "recommended_garage_type": "Engine specialist workshop with crankshaft machining capability",
+  "negotiation_tip": "Request a detailed quote BEFORE disassembly. Compare at least 3 garages."
 }
 
 **7. market_value_impact**: {
@@ -186,12 +186,12 @@ Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
   "value_after_repair": ${estimateCarValueAfterRepair(carDetails, audioData.rawScore)},
   "value_as_is": ${estimateCarValueAsIs(carDetails, audioData.rawScore)},
   "depreciation_factors": [
-    "Moteur reconstruit: -25% valeur",
-    "Historique problème grave: -15%",
-    "Âge véhicule: -${calculateAgeDepreciation(carDetails.year)}%"
+    "Rebuilt engine: -25% value",
+    "History of serious problem: -15%",
+    "Vehicle age: -${calculateAgeDepreciation(carDetails.year)}%"
   ],
-  "resale_timeline": "6-12 mois si réparé, >12 mois sinon",
-  "buyer_negotiation_power": "ÉLEVÉ - Problème moteur documenté"
+  "resale_timeline": "6-12 months if repaired, >12 months otherwise",
+  "buyer_negotiation_power": "HIGH - Documented engine problem"
 }
 
 **8. maintenance_correlation**: {
@@ -200,34 +200,34 @@ Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
   "service_history_quality": "${assessMaintenanceQuality(carLog)}",
   "preventable_percentage": 75,
   "lessons_learned": [
-    "La vidange tous les 10 000 km aurait pu prévenir ce problème",
-    "Le bruit aurait dû être diagnostiqué plus tôt (voir historique)",
-    "Coût vidanges manquées: $${calculateMissedMaintenanceCost(carLog)} vs. Réparation actuelle: 20 000$"
+    "Oil changes every 10,000 km could have prevented this problem",
+    "The noise should have been diagnosed earlier (see history)",
+    "Cost of missed oil changes: $${calculateMissedMaintenanceCost(carLog)} vs. Current repair: 20000$"
   ]
 }
 
 **9. intelligent_recommendations**: {
   "for_current_owner": [
-    "🚨 NE PAS CONDUIRE - Risque casse complète moteur",
-    "📞 Appeler dépanneuse (coût: 500-800$ selon distance)",
-    "🔍 Faire diagnostiquer par 3 garages différents",
-    "💰 Budget réparation: 15 000-25 000$ réaliste",
-    "📄 Si assurance: Vérifier couverture panne mécanique",
-    "💡 Alternative: Vendre en l'état (perte estimée: $${calculateSellAsIsLoss(carDetails, audioData)})"
+    "🚨 DO NOT DRIVE - Risk of complete engine failure",
+    "📞 Call tow truck (cost: 500-800$ depending on distance)",
+    "🔍 Get diagnosed by 3 different garages",
+    "💰 Realistic repair budget: 15,000-25,000$",
+    "📄 If insured: Check mechanical breakdown coverage",
+    "💡 Alternative: Sell as-is (estimated loss: $${calculateSellAsIsLoss(carDetails, audioData)})"
   ],
   "for_potential_buyer": [
-    "❌ ÉVITER CET ACHAT - Score ${audioData.rawScore}/100 critique",
-    "💸 Si le vendeur insiste, négocier -$${calculateNegotiationDiscount(audioData)} minimum",
-    "🔧 Prévoir budget réparation immédiate: 20 000$",
-    "📊 ROI négatif probable sur ce véhicule",
-    "🏃 Chercher autre véhicule avec Score AI > 70/100"
+    "❌ AVOID THIS PURCHASE - Critical score ${audioData.rawScore}/100",
+    "💸 If seller insists, negotiate at least -$${calculateNegotiationDiscount(audioData)}",
+    "🔧 Budget emergency repair: 20,000$",
+    "📊 Probably negative ROI on this vehicle",
+    "🏃 Look for another vehicle with AI Score > 70/100"
   ],
   "for_mechanic": [
-    "🛠️ Déposer carter huile pour inspection vilebrequin",
-    "🔬 Test compression cylindres (pression attendue: 12-14 bars)",
-    "🎥 Boroscope inspection parois cylindres",
-    "🧪 Analyse huile moteur (particules métalliques)",
-    "📋 Documentation complète pour assurance/garantie"
+    "🛠️ Remove oil pan for crankshaft inspection",
+    "🔬 Cylinder compression test (expected pressure: 12-14 bars)",
+    "🎥 Boroscope cylinder wall inspection",
+    "🧪 Engine oil analysis (metal particles)",
+    "📋 Complete documentation for insurance/warranty"
   ]
 }
 
@@ -236,13 +236,13 @@ Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
   "data_quality_score": 0.92,
   "tflite_model_accuracy": "${getModelAccuracy()}",
   "factors_boosting_confidence": [
-    "Classification TFLite claire (${audioData.topSoundConfidence * 100}%)",
-    "Historique carnet cohérent",
-    "${audioData.allDetectedSounds.size} sons différents analysés"
+    "Clear TFLite classification (${audioData.topSoundConfidence * 100}%)",
+    "Consistent logbook history",
+    "${audioData.allDetectedSounds.size} different sounds analyzed"
   ],
   "uncertainty_factors": [
-    "Qualité audio: ${assessAudioQuality(audioData)}",
-    "Bruit ambiant possible"
+    "Audio quality: ${assessAudioQuality(audioData)}",
+    "Possible ambient noise"
   ],
   "recommend_second_opinion": ${audioData.rawScore < 50},
   "gemini_model_version": "gemini-2.5-pro",
@@ -261,13 +261,13 @@ Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
 }
 
 ╔══════════════════════════════════════════════════════════════════════╗
-║                    ⚡ FORMAT DE SORTIE OBLIGATOIRE                   ║
+║                    ⚡ MANDATORY OUTPUT FORMAT                       ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
-Réponds UNIQUEMENT avec un JSON valide (pas de markdown, pas de texte avant/après).
-Le JSON sera parsé directement par Kotlin/Gson et stocké dans Firestore.
+Respond ONLY with a valid JSON (no markdown, no text before/after).
+The JSON will be parsed directly by Kotlin/Gson and stored in Firestore.
 
-STRUCTURE EXACTE ATTENDUE:
+EXPECTED EXACT STRUCTURE:
 {
   "enhanced_health_score": 42,
   "primary_diagnosis": { ... },
@@ -300,49 +300,49 @@ private fun buildMaintenanceContext(carLog: CarLog): String {
         .filter { !it.isCompleted && it.dueDate < System.currentTimeMillis() }
     
     return """
-🛢️ Dernière Vidange: ${lastOilChange?.let { 
-    "Il y a ${getDaysSince(it.date)} jours (${it.mileage} km)" 
-} ?: "AUCUNE ENREGISTRÉE ⚠️"}
+🛢️ Last Oil Change: ${lastOilChange?.let {
+    "${getDaysSince(it.date)} days ago (${it.mileage} km)"
+} ?: "NONE RECORDED ⚠️"}
 
-🔍 Dernier CT: ${lastCT?.let {
-    if (it.isExpired) "EXPIRÉ depuis ${getDaysSince(it.expiryDate)} jours ❌"
-    else "Valide jusqu'au ${formatDate(it.expiryDate)} ✅"
-} ?: "NON RENSEIGNÉ"}
+🔍 Last Technical Inspection: ${lastCT?.let {
+    if (it.isExpired) "EXPIRED since ${getDaysSince(it.expiryDate)} days ❌"
+    else "Valid until ${formatDate(it.expiryDate)} ✅"
+} ?: "NOT PROVIDED"}
 
-📋 Rappels en Retard (${overdueReminders.size}):
-${if (overdueReminders.isEmpty()) "   Aucun" else overdueReminders.joinToString("\n") { 
-    "   - ${it.title}: ${getDaysSince(it.dueDate)} jours de retard"
+📋 Overdue Reminders (${overdueReminders.size}):
+${if (overdueReminders.isEmpty()) "   None" else overdueReminders.joinToString("\n") {
+    "   - ${it.title}: ${getDaysSince(it.dueDate)} days overdue"
 }}
 
-📊 Qualité Entretien Global: ${assessMaintenanceQuality(carLog)}
-💸 Coût Total Entretien (12 mois): $${calculateTotalMaintenanceCost(carLog)}
+📊 Overall Maintenance Quality: ${assessMaintenanceQuality(carLog)}
+💸 Total Maintenance Cost (12 months): $${calculateTotalMaintenanceCost(carLog)}
     """.trimIndent()
 }
 
 private fun analyzeDiagnosticTrend(diagnostics: List<AudioDiagnosticData>): String {
     if (diagnostics.isEmpty()) {
-        return "Premier diagnostic - Pas d'historique"
+        return "First diagnostic - No history"
     }
-    
+
     val sortedDiags = diagnostics.sortedBy { it.createdAt }
     val scoreEvolution = sortedDiags.map { "${it.rawScore}/100" }.joinToString(" → ")
-    
+
     val degradationRate = if (sortedDiags.size >= 2) {
         val first = sortedDiags.first().rawScore
         val last = sortedDiags.last().rawScore
         ((first - last).toFloat() / sortedDiags.size).toInt()
     } else 0
-    
+
     val recurringIssues = findRecurringIssues(diagnostics)
-    
+
     return """
-🔄 Évolution Scores: $scoreEvolution
-📉 Taux Dégradation: ${degradationRate} points/diagnostic
-⏱️ Premier diagnostic: ${formatDate(sortedDiags.first().createdAt)}
-🔔 Problèmes récurrents: $recurringIssues
-⚠️ Tendance: ${when {
-    degradationRate > 5 -> "AGGRAVATION RAPIDE"
-    degradationRate > 0 -> "Dégradation progressive"
+🔄 Score Evolution: $scoreEvolution
+📉 Degradation Rate: ${degradationRate} points/diagnostic
+⏱️ First diagnostic: ${formatDate(sortedDiags.first().createdAt)}
+🔔 Recurring Problems: $recurringIssues
+⚠️ Trend: ${when {
+    degradationRate > 5 -> "RAPID AGGRAVATION"
+    degradationRate > 0 -> "Progressive degradation"
     else -> "Stable"
 }}
     """.trimIndent()
@@ -403,16 +403,16 @@ private fun assessOilChangeImpact(carLog: CarLog): String {
     val lastOilChange = carLog.maintenanceRecords
         .filter { it.type == MaintenanceType.OIL_CHANGE }
         .maxByOrNull { it.date }
-    
+
     return if (lastOilChange == null) {
-        "CRITIQUE - Aucune vidange enregistrée"
+        "CRITICAL - No oil change recorded"
     } else {
         val daysSince = getDaysSince(lastOilChange.date)
         when {
-            daysSince > 365 -> "CRITIQUE - ${daysSince} jours sans vidange"
-            daysSince > 180 -> "ÉLEVÉ - Vidange en retard"
-            daysSince > 90 -> "MODÉRÉ - Prévoir vidange prochainement"
-            else -> "BON - Vidange récente"
+            daysSince > 365 -> "CRITICAL - ${daysSince} days without oil change"
+            daysSince > 180 -> "HIGH - Oil change overdue"
+            daysSince > 90 -> "MODERATE - Schedule oil change soon"
+            else -> "GOOD - Recent oil change"
         }
     }
 }
@@ -421,18 +421,18 @@ private fun assessMileageFactor(carLog: CarLog, carDetails: CarDetails): String 
     val lastOilChange = carLog.maintenanceRecords
         .filter { it.type == MaintenanceType.OIL_CHANGE }
         .maxByOrNull { it.date }
-    
+
     return if (lastOilChange != null) {
         // Estimate current mileage (this would come from user input in real app)
         val estimatedCurrentMileage = lastOilChange.mileage + 5000
         val kmSinceOilChange = estimatedCurrentMileage - lastOilChange.mileage
         when {
-            kmSinceOilChange > 15000 -> "CRITIQUE - ${kmSinceOilChange} km depuis dernière vidange"
-            kmSinceOilChange > 10000 -> "ÉLEVÉ - Dépasse l'intervalle recommandé"
-            else -> "BON - Kilométrage acceptable"
+            kmSinceOilChange > 15000 -> "CRITICAL - ${kmSinceOilChange} km since last oil change"
+            kmSinceOilChange > 10000 -> "HIGH - Exceeds recommended interval"
+            else -> "GOOD - Acceptable mileage"
         }
     } else {
-        "INCONNU - Pas d'historique kilométrage"
+        "UNKNOWN - No mileage history"
     }
 }
 
@@ -491,17 +491,17 @@ private fun calculateNegotiationDiscount(audioData: AudioDiagnosticData): Int {
 // =============================================================================
 
 private fun findRecurringIssues(diagnostics: List<AudioDiagnosticData>): String {
-    if (diagnostics.isEmpty()) return "Aucun"
-    
+    if (diagnostics.isEmpty()) return "None"
+
     // Count occurrences of top sound labels
     val soundCounts = mutableMapOf<String, Int>()
     diagnostics.forEach { diag ->
         soundCounts[diag.topSoundLabel] = soundCounts.getOrDefault(diag.topSoundLabel, 0) + 1
     }
-    
+
     val recurring = soundCounts.filter { it.value > 1 }
     return if (recurring.isEmpty()) {
-        "Aucun problème récurrent"
+        "No recurring problem"
     } else {
         recurring.entries.joinToString(", ") { "${it.key} (${it.value}x)" }
     }
@@ -509,10 +509,10 @@ private fun findRecurringIssues(diagnostics: List<AudioDiagnosticData>): String 
 
 private fun assessAudioQuality(audioData: AudioDiagnosticData): String {
     return when {
-        audioData.topSoundConfidence > 0.8f -> "Excellente"
-        audioData.topSoundConfidence > 0.6f -> "Bonne"
-        audioData.topSoundConfidence > 0.4f -> "Moyenne"
-        else -> "Faible"
+        audioData.topSoundConfidence > 0.8f -> "Excellent"
+        audioData.topSoundConfidence > 0.6f -> "Good"
+        audioData.topSoundConfidence > 0.4f -> "Average"
+        else -> "Poor"
     }
 }
 
@@ -523,15 +523,15 @@ private fun getModelAccuracy(): String {
 private fun getCtImpact(carLog: CarLog): String {
     val ct = carLog.documents.find { it.type.name.contains("TECHNICAL") }
     return if (ct == null) {
-        "Pas de CT enregistré - Impossible de circuler légalement"
+        "No Technical Inspection registered - Cannot legally drive"
     } else if (ct.isExpired) {
-        "CT EXPIRÉ - Véhicule non conforme, amende possible"
+        "EXPIRED Technical Inspection - Non-compliant vehicle, fine possible"
     } else {
         val daysLeft = getDaysSince(ct.expiryDate) * -1
         when {
-            daysLeft > 180 -> "CT valide - Aucun impact immédiat"
-            daysLeft > 60 -> "CT à renouveler dans ${daysLeft} jours"
-            else -> "CT expire bientôt - Renouveler URGENT"
+            daysLeft > 180 -> "CT valid - No immediate impact"
+            daysLeft > 60 -> "CT to renew in ${daysLeft} days"
+            else -> "CT expires soon - Renew URGENTNTY"
         }
     }
 }

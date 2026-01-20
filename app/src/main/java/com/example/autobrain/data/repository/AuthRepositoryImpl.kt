@@ -106,7 +106,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun uploadProfileImage(imageUri: String): Result<String> {
         return try {
             val userId = authDataSource.getCurrentUserId()
-                ?: return Result.Error(Exception("Utilisateur non connecté"))
+                ?: return Result.Error(Exception("User not logged in"))
 
             val uri = Uri.parse(imageUri)
             val storageRef = storage.reference

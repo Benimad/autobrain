@@ -66,7 +66,7 @@ class FirebaseAuthDataSource @Inject constructor(
 
                 Result.Success(user)
             } else {
-                Result.Error(Exception("Échec de la création du compte"))
+                Result.Error(Exception("Failed to create account"))
             }
         } catch (e: Exception) {
             Result.Error(e)
@@ -100,10 +100,10 @@ class FirebaseAuthDataSource @Inject constructor(
 
                     Result.Success(user)
                 } else {
-                    Result.Error(Exception("Utilisateur non trouvé"))
+                    Result.Error(Exception("User not found"))
                 }
             } else {
-                Result.Error(Exception("Échec de la connexion"))
+                Result.Error(Exception("Failed to sign in"))
             }
         } catch (e: Exception) {
             Result.Error(e)

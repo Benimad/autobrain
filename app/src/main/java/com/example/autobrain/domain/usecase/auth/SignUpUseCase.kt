@@ -22,19 +22,19 @@ class SignUpUseCase @Inject constructor(
     ): Result<User> {
         // Validation
         if (name.isBlank()) {
-            return Result.Error(Exception("Le nom est requis"))
+            return Result.Error(Exception("Name is required"))
         }
 
         if (!email.isValidEmail()) {
-            return Result.Error(Exception("Email invalide"))
+            return Result.Error(Exception("Invalid email"))
         }
 
         if (!password.isValidPassword()) {
-            return Result.Error(Exception("Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre"))
+            return Result.Error(Exception("Password must contain at least 8 characters, one letter and one digit"))
         }
 
         if (age < Constants.MINIMUM_USER_AGE) {
-            return Result.Error(Exception("Vous devez avoir au moins ${Constants.MINIMUM_USER_AGE} ans"))
+            return Result.Error(Exception("You must be at least ${Constants.MINIMUM_USER_AGE} years old"))
         }
 
         return authRepository.signUp(email, password, name, age, carMake, carModel, carYear)

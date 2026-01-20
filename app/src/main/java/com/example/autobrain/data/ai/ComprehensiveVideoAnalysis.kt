@@ -69,7 +69,7 @@ fun buildComprehensiveVideoAnalysisPrompt(
     val diagnosticTrend = analyzeVideoDiagnosticTrend(previousVideoDiagnostics)
     
     return """
-Tu es le système d'IA AutoBrain - Expert analyse vidéo automobile avec ML Kit Google + contexte Firestore complet.
+You are the AutoBrain AI system - Automotive video analysis expert with Google ML Kit + complete Firestore context.
 
 ╔══════════════════════════════════════════════════════════════════════╗
 ║        📹 ANALYSE VIDÉO ML KIT (${videoData.totalFramesAnalyzed} frames)           ║
@@ -79,144 +79,144 @@ $smokeAnalysis
 
 $vibrationAnalysis
 
-📊 MÉTRIQUES QUALITÉ VIDÉO:
-  - Luminosité moyenne: ${videoData.averageBrightness}/255
-  - Qualité vidéo: ${videoData.videoQuality.uppercase()}
-  - Stabilité caméra: ${if (videoData.isStableVideo) "✅ STABLE" else "⚠️ INSTABLE"}
-  - Durée enregistrement: ${videoData.durationMs}ms
-  - Hash intégrité: ${videoData.videoHash.take(12)}...
+📊 VIDEO QUALITY METRICS:
+  - Average brightness: ${videoData.averageBrightness}/255
+  - Video quality: ${videoData.videoQuality.uppercase()}
+  - Camera stability: ${if (videoData.isStableVideo) "✅ STABLE" else "⚠️ UNSTABLE"}
+  - Recording duration: ${videoData.durationMs}ms
+  - Integrity hash: ${videoData.videoHash.take(12)}...
 
 ╔══════════════════════════════════════════════════════════════════════╗
-║      🔗 CORRÉLATION AUDIO + VIDÉO (Multi-Modal Analysis)             ║
+║      🔗 AUDIO + VIDEO CORRELATION (Multi-Modal Analysis)             ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
 $audioCorrelation
 
 ╔══════════════════════════════════════════════════════════════════════╗
-║           📚 CARNET & HISTORIQUE (Firebase Realtime)                 ║
+║           📚 LOGBOOK & HISTORY (Firebase Realtime)                 ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
 $maintenanceContext
 
 ╔══════════════════════════════════════════════════════════════════════╗
-║         📈 HISTORIQUE DIAGNOSTICS VIDÉO (Tendances)                  ║
+║         📈 VIDEO DIAGNOSTICS HISTORY (Trends)                  ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
 $diagnosticTrend
 
 ╔══════════════════════════════════════════════════════════════════════╗
-║              🎯 MISSION GEMINI - ANALYSE VISUELLE EXPERT             ║
+║              🎯 GEMINI MISSION - EXPERT VISUAL ANALYSIS             ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
-Fournis une analyse JSON ULTRA-COMPLÈTE avec ces sections:
+Provide a ULTRA-COMPLETE JSON analysis with these sections:
 
 **1. enhanced_visual_score** (0-100):
-   - Score local ML Kit: ${videoData.rawScore}/100
-   - Ajuster selon:
-     * Fumée noire sévérité 4-5 → MAX score 35
-     * Fumée blanche (joint culasse) → MAX score 45
-     * Fumée bleue (segments) → MAX score 55
-     * Vibrations excessives → -30 points
-     * Carnet non tenu → -15 points
-   - Intégrer les diagnostics audio pour score global cohérent
+   - Local ML Kit score: ${videoData.rawScore}/100
+   - Adjust based on:
+     * Black smoke severity 4-5 → MAX score 35
+     * White smoke (head gasket) → MAX score 45
+     * Blue smoke (rings) → MAX score 55
+     * Excessive vibration → -30 points
+     * Unmaintained logbook → -15 points
+   - Integrate audio diagnostics for coherent global score
 
 **2. smoke_deep_analysis**: {
   "type_detected": "${videoData.smokeType}",
-  "technical_diagnosis": "Diagnostic technique précis basé sur couleur et densité",
-  "chemical_composition_theory": "CO2 + particules de carbone (fumée noire) / Vapeur d'eau + liquide refroidissement (fumée blanche) / Hydrocarbures + huile (fumée bleue)",
-  "emission_pattern": "Continu | À l'accélération | Au démarrage | À froid uniquement",
-  "smell_prediction": "Odeur âcre | Odeur sucrée | Odeur d'huile brûlée",
-  "color_intensity": "Légère | Moyenne | Épaisse | Opaque",
+  "technical_diagnosis": "Precise technical diagnosis based on color and density",
+  "chemical_composition_theory": "CO2 + carbon particles (black smoke) / Water vapor + coolant (white smoke) / Hydrocarbons + oil (blue smoke)",
+  "emission_pattern": "Continuous | On acceleration | At startup | Cold only",
+  "smell_prediction": "Acrid smell | Sweet smell | Burning oil smell",
+  "color_intensity": "Light | Medium | Thick | Opaque",
   "root_causes_by_probability": [
     {
-      "cause": "Joint de culasse défaillant",
+      "cause": "Failing head gasket",
       "probability": 0.75,
-      "confirming_tests": ["Test pression circuit refroidissement", "Analyse gaz échappement CO2 dans liquide refroidissement"],
-      "repair_complexity": "ÉLEVÉE",
+      "confirming_tests": ["Coolant circuit pressure test", "Exhaust gas CO2 analysis in coolant"],
+      "repair_complexity": "HIGH",
       "estimated_cost_usd": "8000-18000"
     }
   ],
-  "worst_case_scenario": "Fissure bloc moteur → Remplacement moteur complet (35 000$)",
+  "worst_case_scenario": "Engine block crack → Complete engine replacement (35000$)",
   "immediate_risks": [
-    "Surchauffe moteur si perte liquide refroidissement",
-    "Mélange huile-eau → grippage moteur",
-    "Déformation culasse si conduite prolongée"
+    "Engine overheating if coolant loss",
+    "Oil-water mixture → engine seizure",
+    "Cylinder head deformation if driving prolonged"
   ]
 }
 
 **3. vibration_engineering_analysis**: {
-  "vibration_frequency_estimation": "2-4 Hz (basse fréquence) | 10-20 Hz (moyenne) | >20 Hz (haute)",
-  "vibration_source_diagnosis": "Moteur | Transmission | Suspension | Roues",
-  "phase_analysis": "Au ralenti | À l'accélération | Vitesse constante | Décélération",
+  "vibration_frequency_estimation": "2-4 Hz (low frequency) | 10-20 Hz (medium) | >20 Hz (high)",
+  "vibration_source_diagnosis": "Engine | Transmission | Suspension | Wheels",
+  "phase_analysis": "At idle | On acceleration | Constant speed | Deceleration",
   "probable_mechanical_causes": [
     {
-      "component": "Support moteur avant droit",
-      "failure_type": "Caoutchouc dégradé, jeu excessif",
-      "diagnostic_test": "Inspection visuelle + test levier sous moteur",
+      "component": "Front right engine mount",
+      "failure_type": "Degraded rubber, excessive play",
+      "diagnostic_test": "Visual inspection + lever test under engine",
       "replacement_cost_usd": "800-2500",
       "urgency": "MEDIUM"
     },
     {
-      "component": "Équilibrage roues",
-      "failure_type": "Poids tombé, jante voilée",
-      "diagnostic_test": "Test équilibreuse électronique",
+      "component": "Wheel balancing",
+      "failure_type": "Weight fell, bent rim",
+      "diagnostic_test": "Electronic balancer test",
       "replacement_cost_usd": "200-600",
       "urgency": "LOW"
     }
   ],
   "cascading_failures_if_ignored": [
-    "Usure prématurée silentblocs (3-6 mois)",
-    "Fatigue supports moteur restants (6-12 mois)",
-    "Fissuration châssis (rare, >24 mois)"
+    "Premature silentblock wear (3-6 months)",
+    "Fatigue of remaining engine mounts (6-12 months)",
+    "Chassis cracking (rare, >24 months)"
   ]
 }
 
 **4. combined_audio_video_diagnosis**: {
   "correlation_score": 0.85,
   "multimodal_insights": [
-    "Fumée ${videoData.smokeType} + Son ${getTopAudioSound(audioDiagnostics)} = Diagnostic: ...",
-    "Cohérence temporelle: Les deux symptômes sont apparus simultanément/progressivement"
+    "Smoke ${videoData.smokeType} + Sound ${getTopAudioSound(audioDiagnostics)} = Diagnostic: ...",
+    "Temporal consistency: Both symptoms appeared simultaneously/progressively"
   ],
-  "comprehensive_root_cause": "Cause racine la plus probable en combinant audio + vidéo",
-  "confidence_boost": "La corrélation audio-vidéo augmente la confiance de diagnostic de +15%"
+  "comprehensive_root_cause": "Most probable root cause combining audio + video",
+  "confidence_boost": "Audio-video correlation increases diagnostic confidence by +15%"
 }
 
 **5. repair_scenarios_visual**: [
   {
-    "scenario_name": "Réparation Minimale (Optimiste)",
-    "applicable_if": "Fumée légère, pas de bruit moteur grave",
+    "scenario_name": "Minimal Repair (Optimistic)",
+    "applicable_if": "Light smoke, no serious engine noise",
     "steps": [
-      "Nettoyage injecteurs (1500$)",
-      "Remplacement filtre à air (200$)",
-      "Additif nettoyant FAP (500$)"
+      "Injector cleaning (1500$)",
+      "Air filter replacement (200$)",
+      "FAP cleaning additive (500$)"
     ],
     "total_cost_usd": 2200,
     "success_probability": 0.25,
     "duration_hours": 4
   },
   {
-    "scenario_name": "Réparation Standard (Probable)",
-    "applicable_if": "Fumée moyenne, vibrations",
+    "scenario_name": "Standard Repair (Likely)",
+    "applicable_if": "Medium smoke, vibrations",
     "steps": [
-      "Dépose culasse (2000$ main-d'œuvre)",
-      "Remplacement joint culasse (800$ pièce)",
-      "Rectification plan culasse (1500$)",
-      "Vidange circuit refroidissement (300$)",
-      "Remontage + réglages (1500$)"
+      "Cylinder head removal (2000$ labor)",
+      "Head gasket replacement (800$ part)",
+      "Cylinder head resurfacing (1500$)",
+      "Coolant drain (300$)",
+      "Reassembly + adjustments (1500$)"
     ],
     "total_cost_usd": 6100,
     "success_probability": 0.60,
     "duration_hours": 16
   },
   {
-    "scenario_name": "Reconstruction Majeure (Pessimiste)",
-    "applicable_if": "Fumée épaisse persistante + bruit métallique",
+    "scenario_name": "Major Rebuild (Pessimistic)",
+    "applicable_if": "Thick persistent smoke + metallic noise",
     "steps": [
-      "Dépose moteur complète (3500$)",
-      "Remplacement bloc moteur ou rectification (12000$)",
-      "Remplacement pistons + segments (3000$)",
-      "Reconstruction culasse (4000$)",
-      "Remontage complet (5000$)"
+      "Complete engine removal (3500$)",
+      "Engine block replacement or machining (12000$)",
+      "Pistons + rings replacement (3000$)",
+      "Cylinder head rebuild (4000$)",
+      "Complete reassembly (5000$)"
     ],
     "total_cost_usd": 27500,
     "success_probability": 0.15,
@@ -229,59 +229,59 @@ Fournis une analyse JSON ULTRA-COMPLÈTE avec ces sections:
   "technical_issues": ${buildQualityIssuesList(videoData.qualityIssues)},
   "recommendation_for_rerecording": ${shouldRerecord(videoData)},
   "optimal_recording_conditions": [
-    "Enregistrer en plein jour (10h-16h) ou avec éclairage fort",
-    "Stabiliser téléphone sur support fixe",
-    "Moteur à température normale (après 10 min de conduite)",
-    "Ralenti stable + légères accélérations",
-    "Durée: 30-45 secondes minimum"
+    "Record in daylight (10am-4pm) or with strong lighting",
+    "Stabilize phone on fixed support",
+    "Engine at normal temperature (after 10 min of driving)",
+    "Stable idle + light accelerations",
+    "Duration: 30-45 seconds minimum"
   ]
 }
 
 **7. safety_assessment**: {
   "roadworthiness": "${if (videoData.finalScore < 40) "UNSAFE" else if (videoData.finalScore < 60) "CAUTION" else "SAFE"}",
   "driving_restrictions": [
-    ${if (videoData.vibrationDetected) "\"Éviter autoroute (>120 km/h)\"," else ""}
-    ${if (videoData.smokeDetected) "\"Limiter trajets à <50 km\"," else ""}
-    ${if (videoData.smokeSeverity >= 4) "\"Vérifier liquide refroidissement tous les 20 km\"" else ""}
+    ${if (videoData.vibrationDetected) "\"Avoid highway (>120 km/h)\"," else ""}
+    ${if (videoData.smokeDetected) "\"Limit trips to <50 km\"," else ""}
+    ${if (videoData.smokeSeverity >= 4) "\"Check coolant every 20 km\"" else ""}
   ],
   "breakdown_probability_next_30_days": ${calculateBreakdownProbability(videoData)},
   "towing_recommendation": ${videoData.urgencyLevel == "CRITICAL"},
-  "insurance_claim_viability": "Faible - Usure mécanique rarement couverte"
+  "insurance_claim_viability": "Low - Mechanical wear rarely covered"
 }
 
 **8. market_impact_visual**: {
-  "buyer_perception": "${if (videoData.smokeDetected) "Un acheteur verra cette fumée → Fuite immédiate" else "Apparence normale"}",
-  "negotiation_leverage_seller": "${if (videoData.finalScore < 50) "TRÈS FAIBLE" else if (videoData.finalScore < 70) "FAIBLE" else "NORMAL"}",
+  "buyer_perception": "${if (videoData.smokeDetected) "A buyer will see this smoke → Immediate exit" else "Normal appearance"}",
+  "negotiation_leverage_seller": "${if (videoData.finalScore < 50) "VERY LOW" else if (videoData.finalScore < 70) "LOW" else "NORMAL"}",
   "price_reduction_expected_usd": ${calculatePriceReduction(videoData)},
   "time_to_sell_estimate_days": ${estimateTimeToSell(videoData.finalScore)},
-  "disclosure_requirement": "LÉGALEMENT OBLIGÉ de mentionner fumée/vibration (Lois locales)"
+  "disclosure_requirement": "LEGALLY OBLIGED to mention smoke/vibration (Local laws)"
 }
 
 **9. environmental_compliance**: {
   "emission_test_pass_probability": ${if (videoData.smokeDetected) "0.15" else "0.85"},
-  "pollution_level": "${if (videoData.smokeSeverity >= 4) "Critique" else if (videoData.smokeSeverity >= 2) "Élevé" else "Normal"}",
-  "controle_technique_impact": "${if (videoData.smokeDetected) "Refus CT probable si fumée visible" else "Passage CT possible"}",
+  "pollution_level": "${if (videoData.smokeSeverity >= 4) "Critical" else if (videoData.smokeSeverity >= 2) "High" else "Normal"}",
+  "controle_technique_impact": "${if (videoData.smokeDetected) "CT refusal probable if visible smoke" else "CT passage possible"}",
   "vignette_pollution_eligibility": "${assessVignetteEligibility(videoData)}"
 }
 
 **10. autobrain_video_confidence**: {
-  "ml_kit_accuracy": "87% sur dataset d'entraînement"
+  "ml_kit_accuracy": "87% on training dataset"
   "confidence_this_analysis": ${videoData.smokeConfidence.coerceAtLeast(videoData.vibrationConfidence)},
   "factors_affecting_confidence": [
-    "Qualité vidéo: ${videoData.videoQuality}",
-    "Nombre de frames: ${videoData.totalFramesAnalyzed}",
-    "Stabilité: ${videoData.isStableVideo}"
+    "Video quality: ${videoData.videoQuality}",
+    "Number of frames: ${videoData.totalFramesAnalyzed}",
+    "Stability: ${videoData.isStableVideo}"
   ],
   "gemini_model": "gemini-2.5-pro",
   "analysis_timestamp": ${System.currentTimeMillis()}
 }
 
 ╔══════════════════════════════════════════════════════════════════════╗
-║                   ⚡ JSON OUTPUT OBLIGATOIRE                         ║
+║                   ⚡ MANDATORY JSON OUTPUT                       ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
-Retourne UN SEUL objet JSON valide (pas de markdown, texte avant/après interdit).
-Parser direct Kotlin Gson → Stockage Firestore collection "comprehensive_video_diagnostics"
+Return ONE valid JSON object (no markdown, text before/after prohibited).
+Direct Kotlin Gson parser → Firestore collection "comprehensive_video_diagnostics"
 
 {
   "enhanced_visual_score": 52,
@@ -310,27 +310,27 @@ private fun correlateAudioWithVideo(
     
     return if (recentAudio != null) {
         """
-🔊 Dernier Diagnostic Audio: ${getDaysSince(recentAudio.createdAt)} jours
-  - Son dominant: ${recentAudio.topSoundLabel} (${(recentAudio.topSoundConfidence * 100).toInt()}%)
-  - Score audio: ${recentAudio.rawScore}/100
+🔊 Last Audio Diagnostic: ${getDaysSince(recentAudio.createdAt)} days ago
+  - Dominant sound: ${recentAudio.topSoundLabel} (${(recentAudio.topSoundConfidence * 100).toInt()}%)
+  - Audio score: ${recentAudio.rawScore}/100
   
-🔗 Corrélation Audio-Vidéo:
+🔗 Audio-Video Correlation:
   ${when {
-    recentAudio.topSoundLabel.contains("knocking") && videoData.smokeDetected -> 
-        "⚠️ FORTE CORRÉLATION: Cognement moteur + fumée = Dommage interne moteur probable"
-    recentAudio.topSoundLabel.contains("belt") && videoData.vibrationDetected -> 
-        "🔧 Corrélation Moyenne: Courroie + vibration = Usure accessoires"
-    else -> 
-        "✅ Symptômes indépendants ou faible corrélation"
+    recentAudio.topSoundLabel.contains("knocking") && videoData.smokeDetected ->
+        "⚠️ STRONG CORRELATION: Engine knocking + smoke = Probable internal engine damage"
+    recentAudio.topSoundLabel.contains("belt") && videoData.vibrationDetected ->
+        "🔧 Average Correlation: Belt + vibration = Accessory wear"
+    else ->
+        "✅ Independent symptoms or weak correlation"
   }}
         """.trimIndent()
     } else {
-        "Aucun diagnostic audio récent pour corrélation"
+        "No recent audio diagnostic for correlation"
     }
 }
 
 private fun getTopAudioSound(audioDiags: List<AudioDiagnosticData>): String {
-    return audioDiags.maxByOrNull { it.createdAt }?.topSoundLabel ?: "Aucun"
+    return audioDiags.maxByOrNull { it.createdAt }?.topSoundLabel ?: "None"
 }
 
 // =============================================================================
@@ -339,42 +339,42 @@ private fun getTopAudioSound(audioDiags: List<AudioDiagnosticData>): String {
 
 private fun analyzeVideoDiagnosticTrend(diagnostics: List<VideoDiagnosticData>): String {
     if (diagnostics.isEmpty()) {
-        return "Premier diagnostic vidéo - Pas d'historique"
+        return "First video diagnostic - No history"
     }
-    
+
     val sortedDiags = diagnostics.sortedBy { it.createdAt }
     val scoreEvolution = sortedDiags.map { "${it.finalScore}/100" }.joinToString(" → ")
-    
+
     val degradationRate = if (sortedDiags.size >= 2) {
         val first = sortedDiags.first().finalScore
         val last = sortedDiags.last().finalScore
         ((first - last).toFloat() / sortedDiags.size).toInt()
     } else 0
-    
+
     return """
-🔄 Évolution Scores Vidéo: $scoreEvolution
-📉 Taux Dégradation: ${degradationRate} points/diagnostic
-⏱️ Premier diagnostic: ${formatDate(sortedDiags.first().createdAt)}
-🔔 Problèmes récurrents: ${findRecurringVideoIssues(diagnostics)}
-⚠️ Tendance: ${when {
-    degradationRate > 5 -> "AGGRAVATION RAPIDE"
-    degradationRate > 0 -> "Dégradation progressive"
+🔄 Video Score Evolution: $scoreEvolution
+📉 Degradation Rate: ${degradationRate} points/diagnostic
+⏱️ First diagnostic: ${formatDate(sortedDiags.first().createdAt)}
+🔔 Recurring Problems: ${findRecurringVideoIssues(diagnostics)}
+⚠️ Trend: ${when {
+    degradationRate > 5 -> "RAPID AGGRAVATION"
+    degradationRate > 0 -> "Progressive degradation"
     else -> "Stable"
 }}
     """.trimIndent()
 }
 
 private fun findRecurringVideoIssues(diagnostics: List<VideoDiagnosticData>): String {
-    if (diagnostics.isEmpty()) return "Aucun"
-    
+    if (diagnostics.isEmpty()) return "None"
+
     val smokeCounts = diagnostics.count { it.smokeDetected }
     val vibrationCounts = diagnostics.count { it.vibrationDetected }
-    
+
     val issues = mutableListOf<String>()
-    if (smokeCounts > 1) issues.add("Fumée (${smokeCounts}x)")
+    if (smokeCounts > 1) issues.add("Smoke (${smokeCounts}x)")
     if (vibrationCounts > 1) issues.add("Vibration (${vibrationCounts}x)")
-    
-    return if (issues.isEmpty()) "Aucun problème récurrent" else issues.joinToString(", ")
+
+    return if (issues.isEmpty()) "No recurring problem" else issues.joinToString(", ")
 }
 
 // =============================================================================
@@ -473,22 +473,22 @@ private fun buildMaintenanceContext(carLog: CarLog): String {
         .filter { !it.isCompleted && it.dueDate < System.currentTimeMillis() }
     
     return """
-🛢️ Dernière Vidange: ${lastOilChange?.let { 
-    "Il y a ${getDaysSince(it.date)} jours (${it.mileage} km)" 
-} ?: "AUCUNE ENREGISTRÉE ⚠️"}
+🛢️ Last Oil Change: ${lastOilChange?.let {
+    "${getDaysSince(it.date)} days ago (${it.mileage} km)"
+} ?: "NONE RECORDED ⚠️"}
 
-🔍 Dernier CT: ${lastCT?.let {
-    if (it.isExpired) "EXPIRÉ depuis ${getDaysSince(it.expiryDate)} jours ❌"
-    else "Valide jusqu'au ${formatDate(it.expiryDate)} ✅"
-} ?: "NON RENSEIGNÉ"}
+🔍 Last Technical Inspection: ${lastCT?.let {
+    if (it.isExpired) "EXPIRED since ${getDaysSince(it.expiryDate)} days ❌"
+    else "Valid until ${formatDate(it.expiryDate)} ✅"
+} ?: "NOT PROVIDED"}
 
-📋 Rappels en Retard (${overdueReminders.size}):
-${if (overdueReminders.isEmpty()) "   Aucun" else overdueReminders.joinToString("\n") { 
-    "   - ${it.title}: ${getDaysSince(it.dueDate)} jours de retard"
+📋 Overdue Reminders (${overdueReminders.size}):
+${if (overdueReminders.isEmpty()) "   None" else overdueReminders.joinToString("\n") {
+    "   - ${it.title}: ${getDaysSince(it.dueDate)} days overdue"
 }}
 
-📊 Qualité Entretien Global: ${assessMaintenanceQuality(carLog)}
-💸 Coût Total Entretien (12 mois): $${calculateTotalMaintenanceCost(carLog)}
+📊 Overall Maintenance Quality: ${assessMaintenanceQuality(carLog)}
+💸 Total Maintenance Cost (12 months): $${calculateTotalMaintenanceCost(carLog)}
     """.trimIndent()
 }
 

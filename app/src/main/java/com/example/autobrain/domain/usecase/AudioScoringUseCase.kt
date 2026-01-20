@@ -92,7 +92,7 @@ class AudioScoringUseCase @Inject constructor() {
             detectedIssues = detectedIssues,
             recommendations = recommendations.distinct(),
             urgencyLevel = urgency,
-            criticalWarning = if (score < 50) "⚠️ ATTENTION IMMÉDIATE REQUISE - Problème grave détecté!" else null,
+            criticalWarning = if (score < 50) "⚠️ IMMEDIATE ATTENTION REQUIRED - Serious problem detected!" else null,
             healthStatus = determineHealthStatus(score),
             timestamp = System.currentTimeMillis()
         )
@@ -145,15 +145,15 @@ class AudioScoringUseCase @Inject constructor() {
                 when {
                     overdueDays > 180 -> { // 6 months overdue
                         penalty += 20f
-                        reasons.add("⚠️ Entretien '${reminder.title}' en retard de $overdueDays jours - Critique!")
+                        reasons.add("⚠️ Maintenance '${reminder.title}' is $overdueDays days overdue - Critical!")
                     }
                     overdueDays > 90 -> { // 3 months overdue
                         penalty += 15f
-                        reasons.add("⚠️ Entretien '${reminder.title}' en retard de $overdueDays jours")
+                        reasons.add("⚠️ Maintenance '${reminder.title}' is $overdueDays days overdue")
                     }
                     overdueDays > 30 -> { // 1 month overdue
                         penalty += 10f
-                        reasons.add("Entretien '${reminder.title}' en retard de $overdueDays jours")
+                        reasons.add("Maintenance '${reminder.title}' is $overdueDays days overdue")
                     }
                 }
             }
@@ -165,7 +165,7 @@ class AudioScoringUseCase @Inject constructor() {
         
         if (recentRecords.isEmpty() && carLog.maintenanceRecords.isNotEmpty()) {
             penalty += 15f
-            reasons.add("Aucun entretien enregistré dans les 6 derniers mois")
+            reasons.add("No maintenance recorded in the last 6 months")
         }
         
         // Check mileage-based maintenance (if available)
@@ -180,7 +180,7 @@ class AudioScoringUseCase @Inject constructor() {
                 val kmSinceOil = latestRecord.mileage - lastOilChange.mileage
                 if (kmSinceOil > 15000) {
                     penalty += 20f
-                    reasons.add("⚠️ Vidange dépassée de ${kmSinceOil - 10000} km - Urgent!")
+                    reasons.add("⚠️ Oil change overdue by ${kmSinceOil - 10000} km - Urgent!")
                 }
             }
         }
@@ -190,12 +190,12 @@ class AudioScoringUseCase @Inject constructor() {
             ?.let { ct ->
                 if (ct.isExpired) {
                     penalty += 20f
-                    reasons.add("⚠️ Contrôle technique expiré - Légalement non conforme")
+                    reasons.add("⚠️ Technical inspection expired - Legally non-compliant")
                 } else {
                     val timeUntilExpiry = ct.expiryDate - now
                     if (timeUntilExpiry < oneMonth && timeUntilExpiry > 0) {
                         penalty += 5f
-                        reasons.add("Contrôle technique expire bientôt")
+                        reasons.add("Technical inspection expiring soon")
                     }
                 }
             }
@@ -246,17 +246,17 @@ class AudioScoringUseCase @Inject constructor() {
      */
     private fun estimateRepairCost(soundType: String): CostRange {
         return when (soundType) {
-            EngineSoundTypes.KNOCKING -> CostRange(15000.0, 35000.0, "Reconstruction moteur probable")
-            EngineSoundTypes.MISFIRE -> CostRange(2000.0, 8000.0, "Réparation système allumage/injection")
-            EngineSoundTypes.GRINDING -> CostRange(3000.0, 12000.0, "Réparation freins ou transmission")
-            EngineSoundTypes.RATTLING -> CostRange(500.0, 3000.0, "Resserrage ou remplacement fixations")
-            EngineSoundTypes.HISSING -> CostRange(800.0, 4000.0, "Réparation fuite liquide")
-            EngineSoundTypes.BELT_SQUEAL -> CostRange(300.0, 1500.0, "Remplacement courroie")
-            EngineSoundTypes.RUMBLING -> CostRange(1000.0, 5000.0, "Réparation échappement ou roulements")
-            EngineSoundTypes.WHINING -> CostRange(1500.0, 6000.0, "Réparation direction ou transmission")
-            EngineSoundTypes.TAPPING -> CostRange(800.0, 3000.0, "Réglage soupapes")
-            EngineSoundTypes.CLICKING -> CostRange(500.0, 2500.0, "Réparation CV joint ou démarreur")
-            else -> CostRange(500.0, 5000.0, "Diagnostic requis")
+            EngineSoundTypes.KNOCKING -> CostRange(15000.0, 35000.0, "Probable engine rebuild")
+            EngineSoundTypes.MISFIRE -> CostRange(2000.0, 8000.0, "Ignition/injection system repair")
+            EngineSoundTypes.GRINDING -> CostRange(3000.0, 12000.0, "Brake or transmission repair")
+            EngineSoundTypes.RATTLING -> CostRange(500.0, 3000.0, "Tightening or replacement of mountings")
+            EngineSoundTypes.HISSING -> CostRange(800.0, 4000.0, "Fluid leak repair")
+            EngineSoundTypes.BELT_SQUEAL -> CostRange(300.0, 1500.0, "Belt replacement")
+            EngineSoundTypes.RUMBLING -> CostRange(1000.0, 5000.0, "Exhaust or bearing repair")
+            EngineSoundTypes.WHINING -> CostRange(1500.0, 6000.0, "Steering or transmission repair")
+            EngineSoundTypes.TAPPING -> CostRange(800.0, 3000.0, "Valve adjustment")
+            EngineSoundTypes.CLICKING -> CostRange(500.0, 2500.0, "CV joint or starter repair")
+            else -> CostRange(500.0, 5000.0, "Diagnostic required")
         }
     }
     
@@ -282,10 +282,10 @@ class AudioScoringUseCase @Inject constructor() {
     private fun determineHealthStatus(score: Float): String {
         return when {
             score >= 90 -> "Excellent"
-            score >= 75 -> "Bon"
+            score >= 75 -> "Good"
             score >= 60 -> "Acceptable"
-            score >= 40 -> "Médiocre"
-            else -> "Critique"
+            score >= 40 -> "Poor"
+            else -> "Critical"
         }
     }
 }

@@ -52,13 +52,13 @@ class ProfileViewModel @Inject constructor(
                             _profileState.value = ProfileState.Success(user)
                         }
                     } else {
-                        _profileState.value = ProfileState.Error("Utilisateur non trouvé")
+                        _profileState.value = ProfileState.Error("User not found")
                     }
                 }
 
                 is Result.Error -> {
                     _profileState.value = ProfileState.Error(
-                        result.exception.message ?: "Erreur de chargement"
+                        result.exception.message ?: "Loading error"
                     )
                 }
 

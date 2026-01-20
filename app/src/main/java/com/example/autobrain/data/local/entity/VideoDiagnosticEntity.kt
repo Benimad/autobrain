@@ -52,7 +52,7 @@ data class VideoDiagnosticEntity(
     // Scoring
     val rawScore: Int = 100, // Base 100, deductions applied
     val finalScore: Int = 100,
-    val healthStatus: String = "", // "Excellent", "Bon", "Moyen", "Problème Grave"
+    val healthStatus: String = "", // "Excellent", "Good", "Average", "Serious Problem"
     val urgencyLevel: String = "", // "NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"
     
     // Smart Suggestions (Local, No LLM)

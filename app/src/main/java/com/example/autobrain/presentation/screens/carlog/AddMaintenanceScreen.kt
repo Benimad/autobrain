@@ -50,7 +50,7 @@ fun AddMaintenanceScreen(
             TopAppBar(
                 title = { 
                     Text(
-                        "Ajouter Entretien",
+                        "Add Maintenance",
                         color = TextPrimary
                     ) 
                 },
@@ -58,7 +58,7 @@ fun AddMaintenanceScreen(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             Icons.Default.ArrowBack,
-                            contentDescription = "Retour",
+                            contentDescription = "Back",
                             tint = ElectricTeal
                         )
                     }
@@ -88,7 +88,7 @@ fun AddMaintenanceScreen(
                     value = getMaintenanceTypeLabel(selectedType),
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Type d'entretien", color = TextSecondary) },
+                    label = { Text("Maintenance type", color = TextSecondary) },
                     trailingIcon = { 
                         ExposedDropdownMenuDefaults.TrailingIcon(
                             expanded = showTypeMenu
@@ -137,7 +137,7 @@ fun AddMaintenanceScreen(
                 label = { Text("Description", color = TextSecondary) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2,
-                placeholder = { Text("Ex: Vidange d'huile moteur 5W-30", color = TextMuted) },
+                placeholder = { Text("Ex: Motor oil change 5W-30", color = TextMuted) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = TextPrimary,
                     unfocusedTextColor = TextPrimary,
@@ -163,7 +163,7 @@ fun AddMaintenanceScreen(
                     IconButton(onClick = { showDatePicker = true }) {
                         Icon(
                             Icons.Default.CalendarToday,
-                            contentDescription = "Choisir date",
+                            contentDescription = "Select date",
                             tint = ElectricTeal
                         )
                     }
@@ -186,7 +186,7 @@ fun AddMaintenanceScreen(
             OutlinedTextField(
                 value = mileage,
                 onValueChange = { mileage = it.filter { char -> char.isDigit() } },
-                label = { Text("Kilométrage", color = TextSecondary) },
+                label = { Text("Kilometers", color = TextSecondary) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 suffix = { Text("km", color = TextSecondary) },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -207,7 +207,7 @@ fun AddMaintenanceScreen(
             OutlinedTextField(
                 value = cost,
                 onValueChange = { cost = it.filter { char -> char.isDigit() || char == '.' } },
-                label = { Text("Coût", color = TextSecondary) },
+                label = { Text("Cost", color = TextSecondary) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 suffix = { Text("$", color = TextSecondary) },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -228,8 +228,8 @@ fun AddMaintenanceScreen(
             OutlinedTextField(
                 value = serviceProvider,
                 onValueChange = { serviceProvider = it },
-                label = { Text("Prestataire", color = TextSecondary) },
-                placeholder = { Text("Nom du garage ou mécanicien", color = TextMuted) },
+                label = { Text("Service Provider", color = TextSecondary) },
+                placeholder = { Text("Garage or mechanic name", color = TextMuted) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = TextPrimary,
                     unfocusedTextColor = TextPrimary,
@@ -250,10 +250,10 @@ fun AddMaintenanceScreen(
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Notes (optionnel)", color = TextSecondary) },
+                label = { Text("Notes (optional)", color = TextSecondary) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
-                placeholder = { Text("Notes additionnelles...", color = TextMuted) },
+                placeholder = { Text("Additional notes...", color = TextMuted) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = TextPrimary,
                     unfocusedTextColor = TextPrimary,
@@ -317,7 +317,7 @@ fun AddMaintenanceScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        "Enregistrer",
+                        "Save",
                         color = TextOnAccent
                     )
                 }
@@ -347,7 +347,7 @@ fun AddMaintenanceScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Annuler", color = TextSecondary)
+                    Text("Cancel", color = TextSecondary)
                 }
             },
             colors = DatePickerDefaults.colors(
@@ -379,16 +379,16 @@ fun AddMaintenanceScreen(
 
 fun getMaintenanceTypeLabel(type: MaintenanceType): String {
     return when (type) {
-        MaintenanceType.OIL_CHANGE -> "Vidange d'huile"
-        MaintenanceType.TIRE_ROTATION -> "Rotation des pneus"
-        MaintenanceType.BRAKE_SERVICE -> "Service des freins"
-        MaintenanceType.ENGINE_TUNE_UP -> "Réglage moteur"
-        MaintenanceType.BATTERY_REPLACEMENT -> "Remplacement batterie"
-        MaintenanceType.AIR_FILTER -> "Filtre à air"
-        MaintenanceType.TRANSMISSION_SERVICE -> "Service transmission"
-        MaintenanceType.COOLANT_FLUSH -> "Vidange liquide refroidissement"
-        MaintenanceType.GENERAL_INSPECTION -> "Inspection générale"
-        MaintenanceType.REPAIR -> "Réparation"
-        MaintenanceType.OTHER -> "Autre"
+        MaintenanceType.OIL_CHANGE -> "Oil change"
+        MaintenanceType.TIRE_ROTATION -> "Tire rotation"
+        MaintenanceType.BRAKE_SERVICE -> "Brake service"
+        MaintenanceType.ENGINE_TUNE_UP -> "Engine tune-up"
+        MaintenanceType.BATTERY_REPLACEMENT -> "Battery replacement"
+        MaintenanceType.AIR_FILTER -> "Air filter"
+        MaintenanceType.TRANSMISSION_SERVICE -> "Transmission service"
+        MaintenanceType.COOLANT_FLUSH -> "Coolant flush"
+        MaintenanceType.GENERAL_INSPECTION -> "General inspection"
+        MaintenanceType.REPAIR -> "Repair"
+        MaintenanceType.OTHER -> "Other"
     }
 }

@@ -187,7 +187,7 @@ fun NavGraph(
         }
 
         // =====================================================================
-        // SMART CAR LOGBOOK (Carnet Intelligent)
+        // SMART CAR LOGBOOK
         // =====================================================================
         composable(Screen.CarLogbook.route) {
             CarLogScreen(navController = navController)

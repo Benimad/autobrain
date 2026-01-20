@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val isLoading: Boolean = true,
-    val userName: String = "Utilisateur",
+    val userName: String = "User",
     val userEmail: String = "",
     val userPhotoUrl: String? = null,
     val carMake: String = "Honda",
@@ -56,7 +56,7 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     // Legacy support for existing code
-    private val _userName = MutableStateFlow("Utilisateur")
+    private val _userName = MutableStateFlow("User")
     val userName: StateFlow<String> = _userName.asStateFlow()
 
     private val _carModel = MutableStateFlow("Honda CRV")
@@ -78,7 +78,7 @@ class HomeViewModel @Inject constructor(
             when (val result = authRepository.getCurrentUser()) {
                 is Result.Success -> {
                     result.data?.let { user ->
-                        val name = user.name.ifEmpty { "Utilisateur" }
+                        val name = user.name.ifEmpty { "User" }
                         val carMake = user.carDetails?.make ?: "Honda"
                         val carModelName = user.carDetails?.model ?: "CRV"
                         val carYearValue = user.carDetails?.year?.toString() ?: "2021"
@@ -152,8 +152,8 @@ class HomeViewModel @Inject constructor(
                 // Add video diagnostics
                 videoDiagnostics.forEach { video ->
                     val statusText = when {
-                        video.smokeDetected && video.vibrationDetected -> "Fumée + Vibrations"
-                        video.smokeDetected -> "Fumée détectée (${video.smokeType})"
+                        video.smokeDetected && video.vibrationDetected -> "Smoke + Vibrations"
+                        video.smokeDetected -> "Smoke detected (${video.smokeType})"
                         video.vibrationDetected -> "Vibrations (${video.vibrationLevel})"
                         else -> video.healthStatus
                     }
@@ -161,7 +161,7 @@ class HomeViewModel @Inject constructor(
                     diagnosticItems.add(
                         DiagnosticItem(
                             id = video.id,
-                            title = "Diagnostic Vidéo",
+                            title = "Video Diagnostic",
                             status = statusText,
                             statusColor = when {
                                 video.finalScore >= 80 -> SuccessGreen
@@ -180,8 +180,8 @@ class HomeViewModel @Inject constructor(
                     listOf(
                         DiagnosticItem(
                             id = "empty",
-                            title = "Aucun diagnostic",
-                            status = "Commencez votre premier diagnostic",
+                            title = "No diagnostic",
+                            status = "Start your first diagnostic",
                             statusColor = ElectricTeal,
                             icon = Icons.Outlined.Mic
                         )
@@ -207,9 +207,9 @@ class HomeViewModel @Inject constructor(
                         state.copy(
                             aiScore = latestScore,
                             riskLevel = when {
-                                latestScore >= 80 -> "Faible"
-                                latestScore >= 60 -> "Moyen"
-                                else -> "Élevé"
+                                latestScore >= 80 -> "Low"
+                                latestScore >= 60 -> "Medium"
+                                else -> "High"
                             }
                         )
                     }
@@ -221,8 +221,8 @@ class HomeViewModel @Inject constructor(
                         recentDiagnostics = listOf(
                             DiagnosticItem(
                                 id = "error",
-                                title = "Erreur de chargement",
-                                status = "Réessayez plus tard",
+                                title = "Loading error",
+                                status = "Try again later",
                                 statusColor = Color(0xFFFF5555),
                                 icon = Icons.Outlined.Mic
                             )

@@ -63,16 +63,16 @@ data class EngineSoundResult(
     val analysisTimestamp: Long
 )
 
-enum class EngineIssueType(val score: Int, val severity: IssueSeverity, val descriptionFr: String) {
-    NORMAL(100, IssueSeverity.NONE, "Fonctionnement normal"),
-    BELT_SQUEAL(70, IssueSeverity.MINOR, "Grincement de courroie"),
-    RATTLING(60, IssueSeverity.MEDIUM, "Cliquetis/Bruit de ferraille"),
-    KNOCKING(40, IssueSeverity.GRAVE, "Cognement moteur - Risque grave"),
-    MISFIRING(50, IssueSeverity.MEDIUM, "Ratés d'allumage"),
-    EXHAUST_LEAK(55, IssueSeverity.MEDIUM, "Fuite d'échappement"),
-    VALVE_TAPPING(65, IssueSeverity.MINOR, "Claquement de soupapes"),
-    BEARING_NOISE(35, IssueSeverity.GRAVE, "Bruit de roulement - Risque grave"),
-    UNKNOWN(75, IssueSeverity.MINOR, "Bruit non identifié")
+enum class EngineIssueType(val score: Int, val severity: IssueSeverity, val descriptionEn: String) {
+    NORMAL(100, IssueSeverity.NONE, "Normal operation"),
+    BELT_SQUEAL(70, IssueSeverity.MINOR, "Belt squeak"),
+    RATTLING(60, IssueSeverity.MEDIUM, "Rattling/Metal noise"),
+    KNOCKING(40, IssueSeverity.GRAVE, "Engine knocking - Serious risk"),
+    MISFIRING(50, IssueSeverity.MEDIUM, "Engine misfire"),
+    EXHAUST_LEAK(55, IssueSeverity.MEDIUM, "Exhaust leak"),
+    VALVE_TAPPING(65, IssueSeverity.MINOR, "Valve tapping"),
+    BEARING_NOISE(35, IssueSeverity.GRAVE, "Bearing noise - Serious risk"),
+    UNKNOWN(75, IssueSeverity.MINOR, "Unidentified noise")
 }
 
 data class VideoAnalysisResult(
@@ -84,13 +84,13 @@ data class VideoAnalysisResult(
     val analysisTimestamp: Long
 )
 
-enum class SmokeType(val scorePenalty: Int, val severity: IssueSeverity, val descriptionFr: String) {
-    NONE(0, IssueSeverity.NONE, "Pas de fumée détectée"),
-    WHITE_LIGHT(20, IssueSeverity.MINOR, "Fumée blanche légère (condensation normale)"),
-    WHITE_HEAVY(40, IssueSeverity.GRAVE, "Fumée blanche épaisse - Joint de culasse suspect"),
-    BLUE(35, IssueSeverity.MEDIUM, "Fumée bleue - Consommation d'huile"),
-    BLACK_LIGHT(30, IssueSeverity.MEDIUM, "Fumée noire légère - Mélange riche"),
-    BLACK_HEAVY(50, IssueSeverity.GRAVE, "Fumée noire épaisse - Problème injection grave")
+enum class SmokeType(val scorePenalty: Int, val severity: IssueSeverity, val descriptionEn: String) {
+    NONE(0, IssueSeverity.NONE, "No smoke detected"),
+    WHITE_LIGHT(20, IssueSeverity.MINOR, "Light white smoke (normal condensation)"),
+    WHITE_HEAVY(40, IssueSeverity.GRAVE, "Heavy white smoke - Suspected head gasket"),
+    BLUE(35, IssueSeverity.MEDIUM, "Blue smoke - Oil consumption"),
+    BLACK_LIGHT(30, IssueSeverity.MEDIUM, "Light black smoke - Rich mixture"),
+    BLACK_HEAVY(50, IssueSeverity.GRAVE, "Heavy black smoke - Serious injection problem")
 }
 
 // ============================================================================
@@ -225,9 +225,9 @@ enum class ConfidenceLevel(val displayName: String) {
 // ============================================================================
 
 data class IssuesList(
-    val grave: List<Issue>,              // Réparation > $2,000
-    val medium: List<Issue>,             // Réparation $500 - $2,000
-    val minor: List<Issue>               // Esthétique ou entretien courant
+    val grave: List<Issue>,              // Repair > $2,000
+    val medium: List<Issue>,             // Repair $500 - $2,000
+    val minor: List<Issue>               // Aesthetic or routine maintenance
 ) {
     fun hasGraveIssues(): Boolean = grave.isNotEmpty()
     fun totalIssues(): Int = grave.size + medium.size + minor.size
@@ -242,10 +242,10 @@ data class Issue(
 )
 
 enum class IssueSeverity(val displayName: String, val color: String) {
-    NONE("Aucun", "green"),
-    MINOR("Mineur", "blue"),
-    MEDIUM("Moyen", "orange"),
-    GRAVE("Grave", "red")
+    NONE("None", "green"),
+    MINOR("Minor", "blue"),
+    MEDIUM("Medium", "orange"),
+    GRAVE("Serious", "red")
 }
 
 enum class IssueSource {
@@ -259,18 +259,18 @@ enum class IssueSource {
 // SCORE CATEGORY & RISK LEVEL
 // ============================================================================
 
-enum class ScoreCategory(val range: IntRange, val displayName: String, val displayNameFr: String) {
+enum class ScoreCategory(val range: IntRange, val displayName: String, val displayNameEn: String) {
     EXCELLENT(90..100, "Excellent", "Excellent"),
-    GOOD(70..89, "Good", "Très bon état"),
-    FAIR(50..69, "Fair", "État moyen"),
-    POOR(30..49, "Poor", "État médiocre"),
-    CRITICAL(0..29, "Critical", "À éviter")
+    GOOD(70..89, "Good", "Very good condition"),
+    FAIR(50..69, "Fair", "Average condition"),
+    POOR(30..49, "Poor", "Poor condition"),
+    CRITICAL(0..29, "Critical", "Avoid")
 }
 
-enum class RiskLevel(val displayName: String, val displayNameFr: String, val color: String) {
-    LOW("Low Risk", "Risque faible", "green"),
-    MEDIUM("Medium Risk", "Risque moyen", "orange"),
-    HIGH("High Risk", "Risque élevé", "red")
+enum class RiskLevel(val displayName: String, val displayNameEn: String, val color: String) {
+    LOW("Low Risk", "Low Risk", "green"),
+    MEDIUM("Medium Risk", "Medium Risk", "orange"),
+    HIGH("High Risk", "High Risk", "red")
 }
 
 // ============================================================================

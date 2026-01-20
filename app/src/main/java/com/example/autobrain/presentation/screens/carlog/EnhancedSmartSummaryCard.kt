@@ -104,7 +104,7 @@ fun EnhancedSmartSummaryCard(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Total dépenses",
+                                text = "Total expenses",
                                 fontSize = 13.sp,
                                 color = TextSecondary,
                                 fontWeight = FontWeight.Medium
@@ -131,7 +131,7 @@ fun EnhancedSmartSummaryCard(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "$totalRecords entretiens enregistrés",
+                                text = "$totalRecords maintenance records",
                                 fontSize = 11.sp,
                                 color = TextMuted
                             )
@@ -147,7 +147,7 @@ fun EnhancedSmartSummaryCard(
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = "${formatCurrency(avgCostPerMonth)}/mois en moyenne",
+                                    text = "${formatCurrency(avgCostPerMonth)}/mo on average",
                                     fontSize = 11.sp,
                                     color = TextMuted
                                 )
@@ -246,7 +246,7 @@ private fun VehicleHealthGauge(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = "Santé",
+                text = "Health",
                 fontSize = 9.sp,
                 color = TextMuted
             )
@@ -305,7 +305,7 @@ private fun NextMaintenanceAlert(
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Prochaine maintenance",
+                    text = "Next maintenance",
                     fontSize = 11.sp,
                     color = TextSecondary,
                     fontWeight = FontWeight.Medium
@@ -346,7 +346,7 @@ private fun LastMaintenanceInfo(lastMaintenanceDate: Long) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = "Dernier entretien: $dateStr",
+            text = "Last maintenance: $dateStr",
             fontSize = 11.sp,
             color = TextMuted
         )

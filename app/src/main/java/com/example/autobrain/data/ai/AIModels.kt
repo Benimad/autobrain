@@ -164,71 +164,71 @@ object EngineSoundTypes {
     const val MISFIRE = "misfire"
 
     val descriptions = mapOf(
-        NORMAL_ENGINE to "Moteur fonctionnant normalement",
-        KNOCKING to "Cognement du moteur - Possible problème de piston ou de bielle",
-        RATTLING to "Bruit de cliquetis - Vérifier les fixations et les composants desserrés",
-        BELT_SQUEAL to "Grincement de courroie - Courroie usée ou mal tendue",
-        GRINDING to "Bruit de grincement - Possible usure des freins ou de la transmission",
-        HISSING to "Sifflement - Possible fuite de liquide de refroidissement ou de vide",
-        CLICKING to "Cliquetis - Vérifier les joints homocinétiques ou le démarreur",
-        TAPPING to "Tapotement - Possible jeu de soupapes excessif",
-        RUMBLING to "Grondement - Vérifier l'échappement ou les roulements de roue",
-        WHINING to "Gémissement - Possible problème de direction assistée ou de transmission",
-        MISFIRE to "Raté d'allumage - Problème de combustion ou système d'allumage"
+        NORMAL_ENGINE to "Engine running normally",
+        KNOCKING to "Engine knocking - Possible piston or connecting rod issue",
+        RATTLING to "Ratting noise - Check fasteners and loose components",
+        BELT_SQUEAL to "Belt squeal - Worn or improperly tensioned belt",
+        GRINDING to "Grinding noise - Possible brake or transmission wear",
+        HISSING to "Hissing - Possible coolant or vacuum leak",
+        CLICKING to "Clicking - Check CV joints or starter",
+        TAPPING to "Tapping - Possible excessive valve clearance",
+        RUMBLING to "Rumbling - Check exhaust or wheel bearings",
+        WHINING to "Whining - Possible power steering or transmission issue",
+        MISFIRE to "Engine misfire - Combustion or ignition system issue"
     )
 
     val recommendations = mapOf(
-        NORMAL_ENGINE to listOf("Continuer l'entretien régulier"),
+        NORMAL_ENGINE to listOf("Continue regular maintenance"),
         KNOCKING to listOf(
-            "Consulter un mécanicien immédiatement",
-            "Ne pas conduire sur de longues distances",
-            "Vérifier le niveau et la qualité de l'huile"
+            "Consult a mechanic immediately",
+            "Do not drive long distances",
+            "Check oil level and quality"
         ),
         RATTLING to listOf(
-            "Inspecter les écrans thermiques",
-            "Vérifier les fixations du moteur",
-            "Contrôler le système d'échappement"
+            "Inspect heat shields",
+            "Check engine mount fasteners",
+            "Control exhaust system"
         ),
         BELT_SQUEAL to listOf(
-            "Remplacer la courroie d'accessoires",
-            "Vérifier la tension de la courroie",
-            "Inspecter les poulies"
+            "Replace accessory belt",
+            "Check belt tension",
+            "Inspect pulleys"
         ),
         GRINDING to listOf(
-            "Faire vérifier les plaquettes de frein",
-            "Contrôler la transmission",
-            "Ne pas ignorer ce bruit"
+            "Have brake pads checked",
+            "Inspect transmission",
+            "Do not ignore this noise"
         ),
         HISSING to listOf(
-            "Vérifier le circuit de refroidissement",
-            "Contrôler les durites",
-            "Inspecter le système de climatisation"
+            "Check coolant circuit",
+            "Inspect hoses",
+            "Check air conditioning system"
         ),
         CLICKING to listOf(
-            "Faire vérifier les joints homocinétiques",
-            "Contrôler la batterie",
-            "Inspecter le démarreur"
+            "Have CV joints checked",
+            "Check battery",
+            "Inspect starter"
         ),
         TAPPING to listOf(
-            "Faire régler le jeu aux soupapes",
-            "Vérifier le niveau d'huile",
-            "Consulter un mécanicien"
+            "Adjust valve clearance",
+            "Check oil level",
+            "Consult a mechanic"
         ),
         RUMBLING to listOf(
-            "Inspecter le système d'échappement",
-            "Vérifier les roulements de roue",
-            "Contrôler les supports moteur"
+            "Inspect exhaust system",
+            "Check wheel bearings",
+            "Control engine mounts"
         ),
         WHINING to listOf(
-            "Vérifier le niveau de liquide de direction",
-            "Contrôler la pompe de direction assistée",
-            "Inspecter la transmission"
+            "Check power steering fluid level",
+            "Inspect power steering pump",
+            "Check transmission"
         ),
         MISFIRE to listOf(
-            "Vérifier les bougies d'allumage",
-            "Contrôler le système d'injection",
-            "Inspecter les bobines d'allumage",
-            "Diagnostiquer immédiatement"
+            "Check spark plugs",
+            "Inspect fuel injection system",
+            "Check ignition coils",
+            "Diagnose immediately"
         )
     )
 }

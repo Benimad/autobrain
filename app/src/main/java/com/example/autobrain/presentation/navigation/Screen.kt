@@ -80,7 +80,7 @@ sealed class Screen(val route: String) {
     }
 
     // =========================================================================
-    // SMART CAR LOGBOOK (Carnet Intelligent)
+    // SMART CAR LOGBOOK
     // =========================================================================
     object CarLogbook : Screen("car_logbook")
     object AddCar : Screen("add_car")
@@ -155,11 +155,10 @@ sealed class Screen(val route: String) {
 enum class BottomNavItem(
     val route: String,
     val title: String,
-    val titleFr: String,
     val index: Int
 ) {
-    HOME("home", "Home", "Accueil", 0),
-    DIAGNOSTICS("ai_diagnostics", "Diagnostics", "Diagnostics", 1),
-    CARNET("car_logbook", "Carnet", "Carnet", 2),
-    PROFILE("profile", "Profile", "Profil", 3)
+    HOME("home", "Home", 0),
+    DIAGNOSTICS("ai_diagnostics", "Diagnostics", 1),
+    LOGBOOK("car_logbook", "Logbook", 2),
+    PROFILE("profile", "Profile", 3)
 }

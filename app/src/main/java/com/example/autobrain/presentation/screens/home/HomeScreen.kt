@@ -118,7 +118,7 @@ fun HomeScreen(
             
             // Quick Actions Row
             Text(
-                text = "Actions Rapides",
+                text = "Quick Actions",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary,
@@ -135,7 +135,7 @@ fun HomeScreen(
             ) {
                 QuickActionButton(
                     icon = Icons.Outlined.Mic,
-                    label = "Diagnostic\nAudio",
+                    label = "Audio\nDiagnostic",
                     modifier = Modifier.weight(1f),
                     onClick = { 
                         // Navigate to Smart Audio Diagnostic
@@ -144,7 +144,7 @@ fun HomeScreen(
                 )
                 QuickActionButton(
                     icon = Icons.Outlined.Videocam,
-                    label = "Diagnostic\nVidéo",
+                    label = "Video\nDiagnostic",
                     modifier = Modifier.weight(1f),
                     onClick = { 
                         // Navigate to Video Diagnostic
@@ -153,7 +153,7 @@ fun HomeScreen(
                 )
                 QuickActionButton(
                     icon = Icons.Outlined.Description,
-                    label = "Diagnostic\nComplet IA",
+                    label = "AI Complete\nDiagnostic",
                     modifier = Modifier.weight(1f),
                     onClick = { 
                         // Navigate to AI Enhanced Diagnostics
@@ -166,7 +166,7 @@ fun HomeScreen(
             
             // Recent Diagnostics Section
             Text(
-                text = "Diagnostics Récents",
+                text = "Recent Diagnostics",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary,
@@ -237,7 +237,7 @@ private fun TopGreetingSection(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Bonjour, ${userName.split(" ").firstOrNull() ?: userName}",
+                text = "Hello, ${userName.split(" ").firstOrNull() ?: userName}",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
@@ -409,7 +409,7 @@ private fun AIScoreCard(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Niveau de risque: $riskLevel",
+                                text = "Risk level: $riskLevel",
                                 fontSize = 14.sp,
                                 color = if (riskLevel == "Low") SuccessGreen else WarningAmber
                             )
@@ -555,14 +555,14 @@ private fun SmartLogbookCard(
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Carnet de bord",
+                    text = "Logbook",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = TextPrimary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Prochain entretien dans $daysUntilService jours / $kmUntilService km",
+                    text = "Next service in $daysUntilService days / $kmUntilService km",
                     fontSize = 13.sp,
                     color = urgencyColor
                 )
@@ -599,7 +599,7 @@ private fun AutoBrainBottomNav(
             BottomNavItem(
                 icon = Icons.Outlined.Home,
                 selectedIcon = Icons.Filled.Home,
-                label = "Accueil",
+                label = "Home",
                 selected = selectedIndex == 0,
                 onClick = { onItemSelected(0) }
             )
@@ -617,7 +617,7 @@ private fun AutoBrainBottomNav(
             BottomNavItem(
                 icon = Icons.Outlined.EventNote,
                 selectedIcon = Icons.Filled.EventNote,
-                label = "Carnet",
+                label = "Logbook",
                 selected = selectedIndex == 2,
                 onClick = { onItemSelected(2) }
             )
@@ -626,7 +626,7 @@ private fun AutoBrainBottomNav(
             BottomNavItem(
                 icon = Icons.Outlined.Person,
                 selectedIcon = Icons.Filled.Person,
-                label = "Profil",
+                label = "Profile",
                 selected = selectedIndex == 3,
                 onClick = { onItemSelected(3) }
             )

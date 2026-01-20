@@ -111,7 +111,7 @@ fun CarLogScreen(
     val remindersState by viewModel.remindersState.collectAsState()
     val smartRemindersState by viewModel.smartRemindersState.collectAsState()
     
-    // Dialog state pour Conseils IA
+    // AI Advice dialog state
     var showAIDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -129,13 +129,13 @@ fun CarLogScreen(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                "Carnet Intelligent",
+                                "Smart Logbook",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp,
                                 color = TextPrimary
                             )
                             Text(
-                                "Suivi automatique",
+                                "Auto tracking",
                                 fontSize = 12.sp,
                                 color = TextSecondary
                             )
@@ -146,14 +146,14 @@ fun CarLogScreen(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             Icons.Default.ArrowBack,
-                            contentDescription = "Retour",
+                            contentDescription = "Back",
                             tint = TextPrimary
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.AddMaintenance.route) }) {
-                        Icon(Icons.Default.Add, contentDescription = "Ajouter", tint = ElectricTeal)
+                        Icon(Icons.Default.Add, contentDescription = "Add", tint = ElectricTeal)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -177,7 +177,7 @@ fun CarLogScreen(
                 contentColor = TextOnAccent,
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Ajouter")
+                Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
     ) { padding ->
@@ -211,7 +211,7 @@ fun CarLogScreen(
                         EnhancedSmartSummaryCard(
                             totalRecords = 0,
                             totalExpenses = 0.0,
-                            nextMaintenance = "Ajoutez votre premier entretien",
+                            nextMaintenance = "Add your first maintenance",
                             healthScore = 0,
                             avgCostPerMonth = 0.0,
                             lastMaintenanceDate = null
@@ -242,9 +242,9 @@ fun CarLogScreen(
             // Upcoming Reminders Section
             item {
                 SectionHeader(
-                    title = "Rappels à venir",
-                    subtitle = "Ne manquez aucune échéance",
-                    actionText = "Tout voir",
+                    title = "Upcoming reminders",
+                    subtitle = "Don't miss any due date",
+                    actionText = "View all",
                     onActionClick = { navController.navigate(Screen.Reminders.route) }
                 )
             }
@@ -288,8 +288,8 @@ fun CarLogScreen(
             // Maintenance History Section
             item {
                 SectionHeader(
-                    title = "Historique d'entretien",
-                    subtitle = "Tous vos enregistrements",
+                    title = "Maintenance history",
+                    subtitle = "All your records",
                     actionText = null,
                     onActionClick = null
                 )
@@ -316,7 +316,7 @@ fun CarLogScreen(
                     // Add timeline header
                     item {
                         Text(
-                            text = "Chronologie",
+                            text = "Timeline",
                             style = MaterialTheme.typography.titleMedium,
                             color = ElectricTeal,
                             modifier = Modifier.padding(start = 24.dp, top = 8.dp, bottom = 8.dp)
@@ -417,7 +417,7 @@ private fun SmartSummaryCard(
                 ) {
                     Column {
                         Text(
-                            text = "Résumé du véhicule",
+                            text = "Vehicle summary",
                             fontSize = 14.sp,
                             color = TextSecondary
                         )
@@ -428,7 +428,7 @@ private fun SmartSummaryCard(
                             color = TextPrimary
                         )
                         Text(
-                            text = "Total des dépenses",
+                            text = "Total expenses",
                             fontSize = 12.sp,
                             color = TextMuted
                         )
@@ -455,7 +455,7 @@ private fun SmartSummaryCard(
                                     color = ElectricTeal
                                 )
                                 Text(
-                                    text = "entrées",
+                                    text = "entries",
                                     fontSize = 10.sp,
                                     color = ElectricTeal.copy(alpha = 0.8f)
                                 )
@@ -488,7 +488,7 @@ private fun SmartSummaryCard(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = "Prochaine maintenance",
+                                text = "Next maintenance",
                                 fontSize = 12.sp,
                                 color = TextSecondary
                             )
@@ -520,8 +520,8 @@ private fun QuickActionsSection(
         item {
             QuickActionCard(
                 icon = Icons.Default.Add,
-                title = "Ajouter",
-                subtitle = "Entretien",
+                title = "Add",
+                subtitle = "Maintenance",
                 gradientColors = listOf(ElectricTeal, TealDark),
                 onClick = onAddMaintenance
             )
@@ -529,7 +529,7 @@ private fun QuickActionsSection(
         item {
             QuickActionCard(
                 icon = Icons.Default.AutoAwesome,
-                title = "Conseils IA",
+                title = "AI Advice",
                 subtitle = "Gemini Smart",
                 gradientColors = listOf(WarningAmber, Color(0xFFFBBF24)),
                 onClick = onAIAdvice
@@ -538,8 +538,8 @@ private fun QuickActionsSection(
         item {
             QuickActionCard(
                 icon = Icons.Default.Notifications,
-                title = "Rappels",
-                subtitle = "Échéances",
+                title = "Reminders",
+                subtitle = "Due dates",
                 gradientColors = listOf(Color(0xFFB794F4), Color(0xFF9F7AEA)),
                 onClick = onViewReminders
             )
@@ -548,7 +548,7 @@ private fun QuickActionsSection(
             QuickActionCard(
                 icon = Icons.Default.Description,
                 title = "Documents",
-                subtitle = "Assurance, CT",
+                subtitle = "Insurance, Inspection",
                 gradientColors = listOf(SuccessGreen, SuccessGreenLight),
                 onClick = onViewDocuments
             )
@@ -665,7 +665,7 @@ private fun SmartReminderCard(
         reminder.title.contains("Assurance", ignoreCase = true) ->
             WarningAmber to WarningAmber.copy(alpha = 0.15f)
 
-        reminder.title.contains("Vidange", ignoreCase = true) ->
+        reminder.title.contains("Oil change", ignoreCase = true) ->
             ElectricTeal to ElectricTeal.copy(alpha = 0.15f)
 
         else -> SuccessGreen to SuccessGreen.copy(alpha = 0.15f)
@@ -705,7 +705,7 @@ private fun SmartReminderCard(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.CheckCircle,
-                        contentDescription = "Marquer terminé",
+                        contentDescription = "Mark done",
                         tint = SuccessGreen
                     )
                 }
@@ -768,7 +768,7 @@ private fun EmptyRemindersCard(
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Aucun rappel",
+                text = "No reminders",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = TextPrimary
@@ -793,7 +793,7 @@ private fun EmptyRemindersCard(
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Ajouter un rappel")
+                Text("Add reminder")
             }
         }
     }
@@ -833,7 +833,7 @@ private fun EmptyMaintenanceCard(
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "Aucun enregistrement",
+                text = "No records",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
@@ -842,7 +842,7 @@ private fun EmptyMaintenanceCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Commencez à suivre l'entretien\nde votre véhicule",
+                text = "Start tracking your vehicle's maintenance",
                 fontSize = 14.sp,
                 color = TextSecondary,
                 textAlign = TextAlign.Center
@@ -865,7 +865,7 @@ private fun EmptyMaintenanceCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Ajouter un entretien",
+                    text = "Add maintenance",
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -916,7 +916,7 @@ private fun ErrorCard(
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Réessayer")
+                Text("Retry")
             }
         }
     }
@@ -960,13 +960,13 @@ private fun AIAdviceDialog(
                 }
                 Column {
                     Text(
-                        "Conseils IA Gemini",
+                        "Gemini AI advice",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
                     )
                     Text(
-                        "Analyse intelligente",
+                        "Intelligent analysis",
                         fontSize = 13.sp,
                         color = TextSecondary
                     )
@@ -986,7 +986,7 @@ private fun AIAdviceDialog(
                             modifier = Modifier.size(48.dp)
                         )
                         Text(
-                            "Gemini analyse votre véhicule...",
+                            "Gemini is analyzing your vehicle...",
                             fontSize = 14.sp,
                             color = TextSecondary,
                             textAlign = TextAlign.Center
@@ -998,7 +998,7 @@ private fun AIAdviceDialog(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // Conseil principal
+                        // Main advice
                         item {
                             Card(
                                 colors = CardDefaults.cardColors(
@@ -1020,7 +1020,7 @@ private fun AIAdviceDialog(
                                             modifier = Modifier.size(24.dp)
                                         )
                                         Text(
-                                            "Conseil principal",
+                                            "Main advice",
                                             fontSize = 15.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = ElectricTeal
@@ -1037,11 +1037,11 @@ private fun AIAdviceDialog(
                             }
                         }
                         
-                        // Maintenance suggérée
+                        // Suggested maintenance
                         if (smartRemindersState.suggestedMaintenance.isNotEmpty()) {
                             item {
                                 Text(
-                                    "Entretien recommandé",
+                                    "Recommended maintenance",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TextPrimary
@@ -1076,7 +1076,7 @@ private fun AIAdviceDialog(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    "Propulsé par ",
+                                    "Powered by ",
                                     fontSize = 11.sp,
                                     color = TextSecondary
                                 )
@@ -1110,7 +1110,7 @@ private fun AIAdviceDialog(
                             textAlign = TextAlign.Center
                         )
                         Text(
-                            "Vérifiez votre connexion internet",
+                            "Check your internet connection",
                             fontSize = 12.sp,
                             color = TextSecondary,
                             textAlign = TextAlign.Center
@@ -1120,7 +1120,7 @@ private fun AIAdviceDialog(
                 
                 is SmartRemindersState.Idle -> {
                     Text(
-                        "Prêt à analyser...",
+                        "Ready to analyze...",
                         fontSize = 14.sp,
                         color = TextSecondary
                     )
@@ -1136,7 +1136,7 @@ private fun AIAdviceDialog(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Fermer", fontWeight = FontWeight.SemiBold)
+                Text("Close", fontWeight = FontWeight.SemiBold)
             }
         }
     )
@@ -1347,7 +1347,7 @@ private fun TimelineNode(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = "Prochain: ${record.nextServiceDue.toFormattedDate()}",
+                        text = "Next: ${record.nextServiceDue.toFormattedDate()}",
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
@@ -1430,10 +1430,10 @@ private fun SmartReminderCard(
                 ) {
                     Text(
                         text = when (reminder.priority) {
-                            ReminderPriority.CRITICAL -> "CRITIQUE"
-                            ReminderPriority.HIGH -> "URGENT"
-                            ReminderPriority.MEDIUM -> "MOYEN"
-                            ReminderPriority.LOW -> "BAS"
+                            ReminderPriority.CRITICAL -> "CRITICAL"
+                            ReminderPriority.HIGH -> "HIGH"
+                            ReminderPriority.MEDIUM -> "MEDIUM"
+                            ReminderPriority.LOW -> "LOW"
                         },
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                         fontSize = 11.sp,
@@ -1485,9 +1485,9 @@ private fun SmartReminderCard(
                         )
                         Text(
                             text = if (isOverdue) {
-                                " En retard de ${-daysRemaining} jours"
+                                " Overdue by ${-daysRemaining} days"
                             } else {
-                                " Dans $daysRemaining jours"
+                                " In $daysRemaining days"
                             },
                             fontSize = 12.sp,
                             color = if (isOverdue) ErrorRed else TextSecondary,
@@ -1535,7 +1535,7 @@ private fun SmartReminderCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Marquer comme fait",
+                    text = "Mark as done",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold
                 )

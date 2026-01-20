@@ -120,7 +120,7 @@ class GeminiCarnetRepository @Inject constructor(
     ): Result<CostPrediction> = withContext(Dispatchers.IO) {
         try {
             val prompt = """
-                Prédis les coûts d'entretien pour les 12 prochains mois :
+                Predict maintenance costs for the next 12 months:
                 
                 Véhicule : ${carDetails.brand} ${carDetails.model} ${carDetails.year}
                 Kilométrage actuel : $currentMileage km
@@ -131,21 +131,21 @@ class GeminiCarnetRepository @Inject constructor(
                     "total_annual_cost_usd": 12000,
                     "monthly_breakdown": [
                         {
-                            "month": "Janvier",
+                            "month": "January",
                             "estimated_cost_usd": 500,
-                            "maintenance_items": ["Vidange d'huile"],
+                            "maintenance_items": ["Oil change"],
                             "priority": "HIGH|MEDIUM|LOW"
                         }
                     ],
                     "major_services": [
                         {
-                            "service": "Révision complète",
-                            "when": "Dans 3 mois",
+                            "service": "Full service",
+                            "when": "In 3 months",
                             "cost_usd": 2500,
-                            "why": "Raison"
+                            "why": "Reason"
                         }
                     ],
-                    "savings_tips": ["Conseil 1", "Conseil 2"],
+                    "savings_tips": ["Tip 1", "Tip 2"],
                     "confidence_level": 85
                 }
                 
@@ -181,28 +181,28 @@ class GeminiCarnetRepository @Inject constructor(
                 }
             
             val prompt = """
-                Évalue la QUALITÉ de l'entretien de ce véhicule :
-                
-                Véhicule : ${carDetails.brand} ${carDetails.model} ${carDetails.year}
-                Kilométrage actuel : $currentMileage km
-                Total d'entretiens : ${maintenanceRecords.size}
-                
-                Historique récent :
-                ${recordsText.ifEmpty { "Aucun historique" }}
-                
-                Génère une évaluation au format JSON :
+                Evaluate the QUALITY of this vehicle's maintenance:
+
+Vehicle: ${carDetails.brand} ${carDetails.model} ${carDetails.year}
+Current mileage: $currentMileage km
+Total maintenance: ${maintenanceRecords.size}
+
+Recent history:
+                ${recordsText.ifEmpty { "No history" }}
+
+Generate a JSON evaluation:
                 {
                     "overall_quality_score": 85,
-                    "maintenance_consistency": "Excellent|Bon|Moyen|Mauvais",
-                    "service_providers_quality": "Analyse des prestataires",
-                    "missing_critical_maintenance": ["Entretien manquant 1"],
-                    "positive_aspects": ["Point positif 1"],
-                    "red_flags": ["Alerte 1"],
-                    "impact_on_resale_value": {
-                        "percentage_impact": 10,
-                        "description": "Impact sur la valeur"
-                    },
-                    "recommendations": ["Recommandation 1"],
+                    "maintenance_consistency": "Excellent|Good|Average|Poor",
+    "service_providers_quality": "Service provider analysis",
+    "missing_critical_maintenance": ["Missing maintenance 1"],
+    "positive_aspects": ["Positive point 1"],
+    "red_flags": ["Alert 1"],
+    "impact_on_resale_value": {
+        "percentage_impact": 10,
+        "description": "Impact on value"
+    },
+    "recommendations": ["Recommendation 1"],
                     "ai_score_impact": 15,
                     "detailed_report": "Detailed report..."
                 }
@@ -235,7 +235,7 @@ class GeminiCarnetRepository @Inject constructor(
             }
             
             val prompt = """
-                Crée un planning OPTIMAL d'entretien pour cette voiture :
+                Create an OPTIMAL maintenance schedule for this car:
                 
                 Véhicule : ${carDetails.brand} ${carDetails.model} ${carDetails.year}
                 Kilométrage : $currentMileage km
@@ -247,8 +247,8 @@ class GeminiCarnetRepository @Inject constructor(
                 {
                     "recommended_schedule": [
                         {
-                            "date_range": "15-30 Janvier 2025",
-                            "services": ["Vidange", "Filtres"],
+                            "date_range": "15-30 January 2025",
+                            "services": ["Oil change", "Filters"],
                             "combined_cost_usd": 800,
                             "reason": "Pourquoi grouper ces services",
                             "urgency": "HIGH|MEDIUM|LOW",
@@ -287,7 +287,7 @@ class GeminiCarnetRepository @Inject constructor(
     ): Result<PersonalizedAdvice> = withContext(Dispatchers.IO) {
         try {
             val prompt = """
-                Génère des conseils PERSONNALISÉS d'entretien automobile :
+                Generate PERSONALIZED automotive maintenance advice:
                 
                 Véhicule : ${carDetails.brand} ${carDetails.model} ${carDetails.year}
                 Kilométrage : $currentMileage km
@@ -302,7 +302,7 @@ class GeminiCarnetRepository @Inject constructor(
                 {
                     "key_recommendations": ["Conseil clé 1", "Conseil clé 2"],
                     "driving_style_impact": "Impact du style de conduite",
-                    "climate_specific_advice": "Conseils selon le climat local",
+                    "climate_specific_advice": "Climate-specific advice",
                     "frequency_adjustments": {
                         "oil_change_km": 10000,
                         "tire_check_months": 3,
@@ -346,33 +346,33 @@ class GeminiCarnetRepository @Inject constructor(
                 .joinToString("\n") { "${it.type} à ${it.mileage} km" }
             
             val prompt = """
-                Évalue les RISQUES liés à l'entretien de ce véhicule :
-                
-                Véhicule : ${carDetails.brand} ${carDetails.model} ${carDetails.year}
-                Kilométrage : $currentMileage km
-                
-                Entretiens récents :
-                ${recentRecords.ifEmpty { "Aucun historique" }}
-                
-                Identifie les risques au format JSON :
+                Evaluate MAINTENANCE RISKS for this vehicle:
+
+Vehicle: ${carDetails.brand} ${carDetails.model} ${carDetails.year}
+Mileage: $currentMileage km
+
+Recent maintenance:
+                ${recentRecords.ifEmpty { "No history" }}
+
+Identify risks in JSON format:
                 {
                     "overall_risk_level": "LOW|MEDIUM|HIGH|CRITICAL",
                     "identified_risks": [
                         {
-                            "risk": "Description du risque",
-                            "severity": "LOW|MEDIUM|HIGH|CRITICAL",
-                            "probability": 75,
-                            "consequences": "Conséquences potentielles",
-                            "prevention_cost_usd": 1500,
-                            "repair_cost_if_ignored_usd": 8000
+                            "risk": "Risk description",
+    "severity": "LOW|MEDIUM|HIGH|CRITICAL",
+    "probability": 75,
+    "consequences": "Potential consequences",
+    "prevention_cost_usd": 1500,
+    "repair_cost_if_ignored_usd": 8000
                         }
                     ],
-                    "immediate_actions": ["Action urgente 1"],
-                    "preventive_measures": ["Mesure préventive 1"],
-                    "cost_benefit_analysis": "Analyse coût/bénéfice de la prévention",
-                    "time_critical_issues": ["Problème urgent 1"],
-                    "ai_score_at_risk": -25,
-                    "detailed_assessment": "Évaluation détaillée..."
+                    "immediate_actions": ["Urgent action 1"],
+    "preventive_measures": ["Preventive measure 1"],
+    "cost_benefit_analysis": "Cost/benefit analysis of prevention",
+    "time_critical_issues": ["Urgent issue 1"],
+    "ai_score_at_risk": -25,
+    "detailed_assessment": "Detailed assessment..."
                 }
             """.trimIndent()
             
@@ -403,20 +403,20 @@ class GeminiCarnetRepository @Inject constructor(
                     "- ${it.date}: ${it.type} à ${it.mileage} km ($${it.cost}) [${it.serviceProvider}]"
                 }
         } else {
-            "Aucun historique d'entretien"
+            "No maintenance history"
         }
-        
+
         return """
-            Analyse COMPLÈTE de l'historique d'entretien de ce véhicule :
-            
-            🚗 Véhicule : ${carDetails.brand} ${carDetails.model} ${carDetails.year}
-            📊 Kilométrage : ${carDetails.mileage} km
-            📝 Total d'entretiens : ${records.size}
-            
-            📋 Historique détaillé :
+            COMPLETE analysis of this vehicle's maintenance history:
+
+            🚗 Vehicle: ${carDetails.brand} ${carDetails.model} ${carDetails.year}
+            📊 Mileage: ${carDetails.mileage} km
+            📝 Total maintenance: ${records.size}
+
+            📋 Detailed history:
             $recordsText
-            
-            Fournis une analyse PROFESSIONNELLE et HONNÊTE au format JSON :
+
+            Provide a PROFESSIONAL and HONNEST analysis in JSON format:
             {
                 "overall_maintenance_score": 85,
                 "score_breakdown": {
@@ -424,19 +424,19 @@ class GeminiCarnetRepository @Inject constructor(
                     "quality": 80,
                     "completeness": 85
                 },
-                "positive_points": ["Point positif 1", "Point positif 2"],
-                "concerns": ["Préoccupation 1", "Préoccupation 2"],
-                "urgent_actions": ["Action urgente 1"],
-                "recommended_next_steps": ["Étape 1", "Étape 2"],
-                "estimated_annual_cost_usd": 8000,
-                "maintenance_quality": "Excellent|Bon|Moyen|Insuffisant",
-                "cost_efficiency": "Analyse du rapport qualité/prix",
-                "service_provider_analysis": "Analyse des prestataires utilisés",
+                "positive_points": ["Positive point 1", "Positive point 2"],
+    "concerns": ["Concern 1", "Concern 2"],
+    "urgent_actions": ["Urgent action 1"],
+    "recommended_next_steps": ["Step 1", "Step 2"],
+    "estimated_annual_cost_usd": 8000,
+    "maintenance_quality": "Excellent|Good|Average|Insufficient",
+    "cost_efficiency": "Quality/price ratio analysis",
+    "service_provider_analysis": "Analysis of service providers used",
                 "impact_on_ai_score": 15,
                 "detailed_analysis": "Detailed analysis with all the details..."
             }
             
-            Base ton analyse sur les standards du marché automobile.
+            Base your analysis on automotive market standards.
         """.trimIndent()
     }
     
@@ -447,36 +447,36 @@ class GeminiCarnetRepository @Inject constructor(
     ): String {
         val maintenanceInfo = lastMaintenanceDates.entries.joinToString("\n") { (type, timestamp) ->
             val daysAgo = (System.currentTimeMillis() - timestamp) / (1000 * 60 * 60 * 24)
-            "- $type: il y a $daysAgo jours"
+            "- $type: $daysAgo days ago"
         }
-        
+
         return """
-            Génère des rappels d'entretien INTELLIGENTS et PERSONNALISÉS :
-            
-            🚗 Véhicule : ${carDetails.brand} ${carDetails.model} ${carDetails.year}
-            📊 Kilométrage actuel : $currentMileage km
-            
-            📅 Derniers entretiens effectués :
-            ${maintenanceInfo.ifEmpty { "Aucun historique d'entretien enregistré" }}
-            
-            Crée une liste de rappels PRIORITAIRES au format JSON (array) :
+            Generate INTELLIGENT and PERSONALIZED maintenance reminders:
+
+            🚗 Vehicle: ${carDetails.brand} ${carDetails.model} ${carDetails.year}
+            📊 Current mileage: $currentMileage km
+
+            📅 Last maintenance performed:
+            ${maintenanceInfo.ifEmpty { "No maintenance history registered" }}
+
+            Create a PRIORITIZED reminder list in JSON format (array):
             [
                 {
-                    "title": "Vidange d'huile moteur",
+                    "title": "Engine oil change",
                     "priority": "CRITICAL|HIGH|MEDIUM|LOW",
                     "due_in_days": 15,
                     "due_at_km": ${currentMileage + 5000},
                     "estimated_cost_usd": 500,
                     "description": "Description détaillée du rappel et pourquoi c'est important",
-                    "consequences_if_ignored": "Conséquences graves si non effectué",
+                    "consequences_if_ignored": "Serious consequences if not done",
                     "impact_on_ai_score": -10,
                     "service_type": "OIL_CHANGE|BRAKE_SERVICE|TIRE_ROTATION|etc",
-                    "urgency_reason": "Raison de l'urgence"
+                    "urgency_reason": "Urgency reason"
                 }
             ]
             
-            Inclus MINIMUM ces entretiens essentiels :
-            1. Vidange d'huile moteur (selon kilométrage)
+            Include MINIMUM these essential maintenance:
+            1. Engine oil change (based on mileage)
             2. Contrôle technique annuel
             3. Assurance automobile (renouvellement)
             4. Filtres (air, habitacle, carburant)
@@ -510,7 +510,7 @@ class GeminiCarnetRepository @Inject constructor(
                 overallScore = (jsonMap["overall_maintenance_score"] as? Number)?.toInt() ?: 70,
                 scoreBreakdown = scoreBreakdown,
                 positivePoints = (jsonMap["positive_points"] as? List<*>)
-                    ?.filterIsInstance<String>() ?: listOf("Historique d'entretien présent"),
+                    ?.filterIsInstance<String>() ?: listOf("Maintenance history present"),
                 concerns = (jsonMap["concerns"] as? List<*>)
                     ?.filterIsInstance<String>() ?: emptyList(),
                 urgentActions = (jsonMap["urgent_actions"] as? List<*>)
@@ -518,27 +518,27 @@ class GeminiCarnetRepository @Inject constructor(
                 recommendedNextSteps = (jsonMap["recommended_next_steps"] as? List<*>)
                     ?.filterIsInstance<String>() ?: listOf("Consulter un mécanicien certifié"),
                 estimatedAnnualCostDH = (jsonMap["estimated_annual_cost_usd"] as? Number)?.toInt() ?: 6000,
-                maintenanceQuality = jsonMap["maintenance_quality"] as? String ?: "Moyen",
-                costEfficiency = jsonMap["cost_efficiency"] as? String ?: "À évaluer",
+                maintenanceQuality = jsonMap["maintenance_quality"] as? String ?: "Average",
+                costEfficiency = jsonMap["cost_efficiency"] as? String ?: "To be evaluated",
                 serviceProviderAnalysis = jsonMap["service_provider_analysis"] as? String ?: "",
                 impactOnAIScore = (jsonMap["impact_on_ai_score"] as? Number)?.toInt() ?: 0,
-                detailedAnalysis = jsonMap["detailed_analysis"] as? String ?: "Analyse détaillée non disponible"
+                detailedAnalysis = jsonMap["detailed_analysis"] as? String ?: "Detailed analysis not available"
             )
         } catch (e: Exception) {
             Log.e(TAG, "Parse error: ${e.message}")
             MaintenanceAnalysis(
                 overallScore = if (records.isNotEmpty()) 65 else 30,
                 scoreBreakdown = emptyMap(),
-                positivePoints = if (records.isNotEmpty()) listOf("Suivi d'entretien actif") else emptyList(),
-                concerns = if (records.isEmpty()) listOf("Pas d'historique d'entretien") else emptyList(),
-                urgentActions = listOf("Créer un historique d'entretien complet"),
-                recommendedNextSteps = listOf("Effectuer un diagnostic complet"),
+                positivePoints = if (records.isNotEmpty()) listOf("Active maintenance tracking") else emptyList(),
+    concerns = if (records.isEmpty()) listOf("No maintenance history") else emptyList(),
+    urgentActions = listOf("Create complete maintenance history"),
+    recommendedNextSteps = listOf("Perform complete diagnostic"),
                 estimatedAnnualCostDH = 6000,
-                maintenanceQuality = "À évaluer",
+                maintenanceQuality = "To be evaluated",
                 costEfficiency = "Non disponible",
                 serviceProviderAnalysis = "",
                 impactOnAIScore = 0,
-                detailedAnalysis = "Erreur lors de l'analyse Gemini. Veuillez réessayer."
+                detailedAnalysis = "Gemini analysis error. Please try again."
             )
         }
     }
@@ -554,7 +554,7 @@ class GeminiCarnetRepository @Inject constructor(
             
             remindersList.map { map ->
                 SmartReminder(
-                    title = map["title"] as? String ?: "Entretien",
+                    title = map["title"] as? String ?: "Maintenance",
                     priority = ReminderPriority.valueOf(
                         (map["priority"] as? String ?: "MEDIUM").uppercase()
                             .replace("CRITICAL", "HIGH")
@@ -574,16 +574,16 @@ class GeminiCarnetRepository @Inject constructor(
             // Return default essential reminders
             listOf(
                 SmartReminder(
-                    title = "Vidange d'huile",
+                    title = "Oil change",
                     priority = ReminderPriority.HIGH,
                     dueInDays = 30,
                     dueAtKm = currentMileage + 5000,
                     estimatedCostDH = 500,
-                    description = "Vidange d'huile moteur nécessaire",
-                    consequencesIfIgnored = "Usure moteur accélérée",
+                    description = "Engine oil change needed",
+    consequencesIfIgnored = "Accelerated engine wear",
                     impactOnAIScore = -10,
                     serviceType = "OIL_CHANGE",
-                    urgencyReason = "Maintenance préventive"
+                    urgencyReason = "Preventive maintenance"
                 )
             )
         }
@@ -622,7 +622,7 @@ class GeminiCarnetRepository @Inject constructor(
             
             QualityEvaluation(
                 overallQualityScore = (jsonMap["overall_quality_score"] as? Number)?.toInt() ?: 70,
-                maintenanceConsistency = jsonMap["maintenance_consistency"] as? String ?: "Moyen",
+                maintenanceConsistency = jsonMap["maintenance_consistency"] as? String ?: "Average",
                 serviceProvidersQuality = jsonMap["service_providers_quality"] as? String ?: "",
                 missingCriticalMaintenance = (jsonMap["missing_critical_maintenance"] as? List<*>)
                     ?.filterIsInstance<String>() ?: emptyList(),
@@ -639,13 +639,13 @@ class GeminiCarnetRepository @Inject constructor(
         } catch (e: Exception) {
             QualityEvaluation(
                 overallQualityScore = 60,
-                maintenanceConsistency = "À évaluer",
+                maintenanceConsistency = "To be evaluated",
                 serviceProvidersQuality = "",
                 missingCriticalMaintenance = emptyList(),
                 positiveAspects = emptyList(),
                 redFlags = emptyList(),
                 impactOnResaleValue = 0,
-                recommendations = listOf("Maintenir un historique d'entretien régulier"),
+                recommendations = listOf("Maintain regular maintenance history"),
                 aiScoreImpact = 0,
                 detailedReport = ""
             )

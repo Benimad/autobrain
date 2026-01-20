@@ -10,7 +10,7 @@ class SignInUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(email: String, password: String): Result<User> {
         if (email.isBlank() || password.isBlank()) {
-            return Result.Error(Exception("L'email et le mot de passe sont requis"))
+            return Result.Error(Exception("Email and password are required"))
         }
 
         return authRepository.signIn(email, password)

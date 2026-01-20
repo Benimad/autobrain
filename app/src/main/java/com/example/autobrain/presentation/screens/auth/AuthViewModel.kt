@@ -44,7 +44,7 @@ class AuthViewModel @Inject constructor(
 
                 is Result.Error -> {
                     _authState.value =
-                        AuthState.Error(result.exception.message ?: "Erreur de connexion")
+                        AuthState.Error(result.exception.message ?: "Connection error")
                 }
 
                 is Result.Loading -> {
@@ -78,7 +78,7 @@ class AuthViewModel @Inject constructor(
 
                 is Result.Error -> {
                     _authState.value =
-                        AuthState.Error(result.exception.message ?: "Erreur d'inscription")
+                        AuthState.Error(result.exception.message ?: "Sign up error")
                 }
 
                 is Result.Loading -> {

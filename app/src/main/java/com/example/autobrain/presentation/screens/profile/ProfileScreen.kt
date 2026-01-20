@@ -684,7 +684,7 @@ private fun AutoBrainBottomNav(
             BottomNavItem(
                 icon = Icons.Outlined.Home,
                 selectedIcon = Icons.Filled.Home,
-                label = "Accueil",
+                label = "Home",
                 selected = selectedIndex == 0,
                 onClick = { onItemSelected(0) }
             )
@@ -698,14 +698,14 @@ private fun AutoBrainBottomNav(
             BottomNavItem(
                 icon = Icons.Outlined.EventNote,
                 selectedIcon = Icons.Filled.EventNote,
-                label = "Carnet",
+                label = "Logbook",
                 selected = selectedIndex == 2,
                 onClick = { onItemSelected(2) }
             )
             BottomNavItem(
                 icon = Icons.Outlined.Person,
                 selectedIcon = Icons.Filled.Person,
-                label = "Profil",
+                label = "Profile",
                 selected = selectedIndex == 3,
                 onClick = { onItemSelected(3) }
             )

@@ -205,10 +205,10 @@ class TfliteAudioClassifier @Inject constructor(
                 // Update progress
                 val progress = (SystemClock.elapsedRealtime() - startTime).toFloat() / durationMs
                 val statusMessage = when (_audioQuality.value) {
-                    is AudioQuality.Good -> "Enregistrement en cours..."
-                    is AudioQuality.TooQuiet -> "⚠️ Signal trop faible"
-                    is AudioQuality.TooNoisy -> "⚠️ Trop de bruit ambiant"
-                    is AudioQuality.Unknown -> "Analyse..."
+                    is AudioQuality.Good -> "Recording in progress..."
+                    is AudioQuality.TooQuiet -> "⚠️ Signal too weak"
+                    is AudioQuality.TooNoisy -> "⚠️ Too much ambient noise"
+                    is AudioQuality.Unknown -> "Analyzing..."
                 }
                 onProgress(progress.coerceIn(0f, 1f), statusMessage)
                 
@@ -238,9 +238,9 @@ class TfliteAudioClassifier @Inject constructor(
             val topClassification = finalClassifications.maxByOrNull { it.confidence }
             if (topClassification == null || topClassification.confidence < 0.3f) {
                 return@withContext ClassificationResult.Ambiguous(
-                    "Son ambigu - impossible de classifier avec confiance.\n" +
-                    "Recommandation: Recommencer avec moteur au ralenti stable."
-                )
+    "Ambiguous sound - impossible to classify with confidence.\n" +
+    "Recommendation: Retry with engine at stable idle."
+)
             }
             
             // Save audio file for history
@@ -535,10 +535,10 @@ class TfliteAudioClassifier @Inject constructor(
         
         return when {
             dbLevel < MIN_DB_LEVEL -> AudioQuality.TooQuiet(
-                "Signal trop faible (${dbLevel.toInt()} dB). Rapprochez le micro du moteur."
+                "Signal too weak (${dbLevel.toInt()} dB). Move microphone closer to engine."
             )
             dbLevel > MAX_DB_LEVEL -> AudioQuality.TooNoisy(
-                "Trop de bruit ambiant (${dbLevel.toInt()} dB). Trouvez un endroit plus calme."
+                "Too much ambient noise (${dbLevel.toInt()} dB). Find a quieter location."
             )
             else -> AudioQuality.Good
         }
@@ -656,8 +656,8 @@ data class TemporalFeatures(
 )
 
 sealed class AudioQuality(val message: String) {
-    object Unknown : AudioQuality("Analyse en cours...")
-    object Good : AudioQuality("Qualité audio excellente")
+    object Unknown : AudioQuality("Analysis in progress...")
+    object Good : AudioQuality("Excellent audio quality")
     data class TooQuiet(val reason: String) : AudioQuality(reason)
     data class TooNoisy(val reason: String) : AudioQuality(reason)
 }

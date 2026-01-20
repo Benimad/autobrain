@@ -723,7 +723,7 @@ private fun BottomNavigationBar(
         ) {
             BottomNavItem(
                 icon = Icons.Outlined.Home,
-                label = "Accueil",
+                label = "Home",
                 selected = selectedIndex == 0,
                 onClick = { navController.navigate(Screen.Home.route) }
             )
@@ -735,13 +735,13 @@ private fun BottomNavigationBar(
             )
             BottomNavItem(
                 icon = Icons.Outlined.EventNote,
-                label = "Carnet",
+                label = "Logbook",
                 selected = selectedIndex == 2,
-                onClick = { /* Already on Carnet */ }
+                onClick = { /* Already on Logbook */ }
             )
             BottomNavItem(
                 icon = Icons.Outlined.Person,
-                label = "Profil",
+                label = "Profile",
                 selected = selectedIndex == 3,
                 onClick = { navController.navigate(Screen.Profile.route) }
             )

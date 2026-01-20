@@ -137,7 +137,7 @@ class VideoDiagnosticViewModel @Inject constructor(
         _uiState.value = VideoDiagnosticState.Recording(
             progress = 0f,
             elapsedSeconds = 0,
-            qualityStatus = "Initialisation...",
+            qualityStatus = "Initializing...",
             isQualityGood = true
         )
         
@@ -156,7 +156,7 @@ class VideoDiagnosticViewModel @Inject constructor(
         currentVideoPath = "" // No file saved yet in this MVP, we analyze frames directly
         
         _uiState.value = VideoDiagnosticState.Analyzing(
-            message = "Analyse des données vidéo...",
+            message = "Analyzing video data...",
             progress = 0.1f
         )
         
@@ -174,10 +174,10 @@ class VideoDiagnosticViewModel @Inject constructor(
         isStable: Boolean
     ) {
         val qualityStatus = when {
-            averageBrightness < 30f -> "⚠️ Trop sombre – Améliorer l'éclairage"
-            averageBrightness < 50f -> "ℹ️ Luminosité faible"
-            !isStable -> "⚠️ Vidéo instable – Stabiliser la caméra"
-            else -> "✅ Qualité bonne"
+            averageBrightness < 30f -> "⚠️ Too dark – Improve lighting"
+            averageBrightness < 50f -> "ℹ️ Low brightness"
+            !isStable -> "⚠️ Unstable video – Stabilize camera"
+            else -> "✅ Good quality"
         }
         
         val isQualityGood = averageBrightness >= 50f && isStable
@@ -226,12 +226,12 @@ class VideoDiagnosticViewModel @Inject constructor(
             try {
                 val analysisResults = currentAnalysisResults
                 if (analysisResults == null) {
-                    _uiState.value = VideoDiagnosticState.Error("Aucune donnée d'analyse disponible")
+                    _uiState.value = VideoDiagnosticState.Error("No analysis data available")
                     return@launch
                 }
                 
                 if (currentCarId.isEmpty()) {
-                    _uiState.value = VideoDiagnosticState.Error("ID de voiture manquant")
+                    _uiState.value = VideoDiagnosticState.Error("Missing car ID")
                     return@launch
                 }
                 
@@ -255,9 +255,9 @@ class VideoDiagnosticViewModel @Inject constructor(
                         
                         // Get Gemini enhanced analysis
                         try {
-                            val videoDescription = "Analyse vidéo: ${if (analysisResults.smokeDetected) "Fumée ${analysisResults.smokeType} détectée" else "Pas de fumée"}, " +
-                                    "Vibrations: ${if (analysisResults.vibrationDetected) analysisResults.vibrationLevel else "normales"}, " +
-                                    "Sévérité fumée: ${analysisResults.smokeSeverity}/5"
+                            val videoDescription = "Video analysis: ${if (analysisResults.smokeDetected) "${analysisResults.smokeType} smoke detected" else "No smoke"}, " +
+                            "Vibrations: ${if (analysisResults.vibrationDetected) analysisResults.vibrationLevel else "normal"}, " +
+                            "Smoke severity: ${analysisResults.smokeSeverity}/5"
                             
                             val anomalies = listOf<com.example.autobrain.data.ai.CarAnomaly>()  // Empty for now
                             
@@ -280,7 +280,7 @@ class VideoDiagnosticViewModel @Inject constructor(
                         Log.d(TAG, "Diagnostic completed successfully: ${diagnostic.id}")
                     }
                     is Result.Error -> {
-                        val errorMessage = result.exception.message ?: "Erreur inconnue"
+                        val errorMessage = result.exception.message ?: "Unknown error"
                         _uiState.value = VideoDiagnosticState.Error(errorMessage)
                         Log.e(TAG, "Diagnostic failed: $errorMessage")
                     }
@@ -290,7 +290,7 @@ class VideoDiagnosticViewModel @Inject constructor(
                 }
                 
             } catch (e: Exception) {
-                val errorMessage = e.message ?: "Erreur lors du diagnostic"
+                val errorMessage = e.message ?: "Diagnostic error"
                 _uiState.value = VideoDiagnosticState.Error(errorMessage)
                 Log.e(TAG, "Processing error: $errorMessage", e)
             }

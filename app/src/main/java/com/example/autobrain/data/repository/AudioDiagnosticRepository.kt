@@ -85,7 +85,7 @@ class AudioDiagnosticRepository @Inject constructor(
     ): Result<AudioDiagnosticData> = withContext(Dispatchers.IO) {
         try {
             val userId = auth.currentUser?.uid
-                ?: return@withContext Result.Error(Exception("Utilisateur non authentifié"))
+                ?: return@withContext Result.Error(Exception("User not authenticated"))
             
             // Get car log for maintenance integration
             val carLog = getCarLog(carId)
@@ -160,11 +160,11 @@ class AudioDiagnosticRepository @Inject constructor(
             )
             
             // Step 4: Save to Room (offline-first)
-            onProgress(0.9f, "Sauvegarde locale...")
+            onProgress(0.9f, "Local save...")
             audioDiagnosticDao.insertAudioDiagnostic(diagnosticData.toEntity(isSynced = false))
             
             // Step 5: Try immediate sync if online (fire and forget)
-            onProgress(0.95f, "Synchronisation...")
+            onProgress(0.95f, "Synchronization...")
             trySyncDiagnostic(diagnosticData)
             
             onProgress(1.0f, "Terminé!")

@@ -129,20 +129,20 @@ class FirebaseMessagingService : FcmService() {
     private fun getChannelName(channelId: String): String {
         return when (channelId) {
             Constants.CHANNEL_ID_MESSAGES -> "Messages"
-            Constants.CHANNEL_ID_BOOKINGS -> "Réservations"
-            Constants.CHANNEL_ID_REMINDERS -> "Rappels"
-            Constants.CHANNEL_ID_BREAKDOWN -> "Assistance panne"
+            Constants.CHANNEL_ID_BOOKINGS -> "Bookings"
+            Constants.CHANNEL_ID_REMINDERS -> "Reminders"
+            Constants.CHANNEL_ID_BREAKDOWN -> "Breakdown assistance"
             else -> "Notifications"
         }
     }
 
     private fun getChannelDescription(channelId: String): String {
         return when (channelId) {
-            Constants.CHANNEL_ID_MESSAGES -> "Notifications de nouveaux messages"
-            Constants.CHANNEL_ID_BOOKINGS -> "Notifications de réservations"
-            Constants.CHANNEL_ID_REMINDERS -> "Rappels d'entretien"
-            Constants.CHANNEL_ID_BREAKDOWN -> "Notifications d'assistance panne"
-            else -> "Notifications générales"
+            Constants.CHANNEL_ID_MESSAGES -> "New message notifications"
+            Constants.CHANNEL_ID_BOOKINGS -> "Booking notifications"
+            Constants.CHANNEL_ID_REMINDERS -> "Maintenance reminders"
+            Constants.CHANNEL_ID_BREAKDOWN -> "Breakdown assistance notifications"
+            else -> "General notifications"
         }
     }
 }

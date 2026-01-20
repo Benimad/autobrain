@@ -396,31 +396,31 @@ Generate the URL now:
         }
         
         return """
-Tu es un expert en diagnostic automobile international avec 25 ans d'expérience. Analyse ces sons moteur détectés par un système d'IA TensorFlow Lite.
+You are an international automotive diagnostic expert with 25 years of experience. Analyze these engine sounds detected by an AI TensorFlow Lite system.
 
-=== SONS DÉTECTÉS ===
+=== DETECTED SOUNDS ===
 $classificationsText
 
 === MISSION ===
-Fournis une analyse HONNÊTE et PROFESSIONNELLE en format JSON :
+Provide an HONEST and PROFESSIONNELLE analysis in JSON format :
 
 1. Identifie le problème principal (main_issue)
 2. Liste les causes possibles (possible_causes)
 3. Donne des recommandations concrètes (recommendations)
 4. Calcule un score de santé moteur entre 0-100 (health_score)
-   - 90-100: Moteur excellent, son normal
-   - 70-89: Bon état, maintenance préventive
-   - 50-69: État moyen, problèmes à surveiller
-   - 30-49: Mauvais état, réparations nécessaires
-   - 0-29: État critique, ne pas conduire
+   - 90-100: Excellent engine, normal sound
+   - 70-89: Good condition, preventive maintenance
+   - 50-69: Average state, problems to monitor
+   - 30-49: Poor condition, repairs required
+   - 0-29: Critical state, do not drive
 
 RÈGLES STRICTES :
 - Si "knocking" > 50% confidence → health_score MAX 60
 - Si "grinding" > 50% confidence → health_score MAX 50
 - Si "normal_engine" > 70% confidence → health_score MIN 80
-- Sois HONNÊTE, ne gonfle JAMAIS le score
+- Be HONEST, never inflate the score
 
-Réponds UNIQUEMENT en JSON valide :
+Respond ONLY in valid JSON :
 {
   "main_issue": "Main issue description",
   "possible_causes": ["Cause 1", "Cause 2", "Cause 3"],
@@ -436,7 +436,7 @@ Réponds UNIQUEMENT en JSON valide :
                 "- ${it.type.name}: ${it.description} (Sévérité: ${it.severity.name}, Confiance: ${(it.confidence * 100).toInt()}%)"
             }
         } else {
-            "Aucune anomalie détectée"
+                "No anomaly detected"
         }
         
         return """
@@ -463,7 +463,7 @@ RÈGLES :
 - Vibrations excessives → -20 points
 - Fuites d'huile visibles → -15 points
 
-Réponds UNIQUEMENT en JSON valide :
+Respond ONLY in valid JSON :
 {
   "visual_summary": "Visual summary...",
   "critical_issues": ["Problème 1", "Problème 2"],
@@ -486,11 +486,11 @@ Kilométrage : ${carDetails.mileage} km
 Carburant : ${carDetails.fuelType}
 Transmission : ${carDetails.transmission}
 
-=== DIAGNOSTICS IA ===
+=== AI DIAGNOSTICS ===
 $diagnostics
 
 === MISSION ===
-Estime un prix de revente RÉALISTE et HONNÊTE (pas d'inflation !) :
+Estimate a REALISTIC and HONEST resale price (no inflation!) :
 
 1. Prix estimé moyen en$ (estimated_price_usd)
 2. Fourchette basse-haute en$ (price_range)
@@ -505,7 +505,7 @@ RÈGLES STRICTES :
 - Kilométrage > 150,000 km → dépréciation additionnelle
 - Sois HONNÊTE : protège l'acheteur contre les arnaques
 
-Réponds UNIQUEMENT en JSON valide :
+Respond ONLY in valid JSON :
 {
   "estimated_price_usd": 125000,
   "price_range": "110000 - 135000",
@@ -527,13 +527,13 @@ Réponds UNIQUEMENT en JSON valide :
         
         val videoSummary = videoResult?.let {
             val anomalyCount = it.anomalies.size
-            "Vidéo: $anomalyCount anomalies détectées"
-        } ?: "Vidéo: Non analysée"
-        
-        return """
-Tu es un expert AutoBrain international avec 25 ans d'expérience. Génère un rapport COMPLET et HONNÊTE.
+            "Video: $anomalyCount anomalies detected"
+        } ?: "Video: Not analyzed"
 
-=== VÉHICULE ===
+        return """
+You are an international AutoBrain expert with 25 years of experience. Generate a COMPLETE and HONNEST report.
+
+=== VEHICLE ===
 ${carDetails.brand} ${carDetails.model} ${carDetails.year} - ${carDetails.mileage} km
 
 === DIAGNOSTICS ===
@@ -543,19 +543,19 @@ $videoSummary
 Audio détails : ${audioResult?.possibleCauses?.joinToString(", ") ?: "N/A"}
 Vidéo détails : ${videoResult?.anomalies?.joinToString { it.description } ?: "N/A"}
 
-=== MISSION COMPLÈTE ===
-Génère un rapport de pré-vente AutoBrain COMPLET incluant :
+=== COMPLETE MISSION ===
+Generate a COMPLETE AutoBrain pre-sale report including :
 
-1. Score global AutoBrain 0-100 (overall_score)
-2. Résumé des problèmes majeurs (major_issues)
-3. Problèmes mineurs (minor_issues)
-4. Actions urgentes requises (urgent_actions)
-5. Estimation prix réaliste en$ (price_estimation)
-6. Décision achat recommandée (recommendation)
-   - "Acheter sans hésiter"
-   - "Bon rapport qualité-prix si négociation"
-   - "Risque modéré - inspection mécanicien requise"
-   - "ÉVITER - trop de problèmes"
+1. Global AutoBrain score 0-100 (overall_score)
+2. Major problems summary (major_issues)
+3. Minor problems (minor_issues)
+4. Urgent actions required (urgent_actions)
+5. Realistic price estimation in$ (price_estimation)
+6. Recommended purchase decision (recommendation)
+   - "Buy without hesitation"
+   - "Good value-price if negotiation"
+   - "Moderate risk - mechanic inspection required"
+   - "AVOID - too many problems"
 7. Explication détaillée professionnelle (detailed_explanation)
 
 RÈGLES STRICTES :
@@ -565,41 +565,41 @@ RÈGLES STRICTES :
 - Prix basé sur le marché RÉEL 2025
 - Protège l'acheteur contre arnaques
 
-Réponds UNIQUEMENT en JSON valide :
+Respond ONLY in valid JSON :
 {
   "overall_score": 72,
-  "major_issues": ["Problème 1", "Problème 2"],
-  "minor_issues": ["Problème mineur 1"],
-  "urgent_actions": ["Action urgente 1"],
-  "price_estimation": "115000 - 135000$",
-  "recommendation": "Catégorie de recommandation",
-  "detailed_explanation": "Detailed professional explanation..."
+  "major_issues": ["Issue 1", "Issue 2"],
+    "minor_issues": ["Minor issue 1"],
+    "urgent_actions": ["Urgent action 1"],
+    "price_estimation": "115000 - 135000$",
+    "recommendation": "Recommendation category",
+    "detailed_explanation": "Detailed professional explanation..."
 }
         """.trimIndent()
     }
     
     private fun buildMaintenanceAnalysisPrompt(carDetails: CarDetails, history: String): String {
         return """
-        Tu es un expert en maintenance automobile. Analyse l'historique d'entretien de ce véhicule pour prédire les risques et rappels futurs.
-        
-        === VÉHICULE ===
+        You are an automotive maintenance expert. Analyze this vehicle's maintenance history to predict future risks and reminders.
+
+=== VEHICLE ===
         ${carDetails.brand} ${carDetails.model} ${carDetails.year}
-        Kilométrage: ${carDetails.mileage} km
-        
-        === HISTORIQUE MAINTENANCE ===
+        Mileage: ${carDetails.mileage} km
+
+=== MAINTENANCE HISTORY ===
         $history
         
         === MISSION ===
-        1. Identifie les entretiens manquants ou en retard (vidange, courroie, freins, etc.)
+        1. Identify missing or overdue maintenance (oil change, belt, brakes, etc.)
         2. Estime l'impact négatif sur le Score AI (0 à -20 points)
-        3. Analyse les risques mécaniques liés aux retards
+        3. Analyze mechanical risks related to delays
         
-        Réponds UNIQUEMENT en JSON valide :
+        Respond ONLY in valid JSON :
         {
-          "suggested_reminders": ["Vidange moteur (Urgent)", "Contrôle freins"],
-          "ai_score_impact": -10,
-          "risk_analysis": "Risque élevé de casse moteur si vidange non faite rapidement.",
-          "urgent_actions": ["Faire la vidange immédiatement"]
+          "suggested_reminders": ["Engine oil change (Urgent)", "Brake check"],
+    "ai_score_impact": -10,
+    "risk_analysis": "High risk of engine failure if oil change not done soon.",
+    "urgent_actions": ["Perform oil change immediately"]
         }
         """.trimIndent()
     }
@@ -609,7 +609,7 @@ Réponds UNIQUEMENT en JSON valide :
         val tone = if (daysLeft < 0) "URGENT et ALARMISTE" else "INFORMATIF et BIENVEILLANT"
         
         return """
-        Tu es l'assistant intelligent AutoBrain. Génère une notification courte (max 150 caractères) pour un rappel d'entretien.
+        You are the intelligent AutoBrain assistant. Generate a short notification (max 150 characters) for a maintenance reminder.
         
         Sujet: ${reminder.title}
         Description: ${reminder.description}
@@ -656,7 +656,7 @@ Réponds UNIQUEMENT en JSON valide :
                 possibleCauses = mainClassification?.label?.let {
                     EngineSoundTypes.recommendations[it] ?: emptyList()
                 } ?: emptyList(),
-                recommendations = listOf("Consulter un mécanicien pour diagnostic complet"),
+                recommendations = listOf("Consult a mechanic for complete diagnosis"),
                 healthScore = 70
             )
         }
@@ -707,7 +707,7 @@ Réponds UNIQUEMENT en JSON valide :
                 priceRange = jsonMap["price_range"] as? String ?: "Prix non disponible",
                 depreciationFactors = (jsonMap["depreciation_factors"] as? List<*>)
                     ?.filterIsInstance<String>() ?: emptyList(),
-                buyerAdvice = jsonMap["buyer_advice"] as? String ?: "Consulter un expert",
+                buyerAdvice = jsonMap["buyer_advice"] as? String ?: "Consult an expert",
                 confidenceLevel = jsonMap["confidence_level"] as? String ?: "Moyenne",
                 currency = "USD"
             )
@@ -753,7 +753,7 @@ Réponds UNIQUEMENT en JSON valide :
                 overallScore = 70,
                 majorIssues = listOf("Erreur d'analyse"),
                 minorIssues = emptyList(),
-                urgentActions = listOf("Consulter un mécanicien"),
+                urgentActions = listOf("Consult a mechanic"),
                 priceEstimation = "Non disponible",
                 recommendation = "Inspection professionnelle requise",
                 detailedExplanation = "Erreur lors de l'analyse Gemini",
@@ -856,7 +856,7 @@ Réponds UNIQUEMENT en JSON valide :
                     colorIntensity = "N/A",
                     rootCausesByProbability = emptyList(),
                     worstCaseScenario = "Analyse non disponible",
-                    immediateRisks = listOf("Consulter un mécanicien professionnel")
+                    immediateRisks = listOf("Consult a professional mechanic")
                 ),
                 vibrationEngineeringAnalysis = VibrationEngineeringAnalysis(
                     vibrationFrequencyEstimation = "N/A",
@@ -880,7 +880,7 @@ Réponds UNIQUEMENT en JSON valide :
                 ),
                 safetyAssessment = SafetyAssessment(
                     roadworthiness = "CAUTION",
-                    drivingRestrictions = listOf("Consulter un mécanicien avant de conduire"),
+                    drivingRestrictions = listOf("Consult a mechanic before driving"),
                     breakdownProbabilityNext30Days = 0.5f,
                     towingRecommendation = false,
                     insuranceClaimViability = "Indéterminé"
@@ -890,7 +890,7 @@ Réponds UNIQUEMENT en JSON valide :
                     negotiationLeverageSeller = "MOYEN",
                     priceReductionExpectedUsd = 0.0,
                     timeToSellEstimateDays = 90,
-                    disclosureRequirement = "Consulter un expert"
+                    disclosureRequirement = "Consult an expert"
                 ),
                 environmentalCompliance = EnvironmentalCompliance(
                     emissionTestPassProbability = "0.5",
@@ -1096,7 +1096,7 @@ Réponds UNIQUEMENT en JSON valide :
                     cascadingFailures = emptyList()
                 ),
                 detailedRepairPlan = DetailedRepairPlan(
-                    immediateActions = listOf("Consulter un mécanicien professionnel"),
+                    immediateActions = listOf("Consult a professional mechanic"),
                     repairScenarios = emptyList(),
                     recommendedGarageType = "Garage spécialisé",
                     negotiationTip = "Demander plusieurs devis"
@@ -1117,8 +1117,8 @@ Réponds UNIQUEMENT en JSON valide :
                     lessonsLearned = emptyList()
                 ),
                 intelligentRecommendations = IntelligentRecommendations(
-                    forCurrentOwner = listOf("Consulter un professionnel pour diagnostic complet"),
-                    forPotentialBuyer = listOf("Faire inspecter par un mécanicien indépendant"),
+                    forCurrentOwner = listOf("Consult a professional for complete diagnosis"),
+    forPotentialBuyer = listOf("Have inspected by an independent mechanic"),
                     forMechanic = listOf("Effectuer un diagnostic complet")
                 ),
                 autobrainAiConfidence = AutobrainAiConfidence(

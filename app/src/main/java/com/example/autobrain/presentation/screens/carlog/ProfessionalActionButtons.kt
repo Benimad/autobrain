@@ -40,7 +40,7 @@ fun ProfessionalActionButtonsSection(
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
-            text = "Actions rapides",
+            text = "Quick actions",
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             color = TextPrimary,
@@ -55,8 +55,8 @@ fun ProfessionalActionButtonsSection(
             ProfessionalActionButton(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Add,
-                title = "Ajouter",
-                subtitle = "Entretien",
+                title = "Add",
+                subtitle = "Maintenance",
                 gradient = Brush.linearGradient(
                     colors = listOf(
                         ElectricTeal,
@@ -70,7 +70,7 @@ fun ProfessionalActionButtonsSection(
             ProfessionalActionButton(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.AutoAwesome,
-                title = "Conseils IA",
+                title = "AI Advice",
                 subtitle = "Gemini Smart",
                 gradient = Brush.linearGradient(
                     colors = listOf(
@@ -85,8 +85,8 @@ fun ProfessionalActionButtonsSection(
             ProfessionalActionButton(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Notifications,
-                title = "Rappels",
-                subtitle = "Échéances",
+                title = "Reminders",
+                subtitle = "Due Dates",
                 gradient = Brush.linearGradient(
                     colors = listOf(
                         Color(0xFF9333EA), // Purple

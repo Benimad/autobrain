@@ -55,7 +55,7 @@ fun AddReminderScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ajouter un rappel", color = TextPrimary) },
+                title = { Text("Add reminder", color = TextPrimary) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, null, tint = ElectricTeal)
@@ -108,7 +108,7 @@ fun AddReminderScreen(
                     ) {
                         GeminiIconWithGlow(size = 14.dp)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Analyse Gemini en cours...", color = TextSecondary, fontSize = 12.sp)
+                        Text("Gemini analysis in progress...", color = TextSecondary, fontSize = 12.sp)
                     }
                 }
                 is GeminiSuggestionsState.Success -> {
@@ -178,7 +178,7 @@ fun AddReminderScreen(
                     } else {
                         Icon(Icons.Default.Save, null)
                         Spacer(Modifier.width(8.dp))
-                        Text("Créer le rappel", fontWeight = FontWeight.Bold)
+                        Text("Create reminder", fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -201,7 +201,7 @@ private fun MaintenanceTypeSelector(
                 Icon(Icons.Default.Build, null, tint = ElectricTeal, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    "Type d'entretien",
+                    "Maintenance type",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -245,17 +245,17 @@ private fun MaintenanceTypeChip(
     modifier: Modifier = Modifier
 ) {
     val label = when (type) {
-        MaintenanceType.OIL_CHANGE -> "Vidange"
-        MaintenanceType.TIRE_ROTATION -> "Pneus"
-        MaintenanceType.BRAKE_SERVICE -> "Freins"
-        MaintenanceType.ENGINE_TUNE_UP -> "Moteur"
-        MaintenanceType.BATTERY_REPLACEMENT -> "Batterie"
-        MaintenanceType.AIR_FILTER -> "Filtre à air"
+        MaintenanceType.OIL_CHANGE -> "Oil change"
+        MaintenanceType.TIRE_ROTATION -> "Tires"
+        MaintenanceType.BRAKE_SERVICE -> "Brakes"
+        MaintenanceType.ENGINE_TUNE_UP -> "Engine"
+        MaintenanceType.BATTERY_REPLACEMENT -> "Battery"
+        MaintenanceType.AIR_FILTER -> "Air filter"
         MaintenanceType.TRANSMISSION_SERVICE -> "Transmission"
-        MaintenanceType.COOLANT_FLUSH -> "Refroidissement"
+        MaintenanceType.COOLANT_FLUSH -> "Cooling"
         MaintenanceType.GENERAL_INSPECTION -> "Inspection"
-        MaintenanceType.REPAIR -> "Réparation"
-        MaintenanceType.OTHER -> "Autre"
+        MaintenanceType.REPAIR -> "Repair"
+        MaintenanceType.OTHER -> "Other"
     }
     
     Surface(
@@ -293,7 +293,7 @@ private fun IntelligentCalculationCard(calculation: ReminderCalculation) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.AutoAwesome, null, tint = WarningAmber, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Calcul intelligent", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Text("Smart calculation", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
                 if (calculation.usedLearnedPattern) {
                     Spacer(Modifier.width(8.dp))
                     Surface(
@@ -301,7 +301,7 @@ private fun IntelligentCalculationCard(calculation: ReminderCalculation) {
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
-                            "Basé sur votre historique",
+                            "Based on your history",
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             fontSize = 10.sp,
                             color = SuccessGreen
@@ -311,9 +311,9 @@ private fun IntelligentCalculationCard(calculation: ReminderCalculation) {
             }
             
             // Due mileage
-            InfoRow("Kilométrage dû", "${String.format("%,d", calculation.dueMileage)} km")
-            InfoRow("Km restants", "${String.format("%,d", calculation.kmRemaining)} km")
-            InfoRow("Jours restants", "${calculation.daysRemaining} jours")
+            InfoRow("Due mileage", "${String.format("%,d", calculation.dueMileage)} km")
+            InfoRow("Km remaining", "${String.format("%,d", calculation.kmRemaining)} km")
+            InfoRow("Days remaining", "${calculation.daysRemaining} days")
             
             // Priority
             Row(
@@ -321,7 +321,7 @@ private fun IntelligentCalculationCard(calculation: ReminderCalculation) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Priorité", fontSize = 14.sp, color = TextSecondary)
+                Text("Priority", fontSize = 14.sp, color = TextSecondary)
                 PriorityBadge(calculation.priority)
             }
             
@@ -333,7 +333,7 @@ private fun IntelligentCalculationCard(calculation: ReminderCalculation) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Coût estimé", fontSize = 14.sp, color = TextSecondary)
+                Text("Estimated cost", fontSize = 14.sp, color = TextSecondary)
                 Text(
                     "${calculation.estimatedCost.first.toInt()}-$${calculation.estimatedCost.second.toInt()}",
                     fontSize = 14.sp,
@@ -367,7 +367,7 @@ private fun GeminiSuggestionsCard(suggestions: List<String>) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Psychology, null, tint = WarningAmber, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Conseils IA Gemini", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Text("Gemini AI advice", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             }
             
             suggestions.forEach { suggestion ->
@@ -393,12 +393,12 @@ private fun CustomFieldsSection(
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("Personnaliser (optionnel)", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text("Customize (optional)", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             
             OutlinedTextField(
                 value = customTitle,
                 onValueChange = onTitleChange,
-                label = { Text("Titre personnalisé") },
+                label = { Text("Custom title") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = ElectricTeal,
@@ -460,7 +460,7 @@ private fun NotificationSettingsSection(
             
             if (enabled) {
                 Spacer(Modifier.height(8.dp))
-                Text("Rappeler $daysBefore jours avant", fontSize = 12.sp, color = TextSecondary)
+                Text("Remind $daysBefore days before", fontSize = 12.sp, color = TextSecondary)
             }
         }
     }
@@ -480,10 +480,10 @@ private fun InfoRow(label: String, value: String) {
 @Composable
 private fun PriorityBadge(priority: com.example.autobrain.domain.model.ReminderPriority) {
     val (color, label) = when (priority) {
-        com.example.autobrain.domain.model.ReminderPriority.CRITICAL -> ErrorRed to "CRITIQUE"
-        com.example.autobrain.domain.model.ReminderPriority.HIGH -> WarningAmber to "HAUTE"
-        com.example.autobrain.domain.model.ReminderPriority.MEDIUM -> ElectricTeal to "MOYENNE"
-        com.example.autobrain.domain.model.ReminderPriority.LOW -> SuccessGreen to "BASSE"
+        com.example.autobrain.domain.model.ReminderPriority.CRITICAL -> ErrorRed to "CRITICAL"
+        com.example.autobrain.domain.model.ReminderPriority.HIGH -> WarningAmber to "HIGH"
+        com.example.autobrain.domain.model.ReminderPriority.MEDIUM -> ElectricTeal to "MEDIUM"
+        com.example.autobrain.domain.model.ReminderPriority.LOW -> SuccessGreen to "LOW"
     }
     
     Surface(
@@ -507,7 +507,7 @@ private fun UrgencyBar(score: Int) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Urgence", fontSize = 14.sp, color = TextSecondary)
+            Text("Urgency", fontSize = 14.sp, color = TextSecondary)
             Text("$score/100", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
         }
         Spacer(Modifier.height(4.dp))
@@ -539,7 +539,7 @@ private fun LoadingCard() {
         ) {
             CircularProgressIndicator(modifier = Modifier.size(24.dp), color = ElectricTeal)
             Spacer(Modifier.width(12.dp))
-            Text("Calcul en cours...", color = TextSecondary)
+            Text("Calculating...", color = TextSecondary)
         }
     }
 }

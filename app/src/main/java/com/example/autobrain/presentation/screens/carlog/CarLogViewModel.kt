@@ -3,6 +3,8 @@ package com.example.autobrain.presentation.screens.carlog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.autobrain.core.utils.Result
+import com.example.autobrain.data.ai.GeminiCarDetails
+import com.example.autobrain.data.ai.MaintenanceRecordData
 import com.example.autobrain.domain.model.CarLog
 import com.example.autobrain.domain.model.MaintenanceRecord
 import com.example.autobrain.domain.model.MaintenanceReminder
@@ -261,7 +263,7 @@ class CarLogViewModel @Inject constructor(
                 
                 if (userCarDetails == null || userCarDetails.make.isEmpty()) {
                     _smartRemindersState.value = SmartRemindersState.Error(
-                        "Veuillez ajouter les détails de votre véhicule dans votre profil"
+                        "Please add your vehicle details to your profile"
                     )
                     return@launch
                 }
@@ -283,9 +285,9 @@ class CarLogViewModel @Inject constructor(
                 
                 // Get current maintenance records summary
                 val maintenanceSummary = if (carLogState is CarLogState.Success) {
-                    "Derniers entretiens: ${carLogState.carLog.maintenanceRecords.take(5).joinToString("\n") { "- ${it.type} (${it.date} / ${it.mileage}km): ${it.description}" }}"
+                    "Last maintenance: ${carLogState.carLog.maintenanceRecords.take(5).joinToString("\n") { "- ${it.type} (${it.date} / ${it.mileage}km): ${it.description}" }}"
                 } else {
-                    "Aucun historique d'entretien"
+                    "No maintenance history"
                 }
                 
                 val maintenanceResult = geminiAiRepository.analyzeMaintenance(
@@ -303,13 +305,13 @@ class CarLogViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _smartRemindersState.value = SmartRemindersState.Error(
-                            error.message ?: "Erreur analyse Gemini"
+                            error.message ?: "Gemini analysis error"
                         )
                     }
                 )
             } catch (e: Exception) {
                 _smartRemindersState.value = SmartRemindersState.Error(
-                    e.message ?: "Erreur inattendue"
+                    e.message ?: "Unexpected error"
                 )
             }
         }
@@ -370,12 +372,12 @@ class CarLogViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _aiAnalysisState.value = AIAnalysisState.Error(
-                            error.message ?: "Erreur d'analyse Gemini"
+                            error.message ?: "Gemini analysis error"
                         )
                     }
                 )
             } catch (e: Exception) {
-                _aiAnalysisState.value = AIAnalysisState.Error(e.message ?: "Erreur inattendue")
+                _aiAnalysisState.value = AIAnalysisState.Error(e.message ?: "Unexpected error")
             }
         }
     }
@@ -404,9 +406,9 @@ class CarLogViewModel @Inject constructor(
             remindersResult.fold(
                 onSuccess = { reminders ->
                     _smartRemindersState.value = SmartRemindersState.Success(
-                        advice = "Analyse IA terminée avec succès - ${reminders.size} rappels générés",
+                        advice = "AI analysis completed successfully - ${reminders.size} reminders generated",
                         suggestedMaintenance = reminders.map {
-                            "${it.title} - Dans ${it.dueInDays} jours (${it.dueAtKm}km) - ${it.priority}"
+                            "${it.title} - In ${it.dueInDays} days (${it.dueAtKm}km) - ${it.priority}"
                         }
                     )
                 },
@@ -438,7 +440,7 @@ class CarLogViewModel @Inject constructor(
             try {
                 val carLogState = _carLogState.value
                 if (carLogState !is CarLogState.Success) {
-                    _aiAnalysisState.value = AIAnalysisState.Error("Aucune donnée disponible")
+                    _aiAnalysisState.value = AIAnalysisState.Error("No data available")
                     return@launch
                 }
                 
@@ -472,14 +474,14 @@ class CarLogViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _aiAnalysisState.value = AIAnalysisState.Error(
-                            error.message ?: "Erreur d'analyse Gemini 2.0 Flash"
+                            error.message ?: "Gemini 2.0 Flash analysis error"
                         )
                     }
                 )
                 
             } catch (e: Exception) {
                 _aiAnalysisState.value = AIAnalysisState.Error(
-                    e.message ?: "Erreur inattendue"
+                    e.message ?: "Unexpected error"
                 )
             }
         }
@@ -523,20 +525,20 @@ class CarLogViewModel @Inject constructor(
                 result.fold(
                     onSuccess = { reminders ->
                         _smartRemindersState.value = SmartRemindersState.Success(
-                            advice = "Gemini 2.0 Flash a généré ${reminders.size} rappels intelligents",
+                            advice = "Gemini 2.0 Flash generated ${reminders.size} smart reminders",
                             suggestedMaintenance = reminders.map { it.title }
                         )
                     },
                     onFailure = { error ->
                         _smartRemindersState.value = SmartRemindersState.Error(
-                            error.message ?: "Erreur génération reminders"
+                            error.message ?: "Reminder generation error"
                         )
                     }
                 )
                 
             } catch (e: Exception) {
                 _smartRemindersState.value = SmartRemindersState.Error(
-                    e.message ?: "Erreur inattendue"
+                    e.message ?: "Unexpected error"
                 )
             }
         }
@@ -552,7 +554,7 @@ class CarLogViewModel @Inject constructor(
             try {
                 val carLogState = _carLogState.value
                 if (carLogState !is CarLogState.Success) {
-                    _costPredictionState.value = CostPredictionState.Error("Aucune donnée")
+                    _costPredictionState.value = CostPredictionState.Error("No data")
                     return@launch
                 }
                 
@@ -577,14 +579,14 @@ class CarLogViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _costPredictionState.value = CostPredictionState.Error(
-                            error.message ?: "Erreur prédiction"
+                            error.message ?: "Prediction error"
                         )
                     }
                 )
                 
             } catch (e: Exception) {
                 _costPredictionState.value = CostPredictionState.Error(
-                    e.message ?: "Erreur inattendue"
+                    e.message ?: "Unexpected error"
                 )
             }
         }
@@ -600,7 +602,7 @@ class CarLogViewModel @Inject constructor(
             try {
                 val carLogState = _carLogState.value
                 if (carLogState !is CarLogState.Success) {
-                    _qualityEvaluationState.value = QualityEvaluationState.Error("Aucune donnée")
+                    _qualityEvaluationState.value = QualityEvaluationState.Error("No data")
                     return@launch
                 }
                 
@@ -635,14 +637,14 @@ class CarLogViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _qualityEvaluationState.value = QualityEvaluationState.Error(
-                            error.message ?: "Erreur évaluation"
+                            error.message ?: "Evaluation error"
                         )
                     }
                 )
                 
             } catch (e: Exception) {
                 _qualityEvaluationState.value = QualityEvaluationState.Error(
-                    e.message ?: "Erreur inattendue"
+                    e.message ?: "Unexpected error"
                 )
             }
         }

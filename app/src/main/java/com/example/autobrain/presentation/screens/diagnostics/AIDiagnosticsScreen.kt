@@ -31,7 +31,7 @@ fun AIDiagnosticsScreen(
     navController: NavController
 ) {
     AdaptiveScaffold(
-        title = "Diagnostics IA",
+        title = "AI Diagnostics",
         showBackButton = true,
         onBackClick = { navController.popBackStack() },
         containerColor = Color(0xFF0A1628),
@@ -46,7 +46,7 @@ fun AIDiagnosticsScreen(
         ) {
             item {
                 Text(
-                    text = "Outils d'analyse AutoBrain",
+                    text = "AutoBrain Analysis Tools",
                     fontSize = (20.sp.value * adaptiveTextScale()).sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -56,8 +56,8 @@ fun AIDiagnosticsScreen(
 
             item {
                 DiagnosticToolCard(
-                    title = "Analyse Sonore Moteur",
-                    description = "Détectez les cliquetis, bruits de courroie et problèmes mécaniques via le micro.",
+                    title = "Engine Sound Analysis",
+                    description = "Detect rattling, belt noise and mechanical problems via microphone.",
                     icon = Icons.Outlined.Mic,
                     color1 = Color(0xFF4facfe),
                     color2 = Color(0xFF00f2fe),
@@ -67,8 +67,8 @@ fun AIDiagnosticsScreen(
 
             item {
                 DiagnosticToolCard(
-                    title = "Analyse Vidéo Visuelle",
-                    description = "Identifiez la fumée d'échappement (couleur) et les vibrations moteur par caméra.",
+                    title = "Visual Video Analysis",
+                    description = "Identify exhaust smoke (color) and engine vibrations via camera.",
                     icon = Icons.Outlined.Videocam,
                     color1 = Color(0xFF43e97b),
                     color2 = Color(0xFF38f9d7),
@@ -78,8 +78,8 @@ fun AIDiagnosticsScreen(
 
             item {
                 DiagnosticToolCard(
-                    title = "Estimation Prix Marché",
-                    description = "Obtenez une estimation précise basée sur le marché actuel.",
+                    title = "Market Price Estimation",
+                    description = "Get an accurate estimate based on current market.",
                     icon = Icons.Outlined.AttachMoney,
                     color1 = Color(0xFFfa709a),
                     color2 = Color(0xFFfee140),
@@ -89,8 +89,8 @@ fun AIDiagnosticsScreen(
 
             item {
                 DiagnosticToolCard(
-                    title = "Rapport de Confiance",
-                    description = "Synthèse complète anti-arnaque combinant toutes les analyses.",
+                    title = "Trust Report",
+                    description = "Complete anti-scam synthesis combining all analyses.",
                     icon = Icons.Outlined.VerifiedUser,
                     color1 = Color(0xFF667eea),
                     color2 = Color(0xFF764ba2),

@@ -59,99 +59,99 @@ fun buildUltimateSmartAnalysisPrompt(
 ): String {
     
     return """
-Tu es AutoBrain Supreme AI - L'IA la plus avancée pour l'évaluation automobile avec accès complet aux bases de données Firestore.
+You are AutoBrain Supreme AI - The most advanced AI for automotive evaluation with full access to Firestore databases.
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    🚗 DOSSIER COMPLET VÉHICULE (Firestore)                   ║
+║                    🚗 COMPLETE VEHICLE FILE (Firestore)                   ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-**IDENTITÉ**:
+**IDENTITY**:
 ${carDetails.make} ${carDetails.model} ${carDetails.year}
 VIN: ${carDetails.vin}
-Couleur: ${carDetails.color}
-Plaque: ${carDetails.licensePlate}
+Color: ${carDetails.color}
+Plate: ${carDetails.licensePlate}
 
-**PROPRIÉTAIRE**:
-Nom: ${user.name}
+**OWNER**:
+Name: ${user.name}
 Email: ${user.email}
 Tel: ${user.phoneNumber}
-Inscrit depuis: ${formatDate(user.createdAt)}
+Registered since: ${formatDate(user.createdAt)}
 
-**KILOMÉTRAGE ACTUEL**: ${getLatestMileage(carLog)} km
-**PRIX DEMANDÉ**: ${askedPrice?.let { "$it$" } ?: "Non renseigné"}
+**CURRENT MILEAGE**: ${getLatestMileage(carLog)} km
+**ASKED PRICE**: ${askedPrice?.let { "$it$" } ?: "Not specified"}
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║              📊 DIAGNOSTICS IA COMPLETS (Collections Firestore)              ║
+║              📊 COMPLETE AI DIAGNOSTICS (Firestore Collections)            ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-🔊 **DIAGNOSTIC AUDIO** (Collection: audio_diagnostics):
+🔊 **AUDIO DIAGNOSTIC** (Collection: audio_diagnostics):
 ${audioData?.let {
     """
   - Date: ${formatDate(it.createdAt)}
   - Score: ${it.rawScore}/100
-  - Son principal: ${it.topSoundLabel} (${(it.topSoundConfidence * 100).toInt()}%)
-  - Urgence: ${it.urgencyLevel}
-  - Coût réparation: ${it.minRepairCost.toInt()}-$${it.maxRepairCost.toInt()}
-  - Problèmes: ${it.detectedIssues.joinToString { issue -> issue.soundType }}
-  - Historique (${allAudioHistory.size} diagnostics): ${buildAudioTrendSummary(allAudioHistory)}
+  - Main sound: ${it.topSoundLabel} (${(it.topSoundConfidence * 100).toInt()}%)
+  - Urgency: ${it.urgencyLevel}
+  - Repair cost: ${it.minRepairCost.toInt()}-$${it.maxRepairCost.toInt()}
+  - Issues: ${it.detectedIssues.joinToString { issue -> issue.soundType }}
+  - History (${allAudioHistory.size} diagnostics): ${buildAudioTrendSummary(allAudioHistory)}
     """.trimIndent()
-} ?: "❌ Aucun diagnostic audio disponible"}
+} ?: "❌ No audio diagnostic available"}
 
-🎥 **DIAGNOSTIC VIDÉO** (Collection: video_diagnostics):
+🎥 **VIDEO DIAGNOSTIC** (Collection: video_diagnostics):
 ${videoData?.let {
     """
   - Date: ${formatDate(it.createdAt)}
   - Score: ${it.finalScore}/100
-  - Fumée: ${if (it.smokeDetected) "${it.smokeType} (${it.smokeSeverity}/5)" else "Non"}
-  - Vibration: ${if (it.vibrationDetected) "${it.vibrationLevel} (${it.vibrationSeverity}/5)" else "Non"}
-  - Urgence: ${it.urgencyLevel}
-  - Coût réparation: ${it.estimatedMinCost.toInt()}-$${it.estimatedMaxCost.toInt()}
-  - Historique (${allVideoHistory.size} diagnostics): ${buildVideoTrendSummary(allVideoHistory)}
+  - Smoke: ${if (it.smokeDetected) "${it.smokeType} (${it.smokeSeverity}/5)" else "No"}
+  - Vibration: ${if (it.vibrationDetected) "${it.vibrationLevel} (${it.vibrationSeverity}/5)" else "No"}
+  - Urgency: ${it.urgencyLevel}
+  - Repair cost: ${it.estimatedMinCost.toInt()}-$${it.estimatedMaxCost.toInt()}
+  - History (${allVideoHistory.size} diagnostics): ${buildVideoTrendSummary(allVideoHistory)}
     """.trimIndent()
-} ?: "❌ Aucun diagnostic vidéo disponible"}
+} ?: "❌ No video diagnostic available"}
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║              📚 CARNET INTELLIGENT (Collection: car_logs)                    ║
+║              📚 SMART LOGBOOK (Collection: car_logs)                      ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 ${buildDetailedCarnetAnalysis(carLog)}
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║            💰 DONNÉES MARCHÉ 2025                                          ║
+║            💰 2025 MARKET DATA                                           ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 ${buildMarketDataContext(marketData, carDetails)}
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                  🎯 MISSION SUPRÊME - RAPPORT COMPLET JSON                   ║
+║                  🎯 SUPREME MISSION - COMPLETE JSON REPORT                   ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-Génère le RAPPORT AUTOBRAIN ULTIME en JSON avec ces 15 sections:
+Generate the ULTIMATE AUTOBRAIN REPORT in JSON with these 15 sections:
 
 ### 1. **overall_autobrain_score** (0-100):
-   Formule: (Audio * 0.40) + (Vidéo * 0.35) + (Carnet * 0.15) + (Marché * 0.10)
-   Ajustements:
-   - Problèmes critiques multiples → -20 pts
-   - Excellent entretien → +10 pts
-   - Historique dégradation → -15 pts
+   Formula: (Audio * 0.40) + (Video * 0.35) + (Logbook * 0.15) + (Market * 0.10)
+   Adjustments:
+   - Multiple critical problems → -20 pts
+   - Excellent maintenance → +10 pts
+   - Degradation history → -15 pts
 
 ### 2. **score_breakdown**: {
   "audio_contribution": ${audioData?.rawScore ?: 0} * 0.40 = X,
   "video_contribution": ${videoData?.finalScore ?: 0} * 0.35 = Y,
-  "maintenance_contribution": [Score calculé],
-  "market_contribution": [Score calculé],
-  "penalties": [Liste pénalités],
-  "bonuses": [Liste bonus]
+  "maintenance_contribution": [Calculated score],
+  "market_contribution": [Calculated score],
+  "penalties": [Penalty list],
+  "bonuses": [Bonus list]
 }
 
 ### 3. **comprehensive_diagnosis**: {
-  "primary_issue": "Le problème #1 le plus grave",
-  "secondary_issues": ["Problème 2", "Problème 3"],
-  "underlying_root_cause": "Cause racine (ex: Manque entretien chronique)",
+  "primary_issue": "The #1 most serious problem",
+  "secondary_issues": ["Problem 2", "Problem 3"],
+  "underlying_root_cause": "Root cause (ex: Chronic lack of maintenance)",
   "issue_timeline": {
-    "first_symptoms_estimated": "Il y a 6-12 mois",
-    "current_stage": "Stade avancé",
-    "without_repair_projection": "Panne complète dans 1-3 mois"
+    "first_symptoms_estimated": "6-12 months ago",
+    "current_stage": "Advanced stage",
+    "without_repair_projection": "Complete failure in 1-3 months"
   }
 }
 
@@ -159,10 +159,10 @@ Génère le RAPPORT AUTOBRAIN ULTIME en JSON avec ces 15 sections:
   "immediate_repairs_usd": ${calculateImmediateRepairCost(audioData, videoData)},
   "short_term_repairs_usd": ${calculateShortTermCost(carLog)},
   "preventive_maintenance_usd": ${calculatePreventiveCost(carLog)},
-  "total_investment_needed_usd": [Somme totale],
+  "total_investment_needed_usd": [Total sum],
   "repair_priority_list": [
-    {"item": "Réparation moteur", "cost": 20000, "urgency": "IMMEDIATE"},
-    {"item": "Vidange + filtres", "cost": 800, "urgency": "URGENT"}
+    {"item": "Engine repair", "cost": 20000, "urgency": "IMMEDIATE"},
+    {"item": "Oil change + filters", "cost": 800, "urgency": "URGENT"}
   ]
 }
 
@@ -186,22 +186,22 @@ Génère le RAPPORT AUTOBRAIN ULTIME en JSON avec ces 15 sections:
 ### 6. **buyer_decision_matrix**: {
   "for_current_owner": {
     "should_repair": ${shouldRepair(audioData, videoData, askedPrice)},
-    "reasoning": "Si réparation $${calculateTotalRepairCost(audioData, videoData)} + valeur après = $${estimateAfterRepairValue(carDetails, audioData, videoData)}, mais vente en l'état = $${estimateCurrentValue(carDetails, audioData, videoData)} → Perte/Gain net",
+    "reasoning": "If repair $${calculateTotalRepairCost(audioData, videoData)} + value after = $${estimateAfterRepairValue(carDetails, audioData, videoData)}, but sale as-is = $${estimateCurrentValue(carDetails, audioData, videoData)} → Net loss/gain",
     "recommended_action": "${getRecommendedAction(audioData, videoData, askedPrice, carLog)}",
     "negotiation_strategy_if_selling": [
-      "Être transparent sur les diagnostics AutoBrain",
-      "Proposer $${((askedPrice ?: 80000.0) * 0.9).toInt()} ferme, descendre à $${((askedPrice ?: 80000.0) * 0.85).toInt()} si nécessaire",
-      "Mentionner le coût des réparations pour justifier prix bas"
+      "Be transparent about AutoBrain diagnostics",
+      "Offer $${((askedPrice ?: 80000.0) * 0.9).toInt()} firm, come down to $${((askedPrice ?: 80000.0) * 0.85).toInt()} if necessary",
+      "Mention repair costs to justify low price"
     ]
   },
   "for_potential_buyer": {
     "buy_recommendation": "${getBuyRecommendation(audioData, videoData, askedPrice)}",
     "max_acceptable_price_usd": ${calculateMaxBuyerPrice(carDetails, audioData, videoData)},
     "negotiation_script": [
-      "J'ai fait analyser le véhicule par AutoBrain AI",
-      "Le rapport montre ${audioData?.rawScore ?: videoData?.finalScore ?: 50}/100 au diagnostic",
-      "Il faut prévoir $${calculateTotalRepairCost(audioData, videoData)} de réparations",
-      "Je propose $${calculateBuyerOffer(askedPrice, audioData, videoData)} au lieu de $${askedPrice ?: 0}"
+      "I had this vehicle analyzed by AutoBrain AI",
+      "The report shows ${audioData?.rawScore ?: videoData?.finalScore ?: 50}/100 diagnostic score",
+      "Need to budget $${calculateTotalRepairCost(audioData, videoData)} for repairs",
+      "I offer $${calculateBuyerOffer(askedPrice, audioData, videoData)} instead of $${askedPrice ?: 0}"
     ],
     "investment_viability": {
       "purchase_price": ${askedPrice ?: 0.0},
@@ -220,14 +220,14 @@ Génère le RAPPORT AUTOBRAIN ULTIME en JSON avec ces 15 sections:
   "maintenance_score": ${scoreMaintenanceQuality(carLog)}/100,
   "positives": ${buildMaintenancePositives(carLog)},
   "negatives": ${buildMaintenanceNegatives(carLog)},
-  "impact_on_resale": "Un bon carnet ajoute +10% valeur, mauvais -15%",
+  "impact_on_resale": "Good logbook adds +10% value, bad -15%",
   "missing_critical_services": ${identifyMissingServices(carLog, carDetails)},
   "recommended_immediate_actions": ${getImmediateMaintenanceActions(carLog)}
 }
 
 ### 8. **risk_assessment**: {
   "financial_risk": "${assessFinancialRisk(audioData, videoData, askedPrice)}",
-  "reliability_risk": "Probabilité panne 3 mois: ${calculateBreakdownRisk(audioData, videoData)}%",
+  "reliability_risk": "3-month breakdown probability: ${calculateBreakdownRisk(audioData, videoData)}%",
   "safety_risk": "${assessSafetyRisk(audioData, videoData)}",
   "legal_risk": "${assessLegalRisk(carLog)}",
   "total_risk_score": ${calculateTotalRiskScore(audioData, videoData, carLog)}/10
@@ -242,7 +242,7 @@ Génère le RAPPORT AUTOBRAIN ULTIME en JSON avec ces 15 sections:
   "if_sold_as_is": {
     "time_to_sell": "${estimateTimeToSell(false)}",
     "expected_price": ${estimateCurrentValue(carDetails, audioData, videoData).toDouble()},
-    "buyer_profile": "Mécanicien ou acheteur bricoleur"
+    "buyer_profile": "Mechanic or DIY buyer"
   },
   "if_no_action": {
     "breakdown_probability_6_months": ${calculateSixMonthBreakdown(audioData, videoData)},
@@ -361,7 +361,7 @@ private fun buildMaintenancePositives(carLog: CarLog): String {
     val hasCT = carLog.documents.any { it.type.name.contains("TECHNICAL") && !it.isExpired }
     if (hasCT) positives.add("CT à jour")
     
-    if (carLog.maintenanceRecords.size >= 10) positives.add("Historique complet")
+    if (carLog.maintenanceRecords.size >= 10) positives.add("Complete history")
     
     return if (positives.isEmpty()) "[]" else "[\"${positives.joinToString("\", \"")}\"]"
 }
@@ -374,7 +374,7 @@ private fun buildMaintenanceNegatives(carLog: CarLog): String {
     }
     
     val hasOilChange = carLog.maintenanceRecords.any { it.type == MaintenanceType.OIL_CHANGE }
-    if (!hasOilChange) negatives.add("Aucune vidange enregistrée")
+    if (!hasOilChange) negatives.add("No oil change recorded")
     
     val overdueCount = carLog.reminders.count { !it.isCompleted && it.dueDate < System.currentTimeMillis() }
     if (overdueCount > 0) negatives.add("$overdueCount rappels en retard")
@@ -409,7 +409,7 @@ private fun getImmediateMaintenanceActions(carLog: CarLog): String {
         .maxByOrNull { it.date }
     
     if (lastOil == null || getDaysSince(lastOil.date) > 365) {
-        actions.add("Faire vidange urgente")
+        actions.add("Perform urgent oil change")
     }
     
     return if (actions.isEmpty()) "[]" else "[\"${actions.joinToString("\", \"")}\"]"
@@ -620,7 +620,7 @@ private fun getRecommendedAction(
     
     return when {
         repairCost > 30000 -> "VENDRE_EN_ÉTAT ou CASSER"
-        repairCost > 15000 -> "VENDRE_EN_ÉTAT (réparation trop chère)"
+        repairCost > 15000 -> "SELL_AS_IS (repair too expensive)"
         repairCost > 5000 -> "RÉPARER si attachement sentimental, sinon VENDRE"
         else -> "RÉPARER puis vendre meilleur prix"
     }
@@ -730,9 +730,9 @@ private fun assessSafetyRisk(
 ): String {
     val isCritical = audioData?.urgencyLevel == "CRITICAL" || videoData?.urgencyLevel == "CRITICAL"
     return if (isCritical) {
-        "Sécurité conduite: RISQUÉ - Ne pas conduire sans réparation"
+        "Driving safety: RISKY - Do not drive without repair"
     } else {
-        "Sécurité conduite: ACCEPTABLE si réparations immédiates"
+        "Driving safety: ACCEPTABLE if immediate repairs"
     }
 }
 
@@ -784,7 +784,7 @@ private fun assessCompetitiveness(
     val asked = askedPrice ?: 0.0
     
     return when {
-        asked > currentValue * 1.2 -> "Très faible compétitivité - Prix trop élevé"
+        asked > currentValue * 1.2 -> "Very low competitiveness - Price too high"
         asked > currentValue * 1.1 -> "Faible compétitivité à $asked$"
         asked > currentValue * 0.9 -> "Compétitivité correcte"
         else -> "Bonne affaire potentielle"
@@ -800,11 +800,11 @@ private fun identifyValueOpportunities(
     val repairCost = calculateTotalRepairCost(audioData, videoData)
     
     if (repairCost < 15000) {
-        opportunities.add("Si réparation moteur à <15k$, ROI positif possible")
+        opportunities.add("If engine repair <15k$, positive ROI possible")
     }
     
     if ((audioData?.rawScore ?: 100) < 50 && repairCost < 10000) {
-        opportunities.add("Score bas mais réparation abordable = Opportunité négociation")
+        opportunities.add("Low score but affordable repair = Negotiation opportunity")
     }
     
     return if (opportunities.isEmpty()) "[]" else "[\"${opportunities.joinToString("\", \"")}\"]"

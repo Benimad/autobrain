@@ -79,48 +79,48 @@ class VideoScoringUseCase @Inject constructor() {
         if (analysisResults.smokeDetected) {
             val smokeDeduction = when (analysisResults.smokeType) {
                 "black" -> {
-                    deductions.add(ScoreDeduction("Fumée noire détectée", SMOKE_BLACK_DEDUCTION))
+                    deductions.add(ScoreDeduction("Black smoke detected", SMOKE_BLACK_DEDUCTION))
                     detectedIssues.add(VideoIssue(
                         issueType = "smoke_black",
                         severity = "CRITICAL",
                         confidence = analysisResults.smokeConfidence,
-                        description = "Fumée noire – Problème moteur grave. Combustion incomplète ou excès de carburant. Risque de dommages sévères au moteur.",
+                        description = "Black smoke – Serious engine problem. Incomplete combustion or excess fuel. Risk of severe engine damage.",
                         estimatedMinCost = SMOKE_COSTS["black"]!!.first,
                         estimatedMaxCost = SMOKE_COSTS["black"]!!.second
                     ))
-                    recommendations.add("⚠️ URGENT: Arrêter le véhicule immédiatement et consulter un mécanicien expert.")
-                    recommendations.add("Ne pas conduire le véhicule – risque de dommages irréversibles au moteur (>20 000$).")
-                    recommendations.add("Vérifier: injecteurs, filtre à air, turbo (si applicable).")
+                    recommendations.add("⚠️ URGENT: Stop vehicle immediately and consult expert mechanic.")
+                    recommendations.add("Do not drive vehicle – risk of irreversible engine damage (>$20,000).")
+                    recommendations.add("Check: injectors, air filter, turbo (if applicable).")
                     SMOKE_BLACK_DEDUCTION
                 }
                 "white" -> {
-                    deductions.add(ScoreDeduction("Fumée blanche détectée", SMOKE_WHITE_DEDUCTION))
+                    deductions.add(ScoreDeduction("White smoke detected", SMOKE_WHITE_DEDUCTION))
                     detectedIssues.add(VideoIssue(
                         issueType = "smoke_white",
                         severity = "HIGH",
                         confidence = analysisResults.smokeConfidence,
-                        description = "Fumée blanche – Fuite de liquide de refroidissement dans la chambre de combustion. Joint de culasse probable.",
+                        description = "White smoke – Coolant leaking into combustion chamber. Probable head gasket.",
                         estimatedMinCost = SMOKE_COSTS["white"]!!.first,
                         estimatedMaxCost = SMOKE_COSTS["white"]!!.second
                     ))
-                    recommendations.add("🔧 Consulter un mécanicien rapidement – risque de surchauffe moteur.")
-                    recommendations.add("Vérifier le niveau de liquide de refroidissement régulièrement.")
-                    recommendations.add("Réparation nécessaire: joint de culasse ou bloc moteur (8 000-18 000$).")
+                    recommendations.add("🔧 Consult mechanic quickly – risk of engine overheating.")
+                    recommendations.add("Check coolant level regularly.")
+                    recommendations.add("Repair required: head gasket or engine block ($8,000-$18,000).")
                     SMOKE_WHITE_DEDUCTION
                 }
                 "blue" -> {
-                    deductions.add(ScoreDeduction("Fumée bleue détectée", SMOKE_BLUE_DEDUCTION))
+                    deductions.add(ScoreDeduction("Blue smoke detected", SMOKE_BLUE_DEDUCTION))
                     detectedIssues.add(VideoIssue(
                         issueType = "smoke_blue",
                         severity = "HIGH",
                         confidence = analysisResults.smokeConfidence,
-                        description = "Fumée bleue – Huile brûlée dans la combustion. Segments de piston ou joints de soupape usés.",
+                        description = "Blue smoke – Oil burning in combustion. Worn piston rings or valve seals.",
                         estimatedMinCost = SMOKE_COSTS["blue"]!!.first,
                         estimatedMaxCost = SMOKE_COSTS["blue"]!!.second
                     ))
-                    recommendations.add("🛠️ Réparation recommandée sous 1 mois.")
-                    recommendations.add("Vérifier le niveau d'huile fréquemment – risque de consommation excessive.")
-                    recommendations.add("Coût réparation: segments de piston ou joints (5 000-15 000$).")
+                    recommendations.add("🛠️ Repair recommended within 1 month.")
+                    recommendations.add("Check oil level frequently – risk of excessive consumption.")
+                    recommendations.add("Repair cost: piston rings or seals ($5,000-$15,000).")
                     SMOKE_BLUE_DEDUCTION
                 }
                 else -> 0
@@ -135,48 +135,48 @@ class VideoScoringUseCase @Inject constructor() {
         if (analysisResults.vibrationDetected) {
             val vibrationDeduction = when (analysisResults.vibrationLevel) {
                 "excessive" -> {
-                    deductions.add(ScoreDeduction("Vibrations excessives", VIBRATION_EXCESSIVE_DEDUCTION))
+                    deductions.add(ScoreDeduction("Excessive vibrations", VIBRATION_EXCESSIVE_DEDUCTION))
                     detectedIssues.add(VideoIssue(
                         issueType = "vibration_excessive",
                         severity = "CRITICAL",
                         confidence = analysisResults.vibrationConfidence,
-                        description = "Vibrations excessives – Supports moteur défaillants ou déséquilibrage sévère.",
+                        description = "Excessive vibrations – Failed engine mounts or severe imbalance.",
                         estimatedMinCost = VIBRATION_COSTS["excessive"]!!.first,
                         estimatedMaxCost = VIBRATION_COSTS["excessive"]!!.second
                     ))
-                    recommendations.add("⚠️ Vibrations dangereuses – Inspecter supports moteur et suspension immédiatement.")
-                    recommendations.add("Risque: usure prématurée de composants + inconfort de conduite.")
+                    recommendations.add("⚠️ Dangerous vibrations – Inspect engine mounts and suspension immediately.")
+                    recommendations.add("Risk: premature component wear + driving discomfort.")
                     VIBRATION_EXCESSIVE_DEDUCTION
                 }
                 "high" -> {
-                    deductions.add(ScoreDeduction("Vibrations élevées", VIBRATION_HIGH_DEDUCTION))
+                    deductions.add(ScoreDeduction("High vibrations", VIBRATION_HIGH_DEDUCTION))
                     detectedIssues.add(VideoIssue(
                         issueType = "vibration_high",
                         severity = "HIGH",
                         confidence = analysisResults.vibrationConfidence,
-                        description = "Vibrations élevées – Supports moteur usés ou problème d'équilibrage.",
+                        description = "High vibrations – Worn engine mounts or balancing problem.",
                         estimatedMinCost = VIBRATION_COSTS["high"]!!.first,
                         estimatedMaxCost = VIBRATION_COSTS["high"]!!.second
                     ))
-                    recommendations.add("🔧 Remplacer les supports moteur usés (2 000-7 000$).")
+                    recommendations.add("🔧 Replace worn engine mounts ($2,000-$7,000).")
                     VIBRATION_HIGH_DEDUCTION
                 }
                 "medium" -> {
-                    deductions.add(ScoreDeduction("Vibrations moyennes", VIBRATION_MEDIUM_DEDUCTION))
+                    deductions.add(ScoreDeduction("Medium vibrations", VIBRATION_MEDIUM_DEDUCTION))
                     detectedIssues.add(VideoIssue(
                         issueType = "vibration_medium",
                         severity = "MEDIUM",
                         confidence = analysisResults.vibrationConfidence,
-                        description = "Vibrations moyennes – Usure normale ou équilibrage des roues nécessaire.",
+                        description = "Medium vibrations – Normal wear or wheel balancing needed.",
                         estimatedMinCost = VIBRATION_COSTS["medium"]!!.first,
                         estimatedMaxCost = VIBRATION_COSTS["medium"]!!.second
                     ))
-                    recommendations.add("✅ Vérifier équilibrage des roues et parallélisme.")
+                    recommendations.add("✅ Check wheel balancing and alignment.")
                     VIBRATION_MEDIUM_DEDUCTION
                 }
                 "low" -> {
-                    deductions.add(ScoreDeduction("Vibrations légères", VIBRATION_LOW_DEDUCTION))
-                    recommendations.add("ℹ️ Vibrations légères détectées – Inspection recommandée lors du prochain entretien.")
+                    deductions.add(ScoreDeduction("Light vibrations", VIBRATION_LOW_DEDUCTION))
+                    recommendations.add("ℹ️ Light vibrations detected – Inspection recommended at next maintenance.")
                     VIBRATION_LOW_DEDUCTION
                 }
                 else -> 0
@@ -204,8 +204,8 @@ class VideoScoringUseCase @Inject constructor() {
             
             if (cleanFramePercentage > 0.9f) {
                 score += CLEAN_VIDEO_BONUS
-                deductions.add(ScoreDeduction("Bonus: Aucun problème détecté", -CLEAN_VIDEO_BONUS))
-                recommendations.add("✅ Excellent état – Aucun problème visuel détecté dans la vidéo.")
+                deductions.add(ScoreDeduction("Bonus: No problem detected", -CLEAN_VIDEO_BONUS))
+                recommendations.add("✅ Excellent condition – No visual problem detected in video.")
             }
         }
         
@@ -214,9 +214,9 @@ class VideoScoringUseCase @Inject constructor() {
         // =============================================================================
         
         if (analysisResults.videoQuality == "poor") {
-            recommendations.add(0, "⚠️ Qualité vidéo faible – Reprendre avec meilleure luminosité et stabilité pour un diagnostic précis.")
+            recommendations.add(0, "⚠️ Low video quality – Record again with better brightness and stability for accurate diagnosis.")
         } else if (analysisResults.videoQuality == "acceptable") {
-            recommendations.add(0, "ℹ️ Qualité vidéo acceptable – Pour un diagnostic optimal, améliorer l'éclairage.")
+            recommendations.add(0, "ℹ️ Acceptable video quality – For optimal diagnosis, improve lighting.")
         }
         
         // =============================================================================
@@ -238,7 +238,7 @@ class VideoScoringUseCase @Inject constructor() {
             carnetImpactScore = carnetImpact.totalPenalty,
             overdueMaintenanceItems = carnetImpact.overdueItems,
             criticalWarning = if (urgencyLevel == UrgencyLevel.CRITICAL) {
-                "ATTENTION CRITIQUE: Problème grave détecté – Ne pas conduire sans inspection professionnelle."
+                "CRITICAL ATTENTION: Serious problem detected – Do not drive without professional inspection."
             } else null
         )
     }
@@ -270,37 +270,37 @@ class VideoScoringUseCase @Inject constructor() {
             when {
                 kmSinceOilChange > 15000 -> {
                     totalPenalty += SEVERE_OVERDUE_PENALTY
-                    deductions.add(ScoreDeduction("Vidange très en retard (${kmSinceOilChange} km)", SEVERE_OVERDUE_PENALTY))
-                    recommendations.add("🚨 URGENT: Vidange en retard de ${kmSinceOilChange - 10000} km – Risque de dommages moteur.")
-                    overdueItems.add("Vidange moteur (retard: ${kmSinceOilChange - 10000} km)")
+                    deductions.add(ScoreDeduction("Oil change very overdue (${kmSinceOilChange} km)", SEVERE_OVERDUE_PENALTY))
+                    recommendations.add("🚨 URGENT: Oil change overdue by ${kmSinceOilChange - 10000} km – Risk of engine damage.")
+                    overdueItems.add("Engine oil change (overdue: ${kmSinceOilChange - 10000} km)")
                 }
                 kmSinceOilChange > 10000 -> {
                     totalPenalty += OIL_CHANGE_OVERDUE_PENALTY
-                    deductions.add(ScoreDeduction("Vidange en retard (${kmSinceOilChange} km)", OIL_CHANGE_OVERDUE_PENALTY))
-                    recommendations.add("⚠️ Vidange recommandée sous 2 semaines (${kmSinceOilChange} km depuis dernière vidange).")
-                    overdueItems.add("Vidange moteur")
+                    deductions.add(ScoreDeduction("Oil change overdue (${kmSinceOilChange} km)", OIL_CHANGE_OVERDUE_PENALTY))
+                    recommendations.add("⚠️ Oil change recommended within 2 weeks (${kmSinceOilChange} km since last oil change).")
+                    overdueItems.add("Engine oil change")
                 }
             }
         } else {
             // No oil change record
             totalPenalty += OIL_CHANGE_OVERDUE_PENALTY
-            recommendations.add("⚠️ Aucun historique de vidange – Vérifier l'entretien du véhicule.")
+            recommendations.add("⚠️ No oil change history – Verify vehicle maintenance.")
         }
-        
-        // Check for expired CT (Contrôle Technique)
+
+        // Check for expired CT (Technical Inspection)
         val lastCT = maintenanceRecords
             .filter { it.type == "INSPECTION" || it.description.contains("CT", ignoreCase = true) }
             .maxByOrNull { it.date }
-        
+
         if (lastCT != null) {
             val daysSinceCT = (System.currentTimeMillis() - lastCT.date) / (1000 * 60 * 60 * 24)
             val ctValidityDays = 365 * 2 // CT valid for 2 years
-            
+
             if (daysSinceCT > ctValidityDays) {
                 totalPenalty += CT_EXPIRED_PENALTY
-                deductions.add(ScoreDeduction("Contrôle Technique expiré", CT_EXPIRED_PENALTY))
-                recommendations.add("🚨 Contrôle Technique expiré – Passer le CT avant de vendre/acheter.")
-                overdueItems.add("Contrôle Technique")
+                deductions.add(ScoreDeduction("Technical Inspection expired", CT_EXPIRED_PENALTY))
+                recommendations.add("🚨 Technical Inspection expired – Pass CT before selling/buying.")
+                overdueItems.add("Technical Inspection")
             }
         }
         
@@ -313,10 +313,10 @@ class VideoScoringUseCase @Inject constructor() {
     private fun determineHealthStatus(score: Int): String {
         return when {
             score >= 85 -> "Excellent"
-            score >= 70 -> "Bon"
-            score >= 50 -> "Moyen"
-            score >= 30 -> "Problème Sérieux"
-            else -> "Problème Grave"
+            score >= 70 -> "Good"
+            score >= 50 -> "Average"
+            score >= 30 -> "Serious Problem"
+            else -> "Critical Problem"
         }
     }
     

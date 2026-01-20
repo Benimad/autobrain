@@ -103,7 +103,7 @@ class VideoDiagnosticRepository @Inject constructor(
     ): Result<VideoDiagnosticData> = withContext(Dispatchers.IO) {
         try {
             val userId = auth.currentUser?.uid
-                ?: return@withContext Result.Error(Exception("Utilisateur non authentifié"))
+                ?: return@withContext Result.Error(Exception("User not authenticated"))
             
             onProgress(0.1f, "Vérification du profil...")
             
@@ -135,7 +135,7 @@ class VideoDiagnosticRepository @Inject constructor(
                             2 -> SeverityLevel.MEDIUM
                             else -> SeverityLevel.LOW
                         },
-                        description = "Fumée ${analysisResults.smokeType} détectée",
+                        description = "Smoke ${analysisResults.smokeType} detected",
                         recommendation = "Vérifier le système d'échappement"
                     ))
                 }
@@ -149,11 +149,11 @@ class VideoDiagnosticRepository @Inject constructor(
                             else -> SeverityLevel.MEDIUM
                         },
                         description = "Vibration ${analysisResults.vibrationLevel}",
-                        recommendation = "Contrôler les supports moteur"
+                        recommendation = "Check engine supports"
                     ))
                 }
                 
-                val description = "Analyse vidéo terminée. ${analysisResults.totalFrames} frames analysées."
+                val description = "Video analysis complete. ${analysisResults.totalFrames} frames analyzed."
                 
                 val geminiAnalysis = geminiAiRepository.analyzeVideo(description, anomalies)
                 geminiAnalysis.onSuccess { result ->
@@ -168,11 +168,11 @@ class VideoDiagnosticRepository @Inject constructor(
             }
             
             // Calculate video hash for integrity
-            onProgress(0.5f, "Vérification de l'intégrité...")
+            onProgress(0.5f, "Verifying integrity...")
             val videoHash = calculateFileHash(videoFilePath)
             
             // Build diagnostic data
-            onProgress(0.6f, "Création du diagnostic...")
+            onProgress(0.6f, "Creating diagnostic...")
             val diagnosticData = buildDiagnosticData(
                 userId = userId,
                 carId = carId,
@@ -184,16 +184,16 @@ class VideoDiagnosticRepository @Inject constructor(
             )
             
             // Save to Room (offline-first)
-            onProgress(0.8f, "Sauvegarde locale...")
+            onProgress(0.8f, "Local save...")
             videoDiagnosticDao.insertVideoDiagnostic(diagnosticData.toEntity(isSynced = false))
             
             // Try immediate sync if consent given and online
             if (hasStorageConsent) {
-                onProgress(0.9f, "Synchronisation...")
+                onProgress(0.9f, "Synchronization...")
                 trySyncDiagnostic(diagnosticData)
             }
             
-            onProgress(1.0f, "Terminé!")
+            onProgress(1.0f, "Completed!")
             Result.Success(diagnosticData)
             
         } catch (e: Exception) {

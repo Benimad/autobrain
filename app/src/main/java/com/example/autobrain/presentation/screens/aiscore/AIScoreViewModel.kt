@@ -126,7 +126,7 @@ class AIScoreViewModel @Inject constructor(
     private fun mapAudioDiagnosticToEngineResult(diagnostic: com.example.autobrain.data.local.entity.AudioDiagnosticData): EngineSoundResult {
         // Best effort mapping
         return EngineSoundResult(
-            mainIssue = EngineIssueType.entries.find { it.descriptionFr.equals(diagnostic.topSoundLabel, ignoreCase = true) } ?: EngineIssueType.UNKNOWN,
+            mainIssue = EngineIssueType.entries.find { it.descriptionEn.equals(diagnostic.topSoundLabel, ignoreCase = true) } ?: EngineIssueType.UNKNOWN,
             confidence = diagnostic.topSoundConfidence,
             otherIssues = emptyList(),
             rawDescription = diagnostic.recommendations.joinToString("\n"),
@@ -185,14 +185,14 @@ class AIScoreViewModel @Inject constructor(
                     year = carData.year,
                     mileage = carData.currentKm,
                     fuelType = "Diesel",  // Default, can be from carData
-                    transmission = "Manuelle"
+                    transmission = "Manual"
                 )
                 
                 // Convert currentEngineSoundResult to AudioAnalysisResult
                 val audioResult = currentEngineSoundResult?.let { engineSound ->
                     com.example.autobrain.data.ai.AudioAnalysisResult(
                         classifications = emptyList(),  // Already processed
-                        mainIssue = engineSound.mainIssue.descriptionFr,
+                        mainIssue = engineSound.mainIssue.descriptionEn,
                         possibleCauses = listOf(engineSound.rawDescription),
                         recommendations = emptyList(),
                         healthScore = (engineSound.confidence * 100).toInt()

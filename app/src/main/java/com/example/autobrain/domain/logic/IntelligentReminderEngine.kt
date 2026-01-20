@@ -313,25 +313,25 @@ object IntelligentReminderEngine {
         
         return when {
             kmRemaining < 0 && daysRemaining < 0 -> {
-                "⚠️ $typeLabel en retard! Service immédiat recommandé"
+                "⚠️ $typeLabel overdue! Immediate service recommended"
             }
             kmRemaining < 0 -> {
-                "⚠️ $typeLabel dépassé de ${-kmRemaining} km"
+                "⚠️ $typeLabel exceeded by ${-kmRemaining} km"
             }
             daysRemaining < 0 -> {
-                "⚠️ $typeLabel dépassé de ${-daysRemaining} jours"
+                "⚠️ $typeLabel exceeded by ${-daysRemaining} days"
             }
             kmRemaining < 500 || daysRemaining < 7 -> {
-                "🔴 $typeLabel très urgent - dans $kmRemaining km ou $daysRemaining jours"
+                "🔴 $typeLabel very urgent - in $kmRemaining km or $daysRemaining days"
             }
             kmRemaining < 1000 || daysRemaining < 14 -> {
-                "🟠 $typeLabel bientôt - dans $kmRemaining km ou $daysRemaining jours"
+                "🟠 $typeLabel soon - in $kmRemaining km or $daysRemaining days"
             }
             lastService != null -> {
-                "📅 $typeLabel prévu dans $kmRemaining km (dernier: ${lastService.mileage} km)"
+                "📅 $typeLabel scheduled in $kmRemaining km (last: ${lastService.mileage} km)"
             }
             else -> {
-                "📋 $typeLabel recommandé dans $kmRemaining km"
+                "📋 $typeLabel recommended in $kmRemaining km"
             }
         }
     }
@@ -359,17 +359,17 @@ object IntelligentReminderEngine {
     
     private fun getMaintenanceTypeLabel(type: MaintenanceType): String {
         return when (type) {
-            MaintenanceType.OIL_CHANGE -> "Vidange d'huile"
-            MaintenanceType.TIRE_ROTATION -> "Rotation des pneus"
-            MaintenanceType.BRAKE_SERVICE -> "Service des freins"
-            MaintenanceType.ENGINE_TUNE_UP -> "Réglage moteur"
-            MaintenanceType.BATTERY_REPLACEMENT -> "Remplacement batterie"
-            MaintenanceType.AIR_FILTER -> "Filtre à air"
-            MaintenanceType.TRANSMISSION_SERVICE -> "Service transmission"
-            MaintenanceType.COOLANT_FLUSH -> "Liquide de refroidissement"
-            MaintenanceType.GENERAL_INSPECTION -> "Inspection générale"
-            MaintenanceType.REPAIR -> "Réparation"
-            MaintenanceType.OTHER -> "Autre"
+            MaintenanceType.OIL_CHANGE -> "Oil change"
+            MaintenanceType.TIRE_ROTATION -> "Tire rotation"
+            MaintenanceType.BRAKE_SERVICE -> "Brake service"
+            MaintenanceType.ENGINE_TUNE_UP -> "Engine tune-up"
+            MaintenanceType.BATTERY_REPLACEMENT -> "Battery replacement"
+            MaintenanceType.AIR_FILTER -> "Air filter"
+            MaintenanceType.TRANSMISSION_SERVICE -> "Transmission service"
+            MaintenanceType.COOLANT_FLUSH -> "Coolant flush"
+            MaintenanceType.GENERAL_INSPECTION -> "General inspection"
+            MaintenanceType.REPAIR -> "Repair"
+            MaintenanceType.OTHER -> "Other"
         }
     }
 }
