@@ -112,8 +112,6 @@ object LocaleManager {
     fun getCurrentLanguageCode(context: Context): String {
         val locale = getCurrentLocale(context)
         return locale.language
-            locale.language
-        }
     }
 }
 
