@@ -43,7 +43,7 @@ class VideoScoringUseCase @Inject constructor() {
         // Bonus
         private const val CLEAN_VIDEO_BONUS = 10
         
-        // Cost estimates (in Dirhams)
+        // Cost estimates
         private val SMOKE_COSTS = mapOf(
             "black" to Pair(15000.0, 25000.0), // Major engine repair
             "white" to Pair(8000.0, 18000.0), // Head gasket/coolant system
@@ -294,7 +294,7 @@ class VideoScoringUseCase @Inject constructor() {
         
         if (lastCT != null) {
             val daysSinceCT = (System.currentTimeMillis() - lastCT.date) / (1000 * 60 * 60 * 24)
-            val ctValidityDays = 365 * 2 // CT valid for 2 years in Morocco
+            val ctValidityDays = 365 * 2 // CT valid for 2 years
             
             if (daysSinceCT > ctValidityDays) {
                 totalPenalty += CT_EXPIRED_PENALTY

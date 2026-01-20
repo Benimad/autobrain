@@ -43,7 +43,7 @@ data class ComprehensiveAudioDiagnostic(
     @SerializedName("autobrain_ai_confidence")
     val autobrainAiConfidence: AutobrainAiConfidence,
     
-    @SerializedName("legal_compliance_morocco")
+    @SerializedName("legal_compliance")
     val legalComplianceGeneral: LegalComplianceGeneral
 )
 
@@ -143,22 +143,22 @@ data class DetailedRepairPlan(
 data class RepairScenario(
     @SerializedName("scenario")
     val scenario: String,
-    
+
     @SerializedName("steps")
     val steps: List<String>,
-    
-    @SerializedName("parts_cost_dh")
-    val partsCostDh: Double,
-    
-    @SerializedName("labor_cost_dh")
-    val laborCostDh: Double,
-    
-    @SerializedName("total_cost_dh")
-    val totalCostDh: Double,
-    
+
+    @SerializedName("parts_cost_usd")
+    val partsCostUsd: Double,
+
+    @SerializedName("labor_cost_usd")
+    val laborCostUsd: Double,
+
+    @SerializedName("total_cost_usd")
+    val totalCostUsd: Double,
+
     @SerializedName("duration_days")
     val durationDays: Int,
-    
+
     @SerializedName("probability")
     val probability: Float
 )
@@ -314,9 +314,9 @@ fun ComprehensiveAudioDiagnostic.toFirestoreMap(): Map<String, Any?> {
                 mapOf(
                     "scenario" to scenario.scenario,
                     "steps" to scenario.steps,
-                    "parts_cost_dh" to scenario.partsCostDh,
-                    "labor_cost_dh" to scenario.laborCostDh,
-                    "total_cost_dh" to scenario.totalCostDh,
+                    "parts_cost_usd" to scenario.partsCostUsd,
+                    "labor_cost_usd" to scenario.laborCostUsd,
+                    "total_cost_usd" to scenario.totalCostUsd,
                     "duration_days" to scenario.durationDays,
                     "probability" to scenario.probability
                 )

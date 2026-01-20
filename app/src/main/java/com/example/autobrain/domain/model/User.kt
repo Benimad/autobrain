@@ -50,5 +50,5 @@ data class GeoLocation(
     val longitude: Double = 0.0,
     val address: String = "",
     val city: String = "",
-    val country: String = "Morocco"
+    val country: String = ""
 )

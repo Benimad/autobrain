@@ -15,13 +15,13 @@ import java.util.Locale
  * Supports:
  * - Arabic (ar) with RTL support
  * - English (en)
- * - Darija (Arabic dialect) - uses 'ar' with MA region
+ * - Darija (Arabic dialect)
  */
 object LocaleManager {
     
     const val ARABIC = "ar"
     const val ENGLISH = "en"
-    const val DARIJA = "ar_MA" // Arabic - MA region
+    const val DARIJA = "ar" // Darija (Arabic variant)
     
     /**
      * Available languages in AutoBrain
@@ -70,7 +70,7 @@ object LocaleManager {
      */
     fun setLocale(context: Context, languageCode: String): Context {
         val locale = if (languageCode == DARIJA) {
-            Locale("ar", "MA") // Arabic - Morocco
+            Locale("ar") // Darija
         } else {
             Locale(languageCode)
         }
@@ -111,9 +111,7 @@ object LocaleManager {
      */
     fun getCurrentLanguageCode(context: Context): String {
         val locale = getCurrentLocale(context)
-        return if (locale.country == "MA" && locale.language == "ar") {
-            DARIJA
-        } else {
+        return locale.language
             locale.language
         }
     }

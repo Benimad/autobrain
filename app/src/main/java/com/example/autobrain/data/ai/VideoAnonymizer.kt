@@ -55,9 +55,9 @@ class VideoAnonymizer @Inject constructor(
         TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     }
     
-    // License plate patterns (Morocco, France, Europe)
+    // License plate patterns (International)
     private val licensePlatePatterns = listOf(
-        // Morocco: 12345|A|12 or A-12345 or 12345-أ-12
+        // General pattern: 12345|A|12 or A-12345 or 12345-أ-12
         Regex("\\d{4,5}[\\-|]?[A-Z\\u0600-\\u06FF][\\-|]?\\d{1,2}"),
         // France: AB-123-CD
         Regex("[A-Z]{2}[\\-]?\\d{3}[\\-]?[A-Z]{2}"),

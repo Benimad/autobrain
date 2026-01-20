@@ -133,7 +133,7 @@ Fournis une analyse JSON ULTRA-COMPLÈTE avec ces sections:
       "probability": 0.75,
       "confirming_tests": ["Test pression circuit refroidissement", "Analyse gaz échappement CO2 dans liquide refroidissement"],
       "repair_complexity": "ÉLEVÉE",
-      "estimated_cost_dh": "8000-18000"
+      "estimated_cost_usd": "8000-18000"
     }
   ],
   "worst_case_scenario": "Fissure bloc moteur → Remplacement moteur complet (35 000$)",
@@ -153,14 +153,14 @@ Fournis une analyse JSON ULTRA-COMPLÈTE avec ces sections:
       "component": "Support moteur avant droit",
       "failure_type": "Caoutchouc dégradé, jeu excessif",
       "diagnostic_test": "Inspection visuelle + test levier sous moteur",
-      "replacement_cost_dh": "800-2500",
+      "replacement_cost_usd": "800-2500",
       "urgency": "MEDIUM"
     },
     {
       "component": "Équilibrage roues",
       "failure_type": "Poids tombé, jante voilée",
       "diagnostic_test": "Test équilibreuse électronique",
-      "replacement_cost_dh": "200-600",
+      "replacement_cost_usd": "200-600",
       "urgency": "LOW"
     }
   ],
@@ -190,7 +190,7 @@ Fournis une analyse JSON ULTRA-COMPLÈTE avec ces sections:
       "Remplacement filtre à air (200$)",
       "Additif nettoyant FAP (500$)"
     ],
-    "total_cost_dh": 2200,
+    "total_cost_usd": 2200,
     "success_probability": 0.25,
     "duration_hours": 4
   },
@@ -204,7 +204,7 @@ Fournis une analyse JSON ULTRA-COMPLÈTE avec ces sections:
       "Vidange circuit refroidissement (300$)",
       "Remontage + réglages (1500$)"
     ],
-    "total_cost_dh": 6100,
+    "total_cost_usd": 6100,
     "success_probability": 0.60,
     "duration_hours": 16
   },
@@ -218,7 +218,7 @@ Fournis une analyse JSON ULTRA-COMPLÈTE avec ces sections:
       "Reconstruction culasse (4000$)",
       "Remontage complet (5000$)"
     ],
-    "total_cost_dh": 27500,
+    "total_cost_usd": 27500,
     "success_probability": 0.15,
     "duration_days": 10
   }
@@ -252,7 +252,7 @@ Fournis une analyse JSON ULTRA-COMPLÈTE avec ces sections:
 **8. market_impact_visual**: {
   "buyer_perception": "${if (videoData.smokeDetected) "Un acheteur verra cette fumée → Fuite immédiate" else "Apparence normale"}",
   "negotiation_leverage_seller": "${if (videoData.finalScore < 50) "TRÈS FAIBLE" else if (videoData.finalScore < 70) "FAIBLE" else "NORMAL"}",
-  "price_reduction_expected_dh": ${calculatePriceReduction(videoData)},
+  "price_reduction_expected_usd": ${calculatePriceReduction(videoData)},
   "time_to_sell_estimate_days": ${estimateTimeToSell(videoData.finalScore)},
   "disclosure_requirement": "LÉGALEMENT OBLIGÉ de mentionner fumée/vibration (Lois locales)"
 }

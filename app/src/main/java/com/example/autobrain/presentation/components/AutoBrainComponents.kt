@@ -1197,7 +1197,7 @@ fun GeminiPoweredFooter(
         if (showVersion) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Gemini 2.5 Pro • Morocco Market 2026",
+                text = "Gemini 2.5 Pro • Global Market 2026",
                 fontSize = 10.sp,
                 color = TextSecondary.copy(alpha = 0.7f)
             )

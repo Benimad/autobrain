@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,7 +26,6 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -35,18 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.autobrain.data.ai.ComprehensiveAudioDiagnostic
 import com.example.autobrain.data.ai.getMostLikelyRepairCost
 import com.example.autobrain.data.ai.isSafeToDrive
 import com.example.autobrain.data.local.entity.AudioDiagnosticData
 import com.example.autobrain.presentation.components.AudioWaveform
-import com.example.autobrain.presentation.components.AnimatedIdleWaveform
 import com.example.autobrain.presentation.components.GeminiIcon
 import com.example.autobrain.presentation.theme.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -2338,7 +2333,7 @@ private fun PremiumIssueCard(issue: com.example.autobrain.data.local.entity.Issu
                 }
                 
                 Text(
-                    text = "${issue.minCost.toInt()}-${issue.maxCost.toInt()} MAD",
+                    text = "${issue.minCost.toInt()}-${issue.maxCost.toInt()} USD",
                     style = MaterialTheme.typography.bodySmall,
                     color = PremiumCyan,
                     fontWeight = FontWeight.Bold
@@ -2482,7 +2477,7 @@ private fun PremiumGeminiAnalysisButton(
                             )
                         }
                         Text(
-                            "11 sections détaillées • Marché marocain",
+                            "11 sections détaillées • Marché automobile",
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.White.copy(alpha = 0.8f)
                         )
@@ -3001,7 +2996,7 @@ private fun PremiumRepairCostCard(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "${scenario.totalCostDh.toInt()} DH",
+                        text = "${scenario.totalCostUsd.toInt()}",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFFFD700)
@@ -3098,9 +3093,9 @@ private fun PremiumMarketValueCard(
             
             Spacer(modifier = Modifier.height(14.dp))
             
-            PremiumValueRow("Valeur avant problème", "${impact.valueBeforeIssue.toInt()} DH", Color.White)
-            PremiumValueRow("Valeur en l'état", "${impact.valueAsIs.toInt()} DH", Color(0xFFFFAB00))
-            PremiumValueRow("Valeur après réparation", "${impact.valueAfterRepair.toInt()} DH", Color(0xFF4CAF50))
+            PremiumValueRow("Valeur avant problème", "$${impact.valueBeforeIssue.toInt()}", Color.White)
+            PremiumValueRow("Valeur en l'état", "$${impact.valueAsIs.toInt()}", Color(0xFFFFAB00))
+            PremiumValueRow("Valeur après réparation", "$${impact.valueAfterRepair.toInt()}", Color(0xFF4CAF50))
             
             Spacer(modifier = Modifier.height(12.dp))
             
@@ -3123,7 +3118,7 @@ private fun PremiumMarketValueCard(
                     color = Color.White.copy(alpha = 0.8f)
                 )
                 Text(
-                    text = "-${loss.toInt()} DH",
+                    text = "-${loss.toInt()}",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFFF5252)

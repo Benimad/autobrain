@@ -492,7 +492,7 @@ $diagnostics
 === MISSION ===
 Estime un prix de revente RÉALISTE et HONNÊTE (pas d'inflation !) :
 
-1. Prix estimé moyen en$ (estimated_price_dh)
+1. Prix estimé moyen en$ (estimated_price_usd)
 2. Fourchette basse-haute en$ (price_range)
 3. Facteurs de dépréciation (depreciation_factors)
 4. Conseil acheteur (buyer_advice)
@@ -507,7 +507,7 @@ RÈGLES STRICTES :
 
 Réponds UNIQUEMENT en JSON valide :
 {
-  "estimated_price_dh": 125000,
+  "estimated_price_usd": 125000,
   "price_range": "110000 - 135000",
   "depreciation_factors": ["Facteur 1", "Facteur 2"],
   "buyer_advice": "Buyer advice...",
@@ -550,7 +550,7 @@ Génère un rapport de pré-vente AutoBrain COMPLET incluant :
 2. Résumé des problèmes majeurs (major_issues)
 3. Problèmes mineurs (minor_issues)
 4. Actions urgentes requises (urgent_actions)
-5. Estimation prix réaliste Maroc en$ (price_estimation)
+5. Estimation prix réaliste en$ (price_estimation)
 6. Décision achat recommandée (recommendation)
    - "Acheter sans hésiter"
    - "Bon rapport qualité-prix si négociation"
@@ -703,7 +703,7 @@ Réponds UNIQUEMENT en JSON valide :
             val jsonMap = parseJsonToMap(jsonText)
             
             PriceEstimation(
-                estimatedPrice = (jsonMap["estimated_price_dh"] as? Number)?.toDouble() ?: 0.0,
+                estimatedPrice = (jsonMap["estimated_price_usd"] as? Number)?.toDouble() ?: 0.0,
                 priceRange = jsonMap["price_range"] as? String ?: "Prix non disponible",
                 depreciationFactors = (jsonMap["depreciation_factors"] as? List<*>)
                     ?.filterIsInstance<String>() ?: emptyList(),
@@ -888,7 +888,7 @@ Réponds UNIQUEMENT en JSON valide :
                 marketImpactVisual = MarketImpactVisual(
                     buyerPerception = "Indéterminé",
                     negotiationLeverageSeller = "MOYEN",
-                    priceReductionExpectedDh = 0.0,
+                    priceReductionExpectedUsd = 0.0,
                     timeToSellEstimateDays = 90,
                     disclosureRequirement = "Consulter un expert"
                 ),
@@ -1036,9 +1036,9 @@ Réponds UNIQUEMENT en JSON valide :
             } ?: emptyList()
             
             GeminiPriceEstimation(
-                minPrice = (jsonMap["min_price_dh"] as? Number)?.toInt() ?: 0,
-                maxPrice = (jsonMap["max_price_dh"] as? Number)?.toInt() ?: 0,
-                avgPrice = (jsonMap["avg_price_dh"] as? Number)?.toInt() ?: 0,
+                minPrice = (jsonMap["min_price_usd"] as? Number)?.toInt() ?: 0,
+                maxPrice = (jsonMap["max_price_usd"] as? Number)?.toInt() ?: 0,
+                avgPrice = (jsonMap["avg_price_usd"] as? Number)?.toInt() ?: 0,
                 confidence = (jsonMap["confidence"] as? Number)?.toFloat() ?: 0.5f,
                 factors = factorsList,
                 marketAnalysis = jsonMap["market_analysis"] as? String ?: "",

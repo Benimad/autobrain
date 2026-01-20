@@ -110,18 +110,18 @@ data class IssueTimeline(
 )
 
 data class TotalRepairCostEstimate(
-    @SerializedName("immediate_repairs_dh")
-    val immediateRepairsDh: Double,
-    
-    @SerializedName("short_term_repairs_dh")
-    val shortTermRepairsDh: Double,
-    
-    @SerializedName("preventive_maintenance_dh")
-    val preventiveMaintenanceDh: Double,
-    
-    @SerializedName("total_investment_needed_dh")
-    val totalInvestmentNeededDh: Double,
-    
+    @SerializedName("immediate_repairs_usd")
+    val immediateRepairsUsd: Double,
+
+    @SerializedName("short_term_repairs_usd")
+    val shortTermRepairsUsd: Double,
+
+    @SerializedName("preventive_maintenance_usd")
+    val preventiveMaintenanceUsd: Double,
+
+    @SerializedName("total_investment_needed_usd")
+    val totalInvestmentNeededUsd: Double,
+
     @SerializedName("repair_priority_list")
     val repairPriorityList: List<RepairPriority>
 )
@@ -138,29 +138,29 @@ data class RepairPriority(
 )
 
 data class RealisticMarketValue(
-    @SerializedName("perfect_condition_value_dh")
-    val perfectConditionValueDh: Double,
-    
-    @SerializedName("current_condition_value_dh")
-    val currentConditionValueDh: Double,
-    
-    @SerializedName("after_repairs_value_dh")
-    val afterRepairsValueDh: Double,
-    
+    @SerializedName("perfect_condition_value_usd")
+    val perfectConditionValueUsd: Double,
+
+    @SerializedName("current_condition_value_usd")
+    val currentConditionValueUsd: Double,
+
+    @SerializedName("after_repairs_value_usd")
+    val afterRepairsValueUsd: Double,
+
     @SerializedName("depreciation_breakdown")
     val depreciationBreakdown: DepreciationBreakdown,
-    
-    @SerializedName("market_comparables_avito")
-    val marketComparablesAvito: List<MarketComparable>,
-    
-    @SerializedName("fair_market_range_dh")
-    val fairMarketRangeDh: String,
-    
-    @SerializedName("quick_sale_price_dh")
-    val quickSalePriceDh: Double,
-    
-    @SerializedName("dealer_trade_in_price_dh")
-    val dealerTradeInPriceDh: Double
+
+    @SerializedName("market_comparables")
+    val marketComparables: List<MarketComparable>,
+
+    @SerializedName("fair_market_range_usd")
+    val fairMarketRangeUsd: String,
+
+    @SerializedName("quick_sale_price_usd")
+    val quickSalePriceUsd: Double,
+
+    @SerializedName("dealer_trade_in_price_usd")
+    val dealerTradeInPriceUsd: Double
 )
 
 data class DepreciationBreakdown(
@@ -183,10 +183,10 @@ data class DepreciationBreakdown(
 data class MarketComparable(
     @SerializedName("listing")
     val listing: String,
-    
-    @SerializedName("price_dh")
-    val priceDh: Double,
-    
+
+    @SerializedName("price_usd")
+    val priceUsd: Double,
+
     @SerializedName("location")
     val location: String
 )
@@ -216,13 +216,13 @@ data class OwnerDecision(
 data class BuyerDecision(
     @SerializedName("buy_recommendation")
     val buyRecommendation: String,
-    
-    @SerializedName("max_acceptable_price_dh")
-    val maxAcceptablePriceDh: Double,
-    
+
+    @SerializedName("max_acceptable_price_usd")
+    val maxAcceptablePriceUsd: Double,
+
     @SerializedName("negotiation_script")
     val negotiationScript: List<String>,
-    
+
     @SerializedName("investment_viability")
     val investmentViability: InvestmentViability
 )
@@ -365,13 +365,13 @@ data class ComparableMarketAnalysis(
 data class BetterAlternative(
     @SerializedName("vehicle")
     val vehicle: String,
-    
-    @SerializedName("price_dh")
-    val priceDh: Double,
-    
+
+    @SerializedName("price_usd")
+    val priceUsd: Double,
+
     @SerializedName("autobrain_estimated_score")
     val autobrainEstimatedScore: String,
-    
+
     @SerializedName("why_better")
     val whyBetter: String
 )
@@ -458,10 +458,10 @@ fun UltimateSmartAnalysis.toFirestoreMap(): Map<String, Any?> {
             )
         ),
         "total_repair_cost_estimate" to mapOf(
-            "immediate_repairs_dh" to totalRepairCostEstimate.immediateRepairsDh,
-            "short_term_repairs_dh" to totalRepairCostEstimate.shortTermRepairsDh,
-            "preventive_maintenance_dh" to totalRepairCostEstimate.preventiveMaintenanceDh,
-            "total_investment_needed_dh" to totalRepairCostEstimate.totalInvestmentNeededDh,
+            "immediate_repairs_usd" to totalRepairCostEstimate.immediateRepairsUsd,
+            "short_term_repairs_usd" to totalRepairCostEstimate.shortTermRepairsUsd,
+            "preventive_maintenance_usd" to totalRepairCostEstimate.preventiveMaintenanceUsd,
+            "total_investment_needed_usd" to totalRepairCostEstimate.totalInvestmentNeededUsd,
             "repair_priority_list" to totalRepairCostEstimate.repairPriorityList.map { priority ->
                 mapOf(
                     "item" to priority.item,
@@ -471,9 +471,9 @@ fun UltimateSmartAnalysis.toFirestoreMap(): Map<String, Any?> {
             }
         ),
         "realistic_market_value" to mapOf(
-            "perfect_condition_value_dh" to realisticMarketValue.perfectConditionValueDh,
-            "current_condition_value_dh" to realisticMarketValue.currentConditionValueDh,
-            "after_repairs_value_dh" to realisticMarketValue.afterRepairsValueDh,
+            "perfect_condition_value_usd" to realisticMarketValue.perfectConditionValueUsd,
+            "current_condition_value_usd" to realisticMarketValue.currentConditionValueUsd,
+            "after_repairs_value_usd" to realisticMarketValue.afterRepairsValueUsd,
             "depreciation_breakdown" to mapOf(
                 "age_depreciation" to realisticMarketValue.depreciationBreakdown.ageDepreciation,
                 "mileage_depreciation" to realisticMarketValue.depreciationBreakdown.mileageDepreciation,
@@ -481,16 +481,16 @@ fun UltimateSmartAnalysis.toFirestoreMap(): Map<String, Any?> {
                 "poor_maintenance" to realisticMarketValue.depreciationBreakdown.poorMaintenance,
                 "total_depreciation" to realisticMarketValue.depreciationBreakdown.totalDepreciation
             ),
-            "market_comparables_avito" to realisticMarketValue.marketComparablesAvito.map { comp ->
+            "market_comparables" to realisticMarketValue.marketComparables.map { comp ->
                 mapOf(
                     "listing" to comp.listing,
-                    "price_dh" to comp.priceDh,
+                    "price_usd" to comp.priceUsd,
                     "location" to comp.location
                 )
             },
-            "fair_market_range_dh" to realisticMarketValue.fairMarketRangeDh,
-            "quick_sale_price_dh" to realisticMarketValue.quickSalePriceDh,
-            "dealer_trade_in_price_dh" to realisticMarketValue.dealerTradeInPriceDh
+            "fair_market_range_usd" to realisticMarketValue.fairMarketRangeUsd,
+            "quick_sale_price_usd" to realisticMarketValue.quickSalePriceUsd,
+            "dealer_trade_in_price_usd" to realisticMarketValue.dealerTradeInPriceUsd
         ),
         "buyer_decision_matrix" to mapOf(
             "for_current_owner" to mapOf(
@@ -501,7 +501,7 @@ fun UltimateSmartAnalysis.toFirestoreMap(): Map<String, Any?> {
             ),
             "for_potential_buyer" to mapOf(
                 "buy_recommendation" to buyerDecisionMatrix.forPotentialBuyer.buyRecommendation,
-                "max_acceptable_price_dh" to buyerDecisionMatrix.forPotentialBuyer.maxAcceptablePriceDh,
+                "max_acceptable_price_usd" to buyerDecisionMatrix.forPotentialBuyer.maxAcceptablePriceUsd,
                 "negotiation_script" to buyerDecisionMatrix.forPotentialBuyer.negotiationScript,
                 "investment_viability" to mapOf(
                     "purchase_price" to buyerDecisionMatrix.forPotentialBuyer.investmentViability.purchasePrice,
@@ -564,7 +564,7 @@ fun UltimateSmartAnalysis.toFirestoreMap(): Map<String, Any?> {
             "better_alternatives_same_budget" to comparableMarketAnalysis.betterAlternativesSameBudget.map { alt ->
                 mapOf(
                     "vehicle" to alt.vehicle,
-                    "price_dh" to alt.priceDh,
+                    "price_usd" to alt.priceUsd,
                     "autobrain_estimated_score" to alt.autobrainEstimatedScore,
                     "why_better" to alt.whyBetter
                 )

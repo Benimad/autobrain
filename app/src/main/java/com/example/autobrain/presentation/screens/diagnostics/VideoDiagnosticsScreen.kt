@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,7 +23,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,13 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.autobrain.data.ai.ComprehensiveVideoDiagnostic
 import com.example.autobrain.data.ai.getMostLikelyRepairScenario
 import com.example.autobrain.data.ai.isSafeToDrive
 import com.example.autobrain.data.local.entity.VideoDiagnosticData
 import com.example.autobrain.presentation.components.CameraPreview
 import com.example.autobrain.presentation.components.GeminiIcon
-import com.example.autobrain.presentation.navigation.Screen
 import com.example.autobrain.presentation.theme.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -826,7 +822,7 @@ private fun ComprehensiveVideoDiagnosticCard(
                                 color = TextSecondary
                             )
                             Text(
-                                text = "$${scenario.totalCostDh.toInt()}",
+                                text = "$${scenario.totalCostUsd.toInt()}",
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = ElectricTeal

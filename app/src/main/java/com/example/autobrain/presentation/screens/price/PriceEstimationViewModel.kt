@@ -277,7 +277,7 @@ ${estimation.marketAnalysis}
 
 ⭐ Analyse IA AutoBrain - Gemini AI
 Basé sur les données Firestore + Gemini AI 2.5 Pro
-Marché marocain 2026
+Marché automobile 2026
 
 ---
 Généré par AutoBrain AI
@@ -327,7 +327,7 @@ private fun buildDynamicPriceEstimationPrompt(
     val diagnosticContext = buildDiagnosticContext(audioData, videoData)
     
     return """
-Tu es AutoBrain Prix AI - Expert en estimation automobile pour le marché marocain avec accès aux données Firestore.
+Tu es AutoBrain Prix AI - Expert en estimation automobile avec accès aux données Firestore.
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                    🚗 VÉHICULE À ÉVALUER                                     ║
@@ -350,24 +350,24 @@ $maintenanceContext
 $diagnosticContext
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                  🎯 MISSION - ESTIMATION PRIX MAROC 2026                     ║
+║                  🎯 MISSION - ESTIMATION PRIX 2026                           ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-Analyse le marché marocain actuel (Avito.ma, Moteur.ma, Wandaloo.com) et fournis une estimation HONNÊTE et PRÉCISE.
+Analyse le marché automobile actuel et fournis une estimation HONNÊTE et PRÉCISE.
 
 **RÈGLES STRICTES**:
-- Basé sur prix RÉELS du marché marocain (pas d'inflation)
+- Basé sur prix RÉELS du marché (pas d'inflation)
 - Tenir compte des diagnostics AutoBrain (audio/vidéo)
 - Ajuster selon l'historique d'entretien
-- Considérer la popularité du modèle au Maroc
+- Considérer la popularité du modèle
 - Transparence totale sur les facteurs
 
 **FORMAT JSON OBLIGATOIRE**:
 
 {
-  "min_price_dh": 170000,
-  "max_price_dh": 210000,
-  "avg_price_dh": 190000,
+  "min_price_usd": 170000,
+  "max_price_usd": 210000,
+  "avg_price_usd": 190000,
   "confidence": 0.82,
   "factors": [
     {
@@ -390,8 +390,8 @@ Analyse le marché marocain actuel (Avito.ma, Moteur.ma, Wandaloo.com) et fourni
     },
     {
       "name": "Market Demand",
-      "value": "${if (isPopularInMorocco(brand)) "High" else "Medium"}",
-      "is_positive": ${isPopularInMorocco(brand)},
+      "value": "${if (isPopular(brand)) "High" else "Medium"}",
+      "is_positive": ${isPopular(brand)},
       "impact": "Medium"
     },
     {
@@ -401,7 +401,7 @@ Analyse le marché marocain actuel (Avito.ma, Moteur.ma, Wandaloo.com) et fourni
       "impact": "${if (audioData != null) "High" else "Low"}"
     }
   ],
-  "market_analysis": "Analyse détaillée du marché marocain pour $brand $model $year. Inclure tendances, demande, comparables.",
+  "market_analysis": "Analyse détaillée du marché automobile pour $brand $model $year. Inclure tendances, demande, comparables.",
   "gemini_insights": [
     "Insight professionnel 1 sur le marché",
     "Insight 2 sur la dépréciation",
@@ -457,7 +457,7 @@ private fun formatMileage(mileage: Int): String {
     return mileage.toString().reversed().chunked(3).joinToString(" ").reversed()
 }
 
-private fun isPopularInMorocco(brand: String): Boolean {
+private fun isPopular(brand: String): Boolean {
     val popular = listOf("DACIA", "RENAULT", "PEUGEOT", "CITROEN", "VOLKSWAGEN", "TOYOTA", "HYUNDAI", "KIA", "FIAT")
     return popular.any { it.equals(brand, ignoreCase = true) }
 }

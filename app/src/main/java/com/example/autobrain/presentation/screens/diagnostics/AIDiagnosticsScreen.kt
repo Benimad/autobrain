@@ -79,7 +79,7 @@ fun AIDiagnosticsScreen(
             item {
                 DiagnosticToolCard(
                     title = "Estimation Prix Marché",
-                    description = "Obtenez une estimation précise basée sur le marché marocain actuel.",
+                    description = "Obtenez une estimation précise basée sur le marché actuel.",
                     icon = Icons.Outlined.AttachMoney,
                     color1 = Color(0xFFfa709a),
                     color2 = Color(0xFFfee140),

@@ -128,11 +128,11 @@ class GeminiCarnetRepository @Inject constructor(
                 
                 Génère une prédiction détaillée au format JSON :
                 {
-                    "total_annual_cost_dh": 12000,
+                    "total_annual_cost_usd": 12000,
                     "monthly_breakdown": [
                         {
                             "month": "Janvier",
-                            "estimated_cost_dh": 500,
+                            "estimated_cost_usd": 500,
                             "maintenance_items": ["Vidange d'huile"],
                             "priority": "HIGH|MEDIUM|LOW"
                         }
@@ -141,7 +141,7 @@ class GeminiCarnetRepository @Inject constructor(
                         {
                             "service": "Révision complète",
                             "when": "Dans 3 mois",
-                            "cost_dh": 2500,
+                            "cost_usd": 2500,
                             "why": "Raison"
                         }
                     ],
@@ -249,16 +249,16 @@ class GeminiCarnetRepository @Inject constructor(
                         {
                             "date_range": "15-30 Janvier 2025",
                             "services": ["Vidange", "Filtres"],
-                            "combined_cost_dh": 800,
+                            "combined_cost_usd": 800,
                             "reason": "Pourquoi grouper ces services",
                             "urgency": "HIGH|MEDIUM|LOW",
-                            "savings_potential_dh": 200
+                            "savings_potential_usd": 200
                         }
                     ],
                     "service_grouping_benefits": "Avantages de grouper les services",
                     "priority_order": ["Service le plus urgent 1", "Service 2"],
-                    "total_optimized_cost_dh": 5000,
-                    "cost_without_optimization_dh": 5500,
+                    "total_optimized_cost_usd": 5000,
+                    "cost_without_optimization_usd": 5500,
                     "time_efficiency_gain": "Gain de temps estimé",
                     "best_practices": ["Pratique 1", "Pratique 2"]
                 }
@@ -363,8 +363,8 @@ class GeminiCarnetRepository @Inject constructor(
                             "severity": "LOW|MEDIUM|HIGH|CRITICAL",
                             "probability": 75,
                             "consequences": "Conséquences potentielles",
-                            "prevention_cost_dh": 1500,
-                            "repair_cost_if_ignored_dh": 8000
+                            "prevention_cost_usd": 1500,
+                            "repair_cost_if_ignored_usd": 8000
                         }
                     ],
                     "immediate_actions": ["Action urgente 1"],
@@ -428,7 +428,7 @@ class GeminiCarnetRepository @Inject constructor(
                 "concerns": ["Préoccupation 1", "Préoccupation 2"],
                 "urgent_actions": ["Action urgente 1"],
                 "recommended_next_steps": ["Étape 1", "Étape 2"],
-                "estimated_annual_cost_dh": 8000,
+                "estimated_annual_cost_usd": 8000,
                 "maintenance_quality": "Excellent|Bon|Moyen|Insuffisant",
                 "cost_efficiency": "Analyse du rapport qualité/prix",
                 "service_provider_analysis": "Analyse des prestataires utilisés",
@@ -436,7 +436,7 @@ class GeminiCarnetRepository @Inject constructor(
                 "detailed_analysis": "Detailed analysis with all the details..."
             }
             
-            Base ton analyse sur les standards du marché automobile marocain.
+            Base ton analyse sur les standards du marché automobile.
         """.trimIndent()
     }
     
@@ -451,7 +451,7 @@ class GeminiCarnetRepository @Inject constructor(
         }
         
         return """
-            Génère des rappels d'entretien INTELLIGENTS et PERSONNALISÉS pour le Maroc :
+            Génère des rappels d'entretien INTELLIGENTS et PERSONNALISÉS :
             
             🚗 Véhicule : ${carDetails.brand} ${carDetails.model} ${carDetails.year}
             📊 Kilométrage actuel : $currentMileage km
@@ -466,7 +466,7 @@ class GeminiCarnetRepository @Inject constructor(
                     "priority": "CRITICAL|HIGH|MEDIUM|LOW",
                     "due_in_days": 15,
                     "due_at_km": ${currentMileage + 5000},
-                    "estimated_cost_dh": 500,
+                    "estimated_cost_usd": 500,
                     "description": "Description détaillée du rappel et pourquoi c'est important",
                     "consequences_if_ignored": "Conséquences graves si non effectué",
                     "impact_on_ai_score": -10,
@@ -477,13 +477,13 @@ class GeminiCarnetRepository @Inject constructor(
             
             Inclus MINIMUM ces entretiens essentiels :
             1. Vidange d'huile moteur (selon kilométrage)
-            2. Contrôle technique annuel (obligatoire au Maroc)
+            2. Contrôle technique annuel
             3. Assurance automobile (renouvellement)
             4. Filtres (air, habitacle, carburant)
             5. Freins et plaquettes
             6. Pneumatiques et géométrie
             
-            Utilise les prix RÉELS du marché marocain (garages certifiés).
+            Utilise les prix RÉELS du marché (garages certifiés).
             Réponds UNIQUEMENT en JSON valide, sans texte avant ou après.
         """.trimIndent()
     }
@@ -517,7 +517,7 @@ class GeminiCarnetRepository @Inject constructor(
                     ?.filterIsInstance<String>() ?: emptyList(),
                 recommendedNextSteps = (jsonMap["recommended_next_steps"] as? List<*>)
                     ?.filterIsInstance<String>() ?: listOf("Consulter un mécanicien certifié"),
-                estimatedAnnualCostDH = (jsonMap["estimated_annual_cost_dh"] as? Number)?.toInt() ?: 6000,
+                estimatedAnnualCostDH = (jsonMap["estimated_annual_cost_usd"] as? Number)?.toInt() ?: 6000,
                 maintenanceQuality = jsonMap["maintenance_quality"] as? String ?: "Moyen",
                 costEfficiency = jsonMap["cost_efficiency"] as? String ?: "À évaluer",
                 serviceProviderAnalysis = jsonMap["service_provider_analysis"] as? String ?: "",
@@ -561,7 +561,7 @@ class GeminiCarnetRepository @Inject constructor(
                     ),
                     dueInDays = (map["due_in_days"] as? Number)?.toInt() ?: 30,
                     dueAtKm = (map["due_at_km"] as? Number)?.toInt() ?: (currentMileage + 10000),
-                    estimatedCostDH = (map["estimated_cost_dh"] as? Number)?.toInt() ?: 500,
+                    estimatedCostDH = (map["estimated_cost_usd"] as? Number)?.toInt() ?: 500,
                     description = map["description"] as? String ?: "",
                     consequencesIfIgnored = map["consequences_if_ignored"] as? String ?: "",
                     impactOnAIScore = (map["impact_on_ai_score"] as? Number)?.toInt() ?: -5,
@@ -596,7 +596,7 @@ class GeminiCarnetRepository @Inject constructor(
             val jsonMap: Map<String, Any?> = gson.fromJson(jsonText, type)
             
             CostPrediction(
-                totalAnnualCostDH = (jsonMap["total_annual_cost_dh"] as? Number)?.toInt() ?: 8000,
+                totalAnnualCostDH = (jsonMap["total_annual_cost_usd"] as? Number)?.toInt() ?: 8000,
                 monthlyBreakdown = emptyList(), // Simplified for now
                 majorServices = emptyList(),
                 savingsTips = (jsonMap["savings_tips"] as? List<*>)
@@ -663,8 +663,8 @@ class GeminiCarnetRepository @Inject constructor(
                 serviceGroupingBenefits = jsonMap["service_grouping_benefits"] as? String ?: "",
                 priorityOrder = (jsonMap["priority_order"] as? List<*>)
                     ?.filterIsInstance<String>() ?: emptyList(),
-                totalOptimizedCostDH = (jsonMap["total_optimized_cost_dh"] as? Number)?.toInt() ?: 5000,
-                costWithoutOptimizationDH = (jsonMap["cost_without_optimization_dh"] as? Number)?.toInt() ?: 5500,
+                totalOptimizedCostDH = (jsonMap["total_optimized_cost_usd"] as? Number)?.toInt() ?: 5000,
+                costWithoutOptimizationDH = (jsonMap["cost_without_optimization_usd"] as? Number)?.toInt() ?: 5500,
                 timeEfficiencyGain = jsonMap["time_efficiency_gain"] as? String ?: "",
                 bestPractices = (jsonMap["best_practices"] as? List<*>)
                     ?.filterIsInstance<String>() ?: emptyList()

@@ -17,7 +17,7 @@ import java.util.*
  * Features:
  * - Multimodal diagnostic (audio + video)
  * - Complete maintenance history analysis
- * - Real market pricing from Avito/Moteur.ma
+ * - Real market pricing from global sources
  * - Buyer/Seller decision matrices
  * - Legal compliance check
  * - Investment ROI calculations
@@ -59,7 +59,7 @@ fun buildUltimateSmartAnalysisPrompt(
 ): String {
     
     return """
-Tu es AutoBrain Supreme AI - L'IA la plus avancée pour l'évaluation automobile au Maroc avec accès complet aux bases de données Firestore.
+Tu es AutoBrain Supreme AI - L'IA la plus avancée pour l'évaluation automobile avec accès complet aux bases de données Firestore.
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                    🚗 DOSSIER COMPLET VÉHICULE (Firestore)                   ║
@@ -117,7 +117,7 @@ ${videoData?.let {
 ${buildDetailedCarnetAnalysis(carLog)}
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║            💰 DONNÉES MARCHÉ MAROCAIN 2025 (Avito/Moteur.ma)                 ║
+║            💰 DONNÉES MARCHÉ 2025                                          ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 ${buildMarketDataContext(marketData, carDetails)}
@@ -156,20 +156,20 @@ Génère le RAPPORT AUTOBRAIN ULTIME en JSON avec ces 15 sections:
 }
 
 ### 4. **total_repair_cost_estimate**: {
-  "immediate_repairs_dh": ${calculateImmediateRepairCost(audioData, videoData)},
-  "short_term_repairs_dh": ${calculateShortTermCost(carLog)},
-  "preventive_maintenance_dh": ${calculatePreventiveCost(carLog)},
-  "total_investment_needed_dh": [Somme totale],
+  "immediate_repairs_usd": ${calculateImmediateRepairCost(audioData, videoData)},
+  "short_term_repairs_usd": ${calculateShortTermCost(carLog)},
+  "preventive_maintenance_usd": ${calculatePreventiveCost(carLog)},
+  "total_investment_needed_usd": [Somme totale],
   "repair_priority_list": [
     {"item": "Réparation moteur", "cost": 20000, "urgency": "IMMEDIATE"},
     {"item": "Vidange + filtres", "cost": 800, "urgency": "URGENT"}
   ]
 }
 
-### 5. **realistic_market_value_morocco**: {
-  "perfect_condition_value_dh": ${estimatePerfectConditionValue(carDetails, marketData)},
-  "current_condition_value_dh": ${estimateCurrentValue(carDetails, audioData, videoData)},
-  "after_repairs_value_dh": ${estimateAfterRepairValue(carDetails, audioData, videoData)},
+### 5. **realistic_market_value**: {
+  "perfect_condition_value_usd": ${estimatePerfectConditionValue(carDetails, marketData)},
+  "current_condition_value_usd": ${estimateCurrentValue(carDetails, audioData, videoData)},
+  "after_repairs_value_usd": ${estimateAfterRepairValue(carDetails, audioData, videoData)},
   "depreciation_breakdown": {
     "age_depreciation": "-${calculateAgeDepreciation(carDetails.year)}%",
     "mileage_depreciation": "-${calculateMileageDepreciation(getLatestMileage(carLog))}%",
@@ -177,10 +177,10 @@ Génère le RAPPORT AUTOBRAIN ULTIME en JSON avec ces 15 sections:
     "poor_maintenance": "-${calculateMaintenanceDepreciation(carLog)}%",
     "total_depreciation": "-XX%"
   },
-  "market_comparables_avito": ${formatMarketComparables(marketData)},
-  "fair_market_range_dh": "${(marketData.priceRange.first).toInt()} - ${(marketData.priceRange.second).toInt()}",
-  "quick_sale_price_dh": ${(marketData.averageMarketPrice * 0.85).toInt()},
-  "dealer_trade_in_price_dh": ${(marketData.averageMarketPrice * 0.75).toInt()}
+  "market_comparables": ${formatMarketComparables(marketData)},
+  "fair_market_range_usd": "${(marketData.priceRange.first).toInt()} - ${(marketData.priceRange.second).toInt()}",
+  "quick_sale_price_usd": ${(marketData.averageMarketPrice * 0.85).toInt()},
+  "dealer_trade_in_price_usd": ${(marketData.averageMarketPrice * 0.75).toInt()}
 }
 
 ### 6. **buyer_decision_matrix**: {
@@ -196,7 +196,7 @@ Génère le RAPPORT AUTOBRAIN ULTIME en JSON avec ces 15 sections:
   },
   "for_potential_buyer": {
     "buy_recommendation": "${getBuyRecommendation(audioData, videoData, askedPrice)}",
-    "max_acceptable_price_dh": ${calculateMaxBuyerPrice(carDetails, audioData, videoData)},
+    "max_acceptable_price_usd": ${calculateMaxBuyerPrice(carDetails, audioData, videoData)},
     "negotiation_script": [
       "J'ai fait analyser le véhicule par AutoBrain AI",
       "Le rapport montre ${audioData?.rawScore ?: videoData?.finalScore ?: 50}/100 au diagnostic",
@@ -250,13 +250,13 @@ Génère le RAPPORT AUTOBRAIN ULTIME en JSON avec ces 15 sections:
   }
 }
 
-### 10. **legal_compliance_morocco_2025**: {
+### 10. **legal_compliance**: {
   "controle_technique_status": "${getCtStatus(carLog)}",
   "insurance_validity": "À vérifier",
   "vignette_status": "À jour si payée 2026",
   "resale_legal_requirements": [
     "Fournir carte grise originale",
-    "Déclarer vices cachés (loi marocaine)",
+    "Déclarer vices cachés (loi locale)",
     "Certificat de non-gage (Douane)",
     "Quittance dernière taxe"
   ],
@@ -332,12 +332,12 @@ Ce JSON sera:
   "score_breakdown": {...},
   "comprehensive_diagnosis": {...},
   "total_repair_cost_estimate": {...},
-  "realistic_market_value_morocco": {...},
+  "realistic_market_value": {...},
   "buyer_decision_matrix": {...},
   "maintenance_quality_report": {...},
   "risk_assessment": {...},
   "timeline_projections": {...},
-  "legal_compliance_morocco_2025": {...},
+  "legal_compliance": {...},
   "environmental_impact": {...},
   "comparable_market_analysis": {...},
   "autobrain_confidence_metrics": {...},
@@ -419,7 +419,7 @@ private fun getImmediateMaintenanceActions(carLog: CarLog): String {
 private fun formatMarketComparables(marketData: MarketData): String {
     val comparables = marketData.similarListings.take(3).map { listing ->
         """
-    {"listing": "${listing.vehicle}", "price_dh": ${listing.price.toInt()}, "location": "${listing.location}"}
+    {"listing": "${listing.vehicle}", "price_usd": ${listing.price.toInt()}, "location": "${listing.location}"}
         """.trim()
     }
     return if (comparables.isEmpty()) "[]" else "[\n${comparables.joinToString(",\n")}\n  ]"
@@ -434,7 +434,7 @@ private fun buildBetterAlternatives(marketData: MarketData, askedPrice: Double?)
             """
     {
       "vehicle": "${listing.vehicle}",
-      "price_dh": ${listing.price.toInt()},
+      "price_usd": ${listing.price.toInt()},
       "autobrain_estimated_score": "${estimateScoreFromCondition(listing.condition)}/100",
       "why_better": "Meilleur état général, moins de risques"
     }

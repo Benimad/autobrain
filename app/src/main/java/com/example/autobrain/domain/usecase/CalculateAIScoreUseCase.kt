@@ -271,7 +271,7 @@ class CalculateAIScoreUseCase @Inject constructor(
     
     /**
      * Calculate Market Score (10% of total)
-     * Based on price comparison and model popularity in Morocco
+     * Based on price comparison and model popularity
      */
     private fun calculateMarketScore(
         carData: CarDataForAnalysis,
@@ -320,7 +320,7 @@ class CalculateAIScoreUseCase @Inject constructor(
         )
         
         // Model Popularity (max 5 points)
-        val isPopular = ModelPopularity.POPULAR_BRANDS_MOROCCO
+        val isPopular = ModelPopularity.POPULAR_BRANDS
             .any { it.equals(carData.brand, ignoreCase = true) }
         
         val modelPopularity = if (isPopular) {
@@ -479,7 +479,7 @@ class CalculateAIScoreUseCase @Inject constructor(
                         lowPrice = prices[0].replace("[^0-9]".toRegex(), "").toInt(),
                         highPrice = prices[1].replace("[^0-9]".toRegex(), "").toInt(),
                         confidence = ConfidenceLevel.HIGH,
-                        basedOn = listOf("Gemini AI", "Moteur.ma", "Avito"),
+                        basedOn = listOf("Gemini AI", "Global Market Data"),
                         lastUpdated = System.currentTimeMillis()
                     )
                 } else null

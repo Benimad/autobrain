@@ -90,8 +90,8 @@ data class SmokeRootCause(
     @SerializedName("repair_complexity")
     val repairComplexity: String,
     
-    @SerializedName("estimated_cost_dh")
-    val estimatedCostDh: String
+    @SerializedName("estimated_cost_usd")
+    val estimatedCostUsd: String
 )
 
 // =============================================================================
@@ -118,16 +118,16 @@ data class VibrationEngineeringAnalysis(
 data class VibrationMechanicalCause(
     @SerializedName("component")
     val component: String,
-    
+
     @SerializedName("failure_type")
     val failureType: String,
-    
+
     @SerializedName("diagnostic_test")
     val diagnosticTest: String,
-    
-    @SerializedName("replacement_cost_dh")
-    val replacementCostDh: String,
-    
+
+    @SerializedName("replacement_cost_usd")
+    val replacementCostUsd: String,
+
     @SerializedName("urgency")
     val urgency: String
 )
@@ -157,22 +157,22 @@ data class CombinedAudioVideoDiagnosis(
 data class VisualRepairScenario(
     @SerializedName("scenario_name")
     val scenarioName: String,
-    
+
     @SerializedName("applicable_if")
     val applicableIf: String,
-    
+
     @SerializedName("steps")
     val steps: List<String>,
-    
-    @SerializedName("total_cost_dh")
-    val totalCostDh: Double,
-    
+
+    @SerializedName("total_cost_usd")
+    val totalCostUsd: Double,
+
     @SerializedName("success_probability")
     val successProbability: Float,
-    
+
     @SerializedName("duration_hours")
     val durationHours: Int? = null,
-    
+
     @SerializedName("duration_days")
     val durationDays: Int? = null
 )
@@ -223,16 +223,16 @@ data class SafetyAssessment(
 data class MarketImpactVisual(
     @SerializedName("buyer_perception")
     val buyerPerception: String,
-    
+
     @SerializedName("negotiation_leverage_seller")
     val negotiationLeverageSeller: String,
-    
-    @SerializedName("price_reduction_expected_dh")
-    val priceReductionExpectedDh: Double,
-    
+
+    @SerializedName("price_reduction_expected_usd")
+    val priceReductionExpectedUsd: Double,
+
     @SerializedName("time_to_sell_estimate_days")
     val timeToSellEstimateDays: Int,
-    
+
     @SerializedName("disclosure_requirement")
     val disclosureRequirement: String
 )
@@ -299,7 +299,7 @@ fun ComprehensiveVideoDiagnostic.toFirestoreMap(): Map<String, Any?> {
                     "probability" to cause.probability,
                     "confirming_tests" to cause.confirmingTests,
                     "repair_complexity" to cause.repairComplexity,
-                    "estimated_cost_dh" to cause.estimatedCostDh
+                    "estimated_cost_usd" to cause.estimatedCostUsd
                 )
             },
             "worst_case_scenario" to smokeDeepAnalysis.worstCaseScenario,
@@ -314,7 +314,7 @@ fun ComprehensiveVideoDiagnostic.toFirestoreMap(): Map<String, Any?> {
                     "component" to cause.component,
                     "failure_type" to cause.failureType,
                     "diagnostic_test" to cause.diagnosticTest,
-                    "replacement_cost_dh" to cause.replacementCostDh,
+                    "replacement_cost_usd" to cause.replacementCostUsd,
                     "urgency" to cause.urgency
                 )
             },
@@ -331,7 +331,7 @@ fun ComprehensiveVideoDiagnostic.toFirestoreMap(): Map<String, Any?> {
                 "scenario_name" to scenario.scenarioName,
                 "applicable_if" to scenario.applicableIf,
                 "steps" to scenario.steps,
-                "total_cost_dh" to scenario.totalCostDh,
+                "total_cost_usd" to scenario.totalCostUsd,
                 "success_probability" to scenario.successProbability,
                 "duration_hours" to scenario.durationHours,
                 "duration_days" to scenario.durationDays
@@ -353,7 +353,7 @@ fun ComprehensiveVideoDiagnostic.toFirestoreMap(): Map<String, Any?> {
         "market_impact_visual" to mapOf(
             "buyer_perception" to marketImpactVisual.buyerPerception,
             "negotiation_leverage_seller" to marketImpactVisual.negotiationLeverageSeller,
-            "price_reduction_expected_dh" to marketImpactVisual.priceReductionExpectedDh,
+            "price_reduction_expected_usd" to marketImpactVisual.priceReductionExpectedUsd,
             "time_to_sell_estimate_days" to marketImpactVisual.timeToSellEstimateDays,
             "disclosure_requirement" to marketImpactVisual.disclosureRequirement
         ),

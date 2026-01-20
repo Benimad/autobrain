@@ -119,8 +119,8 @@ class SmartAnalysisRepository @Inject constructor(
                     Log.d(TAG, "✅ Ultimate analysis complete!")
                     Log.d(TAG, "   📊 Overall AutoBrain Score: ${analysis.overallAutobrainScore}/100")
                     Log.d(TAG, "   🔴 Primary Issue: ${analysis.comprehensiveDiagnosis.primaryIssue}")
-                    Log.d(TAG, "   💰 Total Repair Cost: $${analysis.totalRepairCostEstimate.totalInvestmentNeededDh.toInt()}")
-                    Log.d(TAG, "   📈 Current Value: $${analysis.realisticMarketValue.currentConditionValueDh.toInt()}")
+                    Log.d(TAG, "   💰 Total Repair Cost: $${analysis.totalRepairCostEstimate.totalInvestmentNeededUsd.toInt()}")
+                    Log.d(TAG, "   📈 Current Value: $${analysis.realisticMarketValue.currentConditionValueUsd.toInt()}")
                     
                     // Step 10: Store in Firestore
                     Log.d(TAG, "💾 Step 10: Storing ultimate analysis...")

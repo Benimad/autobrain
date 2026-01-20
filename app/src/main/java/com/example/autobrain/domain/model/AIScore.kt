@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName
 /**
  * AutoBrain AI Score Models
  * Comprehensive data classes for AI-powered car evaluation
- * Adapted for Morocco market 2025
  */
 
 // ============================================================================
@@ -157,11 +156,11 @@ enum class PriceComparisonResult(val points: Int) {
 
 data class ModelPopularity(
     val brand: String,
-    val isPopularInMorocco: Boolean,
+    val isPopular: Boolean,
     val points: Int
 ) {
     companion object {
-        val POPULAR_BRANDS_MOROCCO = listOf(
+        val POPULAR_BRANDS = listOf(
             "Dacia", "Renault", "Peugeot", "Hyundai", "Volkswagen",
             "Toyota", "Fiat", "Citroën", "Kia", "Ford"
         )
@@ -188,7 +187,7 @@ data class LlmAnalysisResult(
     @SerializedName("minor_issues")
     val minorIssues: List<String>,
     
-    @SerializedName("price_range_dh")
+    @SerializedName("price_range_usd")
     val priceRangeDh: String,
     
     @SerializedName("buyer_advice")

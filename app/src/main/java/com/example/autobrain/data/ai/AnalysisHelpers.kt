@@ -201,7 +201,7 @@ $comparablesText
 }
 
 /**
- * Check if car brand is popular in Morocco
+ * Check if car brand is popular globally
  */
 fun isPopularModel(make: String): Boolean {
     val popularBrands = listOf(
@@ -438,7 +438,7 @@ fun calculateDataCompletenessScore(
 // =============================================================================
 
 /**
- * Format price in Dirham
+ * Format price
  */
 fun formatPrice(price: Double): String {
     return "$${price.toInt()}"

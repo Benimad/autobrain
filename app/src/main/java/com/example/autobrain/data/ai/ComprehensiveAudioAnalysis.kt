@@ -152,27 +152,27 @@ Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
     {
       "scenario": "Meilleur cas - Simple remplacement segments",
       "steps": ["Dépose culasse", "Remplacement segments", "Rodage"],
-      "parts_cost_dh": 3500,
-      "labor_cost_dh": 4500,
-      "total_cost_dh": 8000,
+      "parts_cost_usd": 3500,
+      "labor_cost_usd": 4500,
+      "total_cost_usd": 8000,
       "duration_days": 3,
       "probability": 0.15
     },
     {
       "scenario": "Cas probable - Reconstruction moteur partielle",
       "steps": ["Dépose moteur", "Rectification vilebrequin", "Remplacement pistons/bielles", "Remontage"],
-      "parts_cost_dh": 12000,
-      "labor_cost_dh": 8000,
-      "total_cost_dh": 20000,
+      "parts_cost_usd": 12000,
+      "labor_cost_usd": 8000,
+      "total_cost_usd": 20000,
       "duration_days": 7,
       "probability": 0.65
     },
     {
       "scenario": "Pire cas - Remplacement moteur complet",
       "steps": ["Achat moteur occasion", "Échange standard", "Remontage"],
-      "parts_cost_dh": 25000,
-      "labor_cost_dh": 10000,
-      "total_cost_dh": 35000,
+      "parts_cost_usd": 25000,
+      "labor_cost_usd": 10000,
+      "total_cost_usd": 35000,
       "duration_days": 10,
       "probability": 0.20
     }
@@ -212,7 +212,7 @@ Fournis une analyse ULTRA-DÉTAILLÉE en JSON avec ces champs OBLIGATOIRES:
     "📞 Appeler dépanneuse (coût: 500-800$ selon distance)",
     "🔍 Faire diagnostiquer par 3 garages différents",
     "💰 Budget réparation: 15 000-25 000$ réaliste",
-    "📄 Si assurance: Vérifier couverture panne mécanique (rare au Maroc)",
+    "📄 Si assurance: Vérifier couverture panne mécanique",
     "💡 Alternative: Vendre en l'état (perte estimée: $${calculateSellAsIsLoss(carDetails, audioData)})"
   ],
   "for_potential_buyer": [
