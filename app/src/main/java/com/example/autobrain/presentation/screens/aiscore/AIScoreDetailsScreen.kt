@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.autobrain.domain.model.*
+import com.example.autobrain.presentation.components.ModernBottomNavBar
 import com.example.autobrain.presentation.navigation.Screen
 import com.example.autobrain.presentation.theme.*
 
@@ -40,7 +41,6 @@ fun AIScoreDetailsScreen(
     viewModel: AIScoreViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var selectedNavIndex by remember { mutableIntStateOf(0) }
 
     Scaffold(
         containerColor = MidnightBlack,
@@ -68,14 +68,14 @@ fun AIScoreDetailsScreen(
             )
         },
         bottomBar = {
-            AutoBrainBottomNav(
-                selectedIndex = selectedNavIndex,
-                onItemSelected = { index ->
-                    selectedNavIndex = index
-                    when (index) {
-                        0 -> navController.navigate(Screen.Home.route)
-                        1 -> navController.navigate(Screen.ScanHistory.route)
-                        2 -> navController.navigate(Screen.Profile.route)
+            ModernBottomNavBar(
+                currentRoute = "home",
+                onNavigate = { route ->
+                    when (route) {
+                        "home" -> navController.navigate(Screen.Home.route)
+                        "ai_diagnostics" -> navController.navigate(Screen.AIDiagnostics.route)
+                        "car_logbook" -> navController.navigate(Screen.CarLogbook.route)
+                        "ai_assistant" -> navController.navigate(Screen.AIAssistant.route)
                     }
                 }
             )

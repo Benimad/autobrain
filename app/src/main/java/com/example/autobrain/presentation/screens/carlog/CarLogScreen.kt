@@ -36,6 +36,7 @@ import com.example.autobrain.domain.model.MaintenanceRecord
 import com.example.autobrain.domain.model.MaintenanceReminder
 import com.example.autobrain.domain.model.MaintenanceType
 import com.example.autobrain.domain.model.ReminderPriority
+import com.example.autobrain.presentation.components.ModernBottomNavBar
 import com.example.autobrain.presentation.navigation.Screen
 import com.example.autobrain.presentation.theme.*
 import java.util.Calendar
@@ -142,15 +143,6 @@ fun CarLogScreen(
                         }
                     }
                 },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = TextPrimary
-                        )
-                    }
-                },
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.AddMaintenance.route) }) {
                         Icon(Icons.Default.Add, contentDescription = "Add", tint = ElectricTeal)
@@ -162,6 +154,19 @@ fun CarLogScreen(
                     navigationIconContentColor = TextPrimary,
                     actionIconContentColor = ElectricTeal
                 )
+            )
+        },
+        bottomBar = {
+            ModernBottomNavBar(
+                currentRoute = "car_logbook",
+                onNavigate = { route ->
+                    when (route) {
+                        "home" -> navController.navigate(Screen.Home.route)
+                        "ai_diagnostics" -> navController.navigate(Screen.AIDiagnostics.route)
+                        "car_logbook" -> { /* Already on Carlog */ }
+                        "ai_assistant" -> navController.navigate(Screen.AIAssistant.route)
+                    }
+                }
             )
         },
         floatingActionButton = {

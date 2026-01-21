@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.example.autobrain.core.utils.*
 import com.example.autobrain.presentation.components.AdaptiveScaffold
 import com.example.autobrain.presentation.components.AdaptiveCard
+import com.example.autobrain.presentation.components.ModernBottomNavBar
 import com.example.autobrain.presentation.navigation.Screen
 import com.example.autobrain.presentation.theme.*
 
@@ -32,10 +33,22 @@ fun AIDiagnosticsScreen(
 ) {
     AdaptiveScaffold(
         title = "AI Diagnostics",
-        showBackButton = true,
-        onBackClick = { navController.popBackStack() },
+        showBackButton = false,
         containerColor = Color(0xFF0A1628),
-        scrollable = false
+        scrollable = false,
+        bottomBar = {
+            ModernBottomNavBar(
+                currentRoute = "ai_diagnostics",
+                onNavigate = { route ->
+                    when (route) {
+                        "home" -> navController.navigate(Screen.Home.route)
+                        "ai_diagnostics" -> { /* Already on AI Diagnostics */ }
+                        "car_logbook" -> navController.navigate(Screen.CarLogbook.route)
+                        "ai_assistant" -> navController.navigate(Screen.AIAssistant.route)
+                    }
+                }
+            )
+        }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier

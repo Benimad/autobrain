@@ -34,6 +34,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.autobrain.core.utils.*
 import com.example.autobrain.presentation.components.AdaptiveContentContainer
+import com.example.autobrain.presentation.components.ModernBottomNavBar
 import com.example.autobrain.presentation.navigation.Screen
 import com.example.autobrain.presentation.theme.*
 import kotlinx.coroutines.launch
@@ -65,7 +66,6 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
-    var selectedNavIndex by remember { mutableIntStateOf(3) }
     var selectedTab by remember { mutableIntStateOf(0) } // 0 = Profile, 1 = My Cars, 2 = Scan History
     
     val pagerState = rememberPagerState(pageCount = { 3 })
@@ -104,15 +104,14 @@ fun ProfileScreen(
     Scaffold(
         containerColor = MidnightBlack,
         bottomBar = {
-            AutoBrainBottomNav(
-                selectedIndex = selectedNavIndex,
-                onItemSelected = { index ->
-                    selectedNavIndex = index
-                    when (index) {
-                        0 -> navController.navigate(Screen.Home.route)
-                        1 -> navController.navigate(Screen.AIDiagnostics.route)
-                        2 -> navController.navigate(Screen.CarLogbook.route)
-                        3 -> { /* Already on Profile */ }
+            ModernBottomNavBar(
+                currentRoute = "profile",
+                onNavigate = { route ->
+                    when (route) {
+                        "home" -> navController.navigate(Screen.Home.route)
+                        "ai_diagnostics" -> navController.navigate(Screen.AIDiagnostics.route)
+                        "car_logbook" -> navController.navigate(Screen.CarLogbook.route)
+                        "ai_assistant" -> navController.navigate(Screen.AIAssistant.route)
                     }
                 }
             )

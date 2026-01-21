@@ -165,14 +165,14 @@ fun ChatScreen(
             )
         },
         bottomBar = {
-            AutoBrainBottomNav(
-                selectedIndex = 3,
-                onItemSelected = { index ->
-                    when (index) {
-                        0 -> navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) { inclusive = true } }
-                        1 -> navController.navigate(Screen.AIDiagnostics.route) { popUpTo(Screen.Home.route) }
-                        2 -> navController.navigate(Screen.CarLogbook.route) { popUpTo(Screen.Home.route) }
-                        3 -> { /* Already on AI Assistant */ }
+            ModernBottomNavBar(
+                currentRoute = "ai_assistant",
+                onNavigate = { route ->
+                    when (route) {
+                        "home" -> navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                        "ai_diagnostics" -> navController.navigate(Screen.AIDiagnostics.route) { popUpTo(Screen.Home.route) }
+                        "car_logbook" -> navController.navigate(Screen.CarLogbook.route) { popUpTo(Screen.Home.route) }
+                        "ai_assistant" -> { /* Already on AI Assistant */ }
                     }
                 }
             )

@@ -52,21 +52,18 @@ fun HomeScreen(
 ) {
     // Get dynamic UI state from ViewModel
     val uiState by viewModel.uiState.collectAsState()
-    
-    var selectedNavIndex by remember { mutableIntStateOf(0) }
 
     Scaffold(
         containerColor = MidnightBlack,
         bottomBar = {
-            AutoBrainBottomNav(
-                selectedIndex = selectedNavIndex,
-                onItemSelected = { index ->
-                    selectedNavIndex = index
-                    when (index) {
-                        0 -> { /* Already on Home */ }
-                        1 -> navController.navigate(Screen.AIDiagnostics.route)
-                        2 -> navController.navigate(Screen.CarLogbook.route)
-                        3 -> navController.navigate(Screen.AIAssistant.route)
+            ModernBottomNavBar(
+                currentRoute = "home",
+                onNavigate = { route ->
+                    when (route) {
+                        "home" -> { /* Already on Home */ }
+                        "ai_diagnostics" -> navController.navigate(Screen.AIDiagnostics.route)
+                        "car_logbook" -> navController.navigate(Screen.CarLogbook.route)
+                        "ai_assistant" -> navController.navigate(Screen.AIAssistant.route)
                     }
                 }
             )
