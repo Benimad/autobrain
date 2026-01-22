@@ -35,6 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.autobrain.R
 import com.example.autobrain.presentation.theme.*
 import com.example.autobrain.core.utils.*
@@ -1017,8 +1019,11 @@ fun AutoBrainTopBar(
 // GEMINI AI ICONS - Using Official Gemini Logo from Web
 // =============================================================================
 
-private const val GEMINI_LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Google_Gemini_icon_2025.svg/512px-Google_Gemini_icon_2025.svg.png"
+private const val GEMINI_LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/512px-Google_Gemini_logo.svg.png"
+private const val GEMINI_ICON_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Google_Gemini_icon_2025.svg/512px-Google_Gemini_icon_2025.svg.png"
+private const val GEMINI_SPARKLE_URL = "https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg"
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun GeminiIcon(
     modifier: Modifier = Modifier,
@@ -1026,27 +1031,11 @@ fun GeminiIcon(
     tint: Color = Color.Unspecified,
     useRemote: Boolean = true
 ) {
-    if (useRemote) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(GEMINI_LOGO_URL)
-                .crossfade(true)
-                .memoryCacheKey("gemini_logo")
-                .diskCacheKey("gemini_logo")
-                .build(),
-            contentDescription = "Gemini AI",
-            modifier = modifier.size(size),
-            placeholder = painterResource(id = R.drawable.ic_gemini_logo),
-            error = painterResource(id = R.drawable.ic_gemini_logo)
-        )
-    } else {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_gemini_logo),
-            contentDescription = "Gemini AI",
-            modifier = modifier.size(size),
-            tint = tint
-        )
-    }
+    GlideImage(
+        model = GEMINI_ICON_URL,
+        contentDescription = "Gemini AI",
+        modifier = modifier.size(size)
+    )
 }
 
 @Composable
@@ -1095,47 +1084,32 @@ fun GeminiIconWithGlow(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun GeminiSparkleIcon(
     modifier: Modifier = Modifier,
     size: Dp = 24.dp,
     tint: Color = Color.Unspecified,
-    useRemote: Boolean = false
+    useRemote: Boolean = true
 ) {
-    if (useRemote) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(GEMINI_LOGO_URL)
-                .crossfade(true)
-                .memoryCacheKey("gemini_sparkle")
-                .diskCacheKey("gemini_sparkle")
-                .build(),
-            contentDescription = "Gemini AI",
-            modifier = modifier.size(size),
-            placeholder = painterResource(id = R.drawable.ic_gemini_sparkle),
-            error = painterResource(id = R.drawable.ic_gemini_sparkle)
-        )
-    } else {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_gemini_sparkle),
-            contentDescription = "Gemini AI",
-            modifier = modifier.size(size),
-            tint = tint
-        )
-    }
+    GlideImage(
+        model = GEMINI_SPARKLE_URL,
+        contentDescription = "Gemini AI",
+        modifier = modifier.size(size)
+    )
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun GeminiBadgeIcon(
     modifier: Modifier = Modifier,
     size: Dp = 32.dp,
     tint: Color = Color.Unspecified
 ) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_gemini_badge),
+    GlideImage(
+        model = GEMINI_LOGO_URL,
         contentDescription = "Powered by Gemini AI",
-        modifier = modifier.size(size),
-        tint = tint
+        modifier = modifier.size(size)
     )
 }
 

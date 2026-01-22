@@ -1,5 +1,6 @@
 package com.example.autobrain.data.repository
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.example.autobrain.core.utils.Result
@@ -34,6 +35,11 @@ import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import com.example.autobrain.core.utils.MediaCompressionUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * Audio Diagnostic Repository - Offline-First Architecture
@@ -47,6 +53,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class AudioDiagnosticRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val audioClassifier: TfliteAudioClassifier,
     private val scoringUseCase: AudioScoringUseCase,
     private val audioDiagnosticDao: AudioDiagnosticDao,
@@ -163,9 +170,9 @@ class AudioDiagnosticRepository @Inject constructor(
             onProgress(0.9f, "Local save...")
             audioDiagnosticDao.insertAudioDiagnostic(diagnosticData.toEntity(isSynced = false))
             
-            // Step 5: Try immediate sync if online (fire and forget)
-            onProgress(0.95f, "Synchronization...")
-            trySyncDiagnostic(diagnosticData)
+            // Step 5: Queue background upload instead of blocking
+            onProgress(0.95f, "Queuing upload...")
+            queueBackgroundUpload(diagnosticData.id)
             
             onProgress(1.0f, "Terminé!")
             Result.Success(diagnosticData)
@@ -423,17 +430,52 @@ class AudioDiagnosticRepository @Inject constructor(
     // =============================================================================
     
     /**
-     * Upload audio file to Firebase Storage
+     * Queue background upload using WorkManager
      */
-    private suspend fun uploadAudioFile(diagnosticId: String, localPath: String): String =
+    private fun queueBackgroundUpload(diagnosticId: String) {
+        try {
+            val workManager = WorkManager.getInstance(context)
+            val uploadWork = OneTimeWorkRequestBuilder<com.example.autobrain.data.worker.AudioUploadWorker>()
+                .setInputData(workDataOf("DIAGNOSTIC_ID" to diagnosticId))
+                .build()
+            
+            workManager.enqueue(uploadWork)
+            Log.d(TAG, "Queued background upload for diagnostic: $diagnosticId")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to queue upload: ${e.message}")
+        }
+    }
+    
+    /**
+     * Upload audio file to Firebase Storage with compression
+     */
+    suspend fun uploadAudioFile(diagnosticId: String, localPath: String): String =
         withContext(Dispatchers.IO) {
             try {
                 val userId = auth.currentUser?.uid ?: return@withContext ""
                 val file = File(localPath)
                 if (!file.exists()) return@withContext ""
                 
-                val uri = Uri.fromFile(file)
-                val fileName = "audio_$diagnosticId.pcm"
+                // Compress audio before upload
+                val compressedPath = "${context.cacheDir}/compressed_$diagnosticId.m4a"
+                val compressionResult = MediaCompressionUtils.compressAudio(
+                    inputPath = localPath,
+                    outputPath = compressedPath,
+                    targetBitrate = 64_000,
+                    sampleRate = 16000
+                )
+                
+                val uploadFile = when (compressionResult) {
+                    is Result.Success -> File(compressedPath)
+                    is Result.Error -> {
+                        Log.w(TAG, "Compression failed, using original file")
+                        file
+                    }
+                    else -> file
+                }
+                
+                val uri = Uri.fromFile(uploadFile)
+                val fileName = "audio_$diagnosticId${if (uploadFile == file) ".pcm" else ".m4a"}"
                 val storageRef = storage.reference
                     .child(STORAGE_PATH_AUDIO)
                     .child(userId)
@@ -441,6 +483,11 @@ class AudioDiagnosticRepository @Inject constructor(
                 
                 storageRef.putFile(uri).await()
                 val downloadUrl = storageRef.downloadUrl.await()
+                
+                // Clean up compressed file
+                if (uploadFile.path == compressedPath) {
+                    uploadFile.delete()
+                }
                 
                 downloadUrl.toString()
             } catch (e: Exception) {

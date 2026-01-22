@@ -41,6 +41,10 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import com.example.autobrain.core.utils.MediaCompressionUtils
 
 /**
  * Video Diagnostic Repository - Offline-First with Security
@@ -187,10 +191,10 @@ class VideoDiagnosticRepository @Inject constructor(
             onProgress(0.8f, "Local save...")
             videoDiagnosticDao.insertVideoDiagnostic(diagnosticData.toEntity(isSynced = false))
             
-            // Try immediate sync if consent given and online
+            // Queue background upload instead of blocking
             if (hasStorageConsent) {
-                onProgress(0.9f, "Synchronization...")
-                trySyncDiagnostic(diagnosticData)
+                onProgress(0.9f, "Queuing upload...")
+                queueBackgroundUpload(diagnosticData.id)
             }
             
             onProgress(1.0f, "Completed!")
@@ -553,16 +557,52 @@ class VideoDiagnosticRepository @Inject constructor(
     // =============================================================================
     
     /**
-     * Upload video file to Firebase Storage
+     * Queue background upload using WorkManager
      */
-    private suspend fun uploadVideoFile(diagnosticId: String, localPath: String): String =
+    private fun queueBackgroundUpload(diagnosticId: String) {
+        try {
+            val workManager = WorkManager.getInstance(context)
+            val uploadWork = OneTimeWorkRequestBuilder<com.example.autobrain.data.worker.VideoUploadWorker>()
+                .setInputData(workDataOf("DIAGNOSTIC_ID" to diagnosticId))
+                .build()
+            
+            workManager.enqueue(uploadWork)
+            Log.d(TAG, "Queued background upload for diagnostic: $diagnosticId")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to queue upload: ${e.message}")
+        }
+    }
+    
+    /**
+     * Upload video file to Firebase Storage with compression
+     */
+    suspend fun uploadVideoFile(diagnosticId: String, localPath: String): String =
         withContext(Dispatchers.IO) {
             try {
                 val userId = auth.currentUser?.uid ?: return@withContext ""
                 val file = File(localPath)
                 if (!file.exists()) return@withContext ""
                 
-                val uri = Uri.fromFile(file)
+                // Compress video before upload
+                val compressedPath = "${context.cacheDir}/compressed_$diagnosticId.mp4"
+                val compressionResult = MediaCompressionUtils.compressVideo(
+                    inputPath = localPath,
+                    outputPath = compressedPath,
+                    targetBitrate = 1_000_000,
+                    maxWidth = 1280,
+                    maxHeight = 720
+                )
+                
+                val uploadFile = when (compressionResult) {
+                    is Result.Success -> File(compressedPath)
+                    is Result.Error -> {
+                        Log.w(TAG, "Compression failed, using original file")
+                        file
+                    }
+                    else -> file
+                }
+                
+                val uri = Uri.fromFile(uploadFile)
                 val fileName = "video_$diagnosticId.mp4"
                 val storageRef = storage.reference
                     .child(STORAGE_PATH_VIDEOS)
@@ -571,6 +611,11 @@ class VideoDiagnosticRepository @Inject constructor(
                 
                 storageRef.putFile(uri).await()
                 val downloadUrl = storageRef.downloadUrl.await()
+                
+                // Clean up compressed file
+                if (uploadFile.path == compressedPath) {
+                    uploadFile.delete()
+                }
                 
                 downloadUrl.toString()
             } catch (e: Exception) {
