@@ -30,7 +30,8 @@ data class CarDetails(
     val vin: String = "",       // Vehicle Identification Number
     val color: String = "",
     val licensePlate: String = "",
-    val carImageUrl: String = ""
+    val carImageUrl: String = "",
+    val imageVersion: Int = 1   // Version 2+ = user-specific images with cache validation
 )
 
 data class ProviderDetails(

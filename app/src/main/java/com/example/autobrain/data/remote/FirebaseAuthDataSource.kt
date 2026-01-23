@@ -33,7 +33,7 @@ class FirebaseAuthDataSource @Inject constructor(
                 val carDetails = if (carMake.isNotBlank() || carModel.isNotBlank()) {
                     val carImageUrl = try {
                         Log.d(TAG, "Fetching car image for: $carMake $carModel $carYear")
-                        val result = carImageRepository.fetchCarImageUrl(carMake, carModel, carYear)
+                        val result = carImageRepository.fetchCarImageUrl(firebaseUser.uid, carMake, carModel, carYear)
                         result.getOrNull() ?: ""
                     } catch (e: Exception) {
                         Log.e(TAG, "Error fetching car image: ${e.message}", e)

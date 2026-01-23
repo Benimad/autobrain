@@ -18,7 +18,7 @@ import com.example.autobrain.data.local.entity.*
         VideoDiagnosticEntity::class,
         CarImageEntity::class
     ],
-    version = 8,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(ListStringConverter::class, MapStringConverter::class)

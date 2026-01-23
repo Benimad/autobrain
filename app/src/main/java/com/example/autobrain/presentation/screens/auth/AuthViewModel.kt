@@ -90,6 +90,15 @@ class AuthViewModel @Inject constructor(
 
     fun signOut() {
         viewModelScope.launch {
+            // Get current user ID before signing out to clear their cache
+            val currentUserResult = authRepository.getCurrentUser()
+            val userId = (currentUserResult as? Result.Success)?.data?.uid
+            
+            // Clear user-specific image cache
+            userId?.let {
+                carImageRepository.clearUserCache(it)
+            }
+            
             // Clear user session from DataStore
             preferencesManager.clearUserSession()
             
@@ -117,8 +126,13 @@ class AuthViewModel @Inject constructor(
                 if (currentUserResult is Result.Success && currentUserResult.data != null) {
                     val user = currentUserResult.data
                     
-                    // Fetch car image
-                    val imageResult = carImageRepository.fetchCarImageUrl(make, model, year)
+                    // Fetch USER-SPECIFIC car image
+                    val imageResult = carImageRepository.fetchCarImageUrl(
+                        userId = user.uid,
+                        make = make,
+                        model = model,
+                        year = year
+                    )
                     val imageUrl = imageResult.getOrNull() ?: ""
                     
                     // Update user with car details
