@@ -719,7 +719,7 @@ class VideoDiagnosticRepository @Inject constructor(
     // =============================================================================
     
     /**
-     * Perform COMPREHENSIVE Video Diagnostic with FULL Firebase Data Integration
+     * Perform COMPREHENSIVE Video Diagnostic with FULL Firebase Data Integration + MULTIMODAL AI
      * 
      * This method integrates:
      * - Real-time Firestore user profile & car details
@@ -727,19 +727,22 @@ class VideoDiagnosticRepository @Inject constructor(
      * - Previous video diagnostic trends
      * - Audio diagnostics for multimodal correlation
      * - ML Kit analysis results
+     * - **ACTUAL VIDEO FILE sent to Gemini for direct analysis**
      * - Market context & legal compliance
      * 
      * @param videoData Current video diagnostic data with ML Kit results
+     * @param videoFilePath Path to the actual video file
      * @return Comprehensive diagnostic result with 10 detailed sections
      */
     suspend fun performComprehensiveVideoAnalysis(
-        videoData: VideoDiagnosticData
+        videoData: VideoDiagnosticData,
+        videoFilePath: String
     ): Result<ComprehensiveVideoDiagnostic> = withContext(Dispatchers.IO) {
         try {
             val userId = auth.currentUser?.uid 
                 ?: return@withContext Result.Error(Exception("User not authenticated"))
             
-            Log.d(TAG, "🚀 Starting COMPREHENSIVE Video Diagnostic")
+            Log.d(TAG, "🚀 Starting COMPREHENSIVE MULTIMODAL Video Diagnostic")
             
             // Step 1: Fetch User Profile from Firestore
             Log.d(TAG, "📥 Step 1: Fetching user profile...")
@@ -761,21 +764,22 @@ class VideoDiagnosticRepository @Inject constructor(
             val audioDiagnostics = fetchAudioDiagnostics(userId)
             Log.d(TAG, "✅ Found ${audioDiagnostics.size} audio diagnostics")
             
-            // Step 5: Build comprehensive prompt and call Gemini AI
-            Log.d(TAG, "⭐ Gemini: Step 5: Calling Gemini 2.5 Pro for comprehensive video analysis...")
-            val prompt = buildComprehensiveVideoAnalysisPrompt(
+            // Step 5: Call Gemini AI with MULTIMODAL input (ML Kit + Video File)
+            Log.d(TAG, "⭐ Gemini: Step 5: Calling Gemini 2.5 Pro for MULTIMODAL video analysis...")
+            Log.d(TAG, "   🎬 Sending BOTH ML Kit analysis AND actual video file")
+            
+            val result = geminiAiRepository.performComprehensiveVideoAnalysisMultimodal(
                 videoData = videoData,
+                videoFilePath = videoFilePath,
                 carLog = carLog,
                 user = user,
                 previousVideoDiagnostics = previousVideoDiagnostics,
                 audioDiagnostics = audioDiagnostics
             )
             
-            val result = geminiAiRepository.performComprehensiveVideoAnalysis(prompt)
-            
             result.fold(
                 onSuccess = { diagnostic ->
-                    Log.d(TAG, "✅ Gemini video analysis complete!")
+                    Log.d(TAG, "✅ Gemini multimodal video analysis complete!")
                     Log.d(TAG, "   📊 Enhanced Visual Score: ${diagnostic.enhancedVisualScore}/100")
                     Log.d(TAG, "   🔴 Smoke Type: ${diagnostic.smokeDeepAnalysis.typeDetected}")
                     Log.d(TAG, "   ⚠️  Safety: ${diagnostic.safetyAssessment.roadworthiness}")
@@ -788,13 +792,13 @@ class VideoDiagnosticRepository @Inject constructor(
                     Result.Success(diagnostic)
                 },
                 onFailure = { error ->
-                    Log.e(TAG, "❌ Gemini video analysis failed: ${error.message}")
+                    Log.e(TAG, "❌ Gemini multimodal video analysis failed: ${error.message}")
                     Result.Error(Exception(error))
                 }
             )
             
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Comprehensive video diagnostic failed: ${e.message}", e)
+            Log.e(TAG, "❌ Comprehensive multimodal video diagnostic failed: ${e.message}", e)
             Result.Error(e)
         }
     }

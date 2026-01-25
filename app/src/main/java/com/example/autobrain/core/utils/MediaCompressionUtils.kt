@@ -172,6 +172,13 @@ object MediaCompressionUtils {
                 return@withContext Result.Error(Exception("Input file not found"))
             }
             
+            // Skip compression for WAV files - MediaExtractor doesn't support raw PCM
+            if (inputPath.endsWith(".wav", ignoreCase = true)) {
+                Log.d(TAG, "Skipping compression for WAV file, using original")
+                inputFile.copyTo(File(outputPath), overwrite = true)
+                return@withContext Result.Success(outputPath)
+            }
+            
             val extractor = MediaExtractor()
             extractor.setDataSource(inputPath)
             

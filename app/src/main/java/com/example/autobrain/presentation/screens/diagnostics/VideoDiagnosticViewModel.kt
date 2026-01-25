@@ -35,7 +35,8 @@ import javax.inject.Inject
 class VideoDiagnosticViewModel @Inject constructor(
     private val repository: VideoDiagnosticRepository,
     private val videoAnalyzer: MlKitVideoAnalyzer,
-    private val geminiAiRepository: com.example.autobrain.data.ai.GeminiAiRepository
+    private val geminiAiRepository: com.example.autobrain.data.ai.GeminiAiRepository,
+    private val frameSnapshotManager: com.example.autobrain.data.ai.FrameSnapshotManager
 ) : ViewModel() {
     
     private val TAG = "VideoDiagnosticVM"
@@ -75,6 +76,10 @@ class VideoDiagnosticViewModel @Inject constructor(
         currentCarId = carId
         currentMileage = mileage
         _uiState.value = VideoDiagnosticState.Idle
+        
+        // Generate diagnostic ID and set it for frame snapshots
+        val diagnosticId = java.util.UUID.randomUUID().toString()
+        videoAnalyzer.setDiagnosticId(diagnosticId)
     }
     
     /**
@@ -153,7 +158,10 @@ class VideoDiagnosticViewModel @Inject constructor(
         // Get comprehensive results from analyzer
         val results = videoAnalyzer.getComprehensiveResults()
         currentAnalysisResults = results
-        currentVideoPath = "" // No file saved yet in this MVP, we analyze frames directly
+        
+        // Save video file path (if CameraX recorded it)
+        // TODO: Implement actual video file saving in CameraX integration
+        currentVideoPath = "" // Currently no video file is saved
         
         _uiState.value = VideoDiagnosticState.Analyzing(
             message = "Analyzing video data...",
@@ -278,6 +286,9 @@ class VideoDiagnosticViewModel @Inject constructor(
                         
                         _uiState.value = VideoDiagnosticState.Success(diagnostic)
                         Log.d(TAG, "Diagnostic completed successfully: ${diagnostic.id}")
+                        
+                        // Automatically trigger comprehensive analysis
+                        performComprehensiveAnalysis(diagnostic, diagnostic.videoFilePath)
                     }
                     is Result.Error -> {
                         val errorMessage = result.exception.message ?: "Unknown error"
@@ -313,10 +324,18 @@ class VideoDiagnosticViewModel @Inject constructor(
     fun getCriticalDiagnostics(userId: String) = repository.getCriticalDiagnostics(userId)
     
     /**
+     * Get critical frame snapshots for current diagnostic
+     */
+    fun getCriticalFrameSnapshots() = videoAnalyzer.getCriticalFrameSnapshots()
+    
+    /**
      * Delete diagnostic
      */
     fun deleteDiagnostic(diagnosticId: String) {
         viewModelScope.launch {
+            // Delete frame snapshots
+            frameSnapshotManager.deleteSnapshotsForDiagnostic(diagnosticId)
+            // Delete diagnostic
             repository.deleteDiagnostic(diagnosticId)
         }
     }
@@ -333,29 +352,31 @@ class VideoDiagnosticViewModel @Inject constructor(
      * - Complete maintenance history
      * - Previous video diagnostic trends
      * - Audio diagnostics for multimodal correlation
-     * And generates 10-section comprehensive report
+     * And generates 10-section comprehensive report with MULTIMODAL input
+     * (ML Kit results + actual video file sent to Gemini)
      */
-    fun performComprehensiveAnalysis(videoData: VideoDiagnosticData) {
+    fun performComprehensiveAnalysis(videoData: VideoDiagnosticData, videoFilePath: String) {
         viewModelScope.launch {
             _isComprehensiveAnalyzing.value = true
             
             try {
-                Log.d(TAG, "🎬 Starting comprehensive video analysis...")
+                Log.d(TAG, "🎬 Starting comprehensive MULTIMODAL video analysis...")
+                Log.d(TAG, "   - Video file: $videoFilePath")
                 
-                val result = repository.performComprehensiveVideoAnalysis(videoData)
+                val result = repository.performComprehensiveVideoAnalysis(videoData, videoFilePath)
                 
                 when (result) {
                     is Result.Success -> {
                         _comprehensiveVideoDiagnostic.value = result.data
                         Log.d(
                             TAG,
-                            "Comprehensive video analysis successful! Score: ${result.data.enhancedVisualScore}/100"
+                            "Comprehensive multimodal video analysis successful! Score: ${result.data.enhancedVisualScore}/100"
                         )
                     }
                     is Result.Error -> {
                         Log.e(
                             TAG,
-                            "Comprehensive video analysis failed: ${result.exception.message}"
+                            "Comprehensive multimodal video analysis failed: ${result.exception.message}"
                         )
                     }
                     is Result.Loading -> {
@@ -364,7 +385,7 @@ class VideoDiagnosticViewModel @Inject constructor(
                 }
                 
             } catch (e: Exception) {
-                Log.e(TAG, "Error during comprehensive video analysis: ${e.message}", e)
+                Log.e(TAG, "Error during comprehensive multimodal video analysis: ${e.message}", e)
             } finally {
                 _isComprehensiveAnalyzing.value = false
             }

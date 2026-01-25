@@ -47,7 +47,20 @@ fun buildComprehensiveAudioAnalysisPrompt(
     val carDetails = user.carDetails ?: CarDetails()
     
     return """
-Tu es Dr. AutoBrain AI - Un expert en diagnostic automobile international avec accès aux données Firestore en temps réel.
+🎯 MULTIMODAL ANALYSIS MODE ACTIVATED
+
+Tu es Dr. AutoBrain AI - Expert en diagnostic automobile avec capacité d'analyse audio directe.
+
+🎵 TU REÇOIS 2 SOURCES DE DONNÉES:
+1. 📊 ANALYSE TFLite (On-Device): Classifications heuristiques ci-dessous
+2. 🔊 FICHIER AUDIO BRUT: Analyse directement le son moteur avec tes capacités multimodales
+
+⚡ MISSION CRITIQUE:
+- Écoute l'audio et identifie les sons réels (knocking, grinding, hissing, etc.)
+- Compare avec l'analyse TFLite pour validation croisée
+- Si TFLite dit "knocking 70%" mais tu entends un son normal → Corrige le score
+- Si TFLite dit "normal" mais tu détectes un problème → Alerte critique
+- Utilise l'audio comme source primaire, TFLite comme référence secondaire
 
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                    🚗 PROFIL VÉHICULE (Firestore)                    ║

@@ -35,7 +35,8 @@ import kotlin.math.abs
  */
 @Singleton
 class MlKitVideoAnalyzer @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val frameSnapshotManager: FrameSnapshotManager
 ) {
     
     private val TAG = "MlKitVideoAnalyzer"
@@ -46,6 +47,8 @@ class MlKitVideoAnalyzer @Inject constructor(
     // Frame analysis state
     private var previousFramePixels: IntArray? = null
     private val frameAnalysisResults = mutableListOf<FrameAnalysisResult>()
+    private val criticalFrameSnapshots = mutableListOf<FrameAnalysisResultWithSnapshot>()
+    private var currentDiagnosticId: String? = null
     
     init {
         initializeDetector()
@@ -119,6 +122,42 @@ class MlKitVideoAnalyzer @Inject constructor(
             )
             
             frameAnalysisResults.add(result)
+            
+            // Save critical frames (high confidence smoke or vibration)
+            if (currentDiagnosticId != null) {
+                val shouldSaveFrame = (smokeDetection != null && smokeDetection.confidence > 0.7f) ||
+                                     (vibrationLevel > 0.2f)
+                
+                if (shouldSaveFrame) {
+                    val reason = if (smokeDetection != null) "smoke_${smokeDetection.smokeType}" else "vibration_high"
+                    val confidence = smokeDetection?.confidence ?: vibrationLevel
+                    
+                    val snapshotPath = frameSnapshotManager.saveCriticalFrame(
+                        diagnosticId = currentDiagnosticId!!,
+                        frameNumber = result.frameNumber,
+                        bitmap = bitmap,
+                        reason = reason,
+                        confidence = confidence
+                    )
+                    
+                    if (snapshotPath != null) {
+                        criticalFrameSnapshots.add(
+                            FrameAnalysisResultWithSnapshot(
+                                frameNumber = result.frameNumber,
+                                timestamp = result.timestamp,
+                                brightness = result.brightness,
+                                smokeDetected = result.smokeDetected,
+                                smokeType = result.smokeType,
+                                smokeConfidence = result.smokeConfidence,
+                                vibrationDetected = result.vibrationDetected,
+                                vibrationLevel = result.vibrationLevel,
+                                snapshotPath = snapshotPath
+                            )
+                        )
+                    }
+                }
+            }
+            
             result
             
         } catch (e: Exception) {
@@ -430,11 +469,27 @@ class MlKitVideoAnalyzer @Inject constructor(
     }
     
     /**
+     * Set diagnostic ID for frame snapshots
+     */
+    fun setDiagnosticId(diagnosticId: String) {
+        currentDiagnosticId = diagnosticId
+    }
+    
+    /**
      * Reset analyzer for new video
      */
     fun reset() {
         previousFramePixels = null
         frameAnalysisResults.clear()
+        criticalFrameSnapshots.clear()
+        currentDiagnosticId = null
+    }
+    
+    /**
+     * Get critical frame snapshots
+     */
+    fun getCriticalFrameSnapshots(): List<FrameAnalysisResultWithSnapshot> {
+        return criticalFrameSnapshots.toList()
     }
     
     /**

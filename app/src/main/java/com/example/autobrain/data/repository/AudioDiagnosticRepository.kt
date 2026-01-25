@@ -576,10 +576,15 @@ class AudioDiagnosticRepository @Inject constructor(
             val previousDiagnostics = fetchPreviousAudioDiagnostics(userId)
             Log.d(TAG, "✅ Found ${previousDiagnostics.size} previous diagnostics")
             
-            // Step 4: Call Gemini AI with Comprehensive Prompt
-            Log.d(TAG, "⭐ Gemini: Step 4: Calling Gemini 2.5 Pro for comprehensive analysis...")
+            // Step 4: Call Gemini AI with Comprehensive Prompt + Audio File
+            Log.d(TAG, "🎵 Step 4: Calling Gemini 2.5 Pro for MULTIMODAL analysis...")
+            Log.d(TAG, "   📁 Audio File: ${audioData.audioFilePath}")
+            Log.d(TAG, "   📊 TFLite Score: ${audioData.rawScore}/100")
+            Log.d(TAG, "   🔊 Top Sound: ${audioData.topSoundLabel} (${(audioData.topSoundConfidence * 100).toInt()}%)")
+            
             val result = geminiAiRepository.performComprehensiveAudioAnalysis(
                 audioData = audioData,
+                audioFilePath = audioData.audioFilePath, // Pass actual audio file
                 carLog = carLog,
                 user = user,
                 previousDiagnostics = previousDiagnostics
@@ -614,7 +619,7 @@ class AudioDiagnosticRepository @Inject constructor(
     /**
      * Fetch user profile with car details from Firestore
      */
-    private suspend fun fetchUserProfile(userId: String): User {
+    suspend fun fetchUserProfile(userId: String): User {
         return try {
             val doc = firestore.collection(COLLECTION_USERS)
                 .document(userId)

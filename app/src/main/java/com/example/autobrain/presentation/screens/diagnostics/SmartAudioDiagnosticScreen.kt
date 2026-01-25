@@ -205,6 +205,15 @@ fun SmartAudioDiagnosticScreen(
                     )
                 }
                 
+                is AudioDiagnosticState.RetryRequired -> {
+                    val state = uiState as AudioDiagnosticState.RetryRequired
+                    ErrorState(
+                        message = state.message,
+                        onRetry = state.retryAction,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                
                 is AudioDiagnosticState.Error -> {
                     val message = (uiState as AudioDiagnosticState.Error).message
                     ErrorState(
@@ -1777,9 +1786,10 @@ private fun SuccessState(
         // Animated Score circle
         item {
             PremiumScoreCircle(
-                score = diagnostic.rawScore,
-                healthStatus = diagnostic.healthStatus,
-                size = if (isCompactScreen) 200.dp else 240.dp
+                score = comprehensiveDiagnostic?.enhancedHealthScore ?: diagnostic.rawScore,
+                healthStatus = comprehensiveDiagnostic?.primaryDiagnosis?.severity ?: diagnostic.healthStatus,
+                size = if (isCompactScreen) 200.dp else 240.dp,
+                isGeminiScore = comprehensiveDiagnostic != null
             )
             
             Spacer(modifier = Modifier.height(if (isCompactScreen) 24.dp else 32.dp))
@@ -1828,14 +1838,25 @@ private fun SuccessState(
             }
         }
         
-        // Comprehensive Analysis Button
-        item {
-            Spacer(modifier = Modifier.height(24.dp))
-            PremiumGeminiAnalysisButton(
-                isAnalyzing = isComprehensiveAnalyzing,
-                onClick = onPerformComprehensive
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+        // Comprehensive Analysis Button - Only show if analysis failed and user wants to retry
+        if (comprehensiveDiagnostic == null && !isComprehensiveAnalyzing) {
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                PremiumGeminiAnalysisButton(
+                    isAnalyzing = false,
+                    onClick = onPerformComprehensive
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+        
+        // Show loading indicator while comprehensive analysis is running
+        if (isComprehensiveAnalyzing) {
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                PremiumGeminiLoadingCard()
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
         
         // Comprehensive Diagnostic Results
@@ -1905,7 +1926,8 @@ private fun PremiumSuccessHeader() {
 private fun PremiumScoreCircle(
     score: Int,
     healthStatus: String,
-    size: Dp
+    size: Dp,
+    isGeminiScore: Boolean = false
 ) {
     // Animated score value
     var animatedScore by remember { mutableIntStateOf(0) }
@@ -2141,13 +2163,19 @@ private fun PremiumScoreCircle(
                     )
                     .padding(horizontal = 18.dp, vertical = 8.dp)
             ) {
-                Text(
-                    text = healthStatus,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = scoreColor,
-                    letterSpacing = 0.5.sp
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (isGeminiScore) {
+                        GeminiIcon(size = 14.dp)
+                        Spacer(modifier = Modifier.width(6.dp))
+                    }
+                    Text(
+                        text = healthStatus,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = scoreColor,
+                        letterSpacing = 0.5.sp
+                    )
+                }
             }
         }
     }
@@ -2435,53 +2463,122 @@ private fun PremiumGeminiAnalysisButton(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            if (isAnalyzing) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    "Réessayer l'analyse Gemini",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PremiumGeminiLoadingCard() {
+    val infiniteTransition = rememberInfiniteTransition(label = "geminiLoading")
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 0.8f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glowAlpha"
+    )
+    
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rotation"
+    )
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 16.dp,
+                shape = RoundedCornerShape(18.dp),
+                spotColor = Color(0xFF9C27B0).copy(alpha = glowAlpha * 0.5f)
+            ),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.5.dp,
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF9C27B0).copy(alpha = glowAlpha),
+                    Color(0xFF7B1FA2).copy(alpha = glowAlpha * 0.6f)
+                )
+            )
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF9C27B0).copy(alpha = 0.15f),
+                            Color(0xFF7B1FA2).copy(alpha = 0.1f)
+                        )
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        "Analyse IA en cours...",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
+                )
+                .padding(20.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Canvas(modifier = Modifier.size(24.dp).rotate(rotation)) {
+                    drawArc(
+                        brush = Brush.sweepGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color(0xFF9C27B0),
+                                Color(0xFF7B1FA2)
+                            )
+                        ),
+                        startAngle = 0f,
+                        sweepAngle = 300f,
+                        useCenter = false,
+                        style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
                     )
                 }
-            } else {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.AutoAwesome,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(26.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            GeminiIcon(size = 18.dp)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                "Analyse Complète Gemini AI",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        GeminiIcon(size = 16.dp)
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            "11 sections détaillées • Marché automobile",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color.White.copy(alpha = 0.8f)
+                            "Analyse Gemini AI en cours...",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFCE93D8)
                         )
                     }
+                    Text(
+                        "Analyse multimodale • Audio + TFLite",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
                 }
             }
         }
@@ -2517,6 +2614,71 @@ private fun PremiumSecondaryButton(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
+    }
+}
+
+@Composable
+private fun PremiumExportPdfButton(
+    onClick: () -> Unit
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "pdfGlow")
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 0.8f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glowAlpha"
+    )
+    
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .shadow(
+                elevation = 12.dp,
+                shape = RoundedCornerShape(14.dp),
+                spotColor = Color(0xFFFF6B6B).copy(alpha = glowAlpha * 0.5f)
+            ),
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent
+        ),
+        contentPadding = PaddingValues(0.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFFFF6B6B),
+                            Color(0xFFFF5252)
+                        )
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.PictureAsPdf,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    "Exporter en PDF",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+        }
     }
 }
 

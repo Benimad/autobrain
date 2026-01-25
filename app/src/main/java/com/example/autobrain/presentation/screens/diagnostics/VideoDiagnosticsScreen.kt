@@ -144,8 +144,10 @@ fun VideoDiagnosticsScreen(
                         diagnostic = state.diagnostic,
                         comprehensiveDiagnostic = comprehensiveVideoDiagnostic,
                         isComprehensiveAnalyzing = isComprehensiveAnalyzing,
-                        onPerformComprehensive = { viewModel.performComprehensiveAnalysis(state.diagnostic) },
-                        onViewFullReport = { /* TODO: Navigate to details */ },
+                        onPerformComprehensive = { /* Auto-triggered, button hidden */ },
+                        onViewFullReport = { 
+                            navController.navigate("comprehensive_video_report/${state.diagnostic.id}")
+                        },
                         onNewAnalysis = { viewModel.initializeDiagnostic("current_car") }
                     )
                 }
@@ -517,67 +519,33 @@ private fun VideoResultState(
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(12.dp),
+            enabled = comprehensiveDiagnostic != null && !isComprehensiveAnalyzing,
             colors = ButtonDefaults.buttonColors(
                 containerColor = ElectricTeal,
-                contentColor = Color.Black
-            )
-        ) {
-            Text(
-                text = "View Full Report",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // Comprehensive Analysis Button
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        Button(
-            onClick = onPerformComprehensive,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp),
-            shape = RoundedCornerShape(16.dp),
-            enabled = !isComprehensiveAnalyzing,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF9C27B0), // Purple for AI
-                contentColor = Color.White,
-                disabledContainerColor = Color(0xFF4A148C).copy(alpha = 0.5f)
+                contentColor = Color.Black,
+                disabledContainerColor = Color(0xFF1C2838)
             )
         ) {
             if (isComprehensiveAnalyzing) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
-                    color = Color.White,
+                    color = Color.Black,
                     strokeWidth = 2.dp
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(Modifier.width(8.dp))
                 Text(
                     "Analyse IA en cours...",
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             } else {
-                Icon(
-                    imageVector = Icons.Default.Videocam,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp)
+                Icon(Icons.Default.Description, null, modifier = Modifier.size(24.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    if (comprehensiveDiagnostic != null) "Voir Rapport Complet" else "Analyse en cours...",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        "🎬 Analyse Vidéo Complète Gemini AI",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        "10 sections • ML Kit + Audio corrélation",
-                        fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-                }
             }
         }
         
@@ -588,12 +556,6 @@ private fun VideoResultState(
         }
         
         Spacer(modifier = Modifier.height(16.dp))
-        
-        TextButton(onClick = onNewAnalysis) {
-            Text("New Analysis", color = TextSecondary)
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 

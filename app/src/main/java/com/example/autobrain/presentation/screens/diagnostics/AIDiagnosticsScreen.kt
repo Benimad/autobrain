@@ -31,11 +31,23 @@ import com.example.autobrain.presentation.theme.*
 fun AIDiagnosticsScreen(
     navController: NavController
 ) {
-    AdaptiveScaffold(
-        title = "AI Diagnostics",
-        showBackButton = false,
+    Scaffold(
         containerColor = Color(0xFF0A1628),
-        scrollable = false,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "AI Diagnostics",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF0A1628),
+                    titleContentColor = Color.White
+                )
+            )
+        },
         bottomBar = {
             ModernBottomNavBar(
                 currentRoute = "ai_diagnostics",

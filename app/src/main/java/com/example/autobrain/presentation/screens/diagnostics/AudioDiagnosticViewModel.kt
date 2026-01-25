@@ -141,7 +141,30 @@ class AudioDiagnosticViewModel @Inject constructor(
     // MAIN DIAGNOSTIC FLOW
     // =============================================================================
     
-    fun startDiagnostic(durationMs: Long = 12000L) {
+    fun calibrateEnvironment() {
+        viewModelScope.launch {
+            _uiState.value = AudioDiagnosticState.Calibrating
+            _statusMessage.value = "Measuring ambient noise..."
+            
+            when (val result = audioClassifier.calibrateAmbientNoise()) {
+                is com.example.autobrain.data.ai.CalibrationResult.Success -> {
+                    _statusMessage.value = result.recommendation
+                    if (result.ambientNoiseLevel < -45.0) {
+                        _uiState.value = AudioDiagnosticState.Ready
+                    } else {
+                        _uiState.value = AudioDiagnosticState.Error(
+                            "Environment too noisy (${result.ambientNoiseLevel.toInt()} dB). " + result.recommendation
+                        )
+                    }
+                }
+                is com.example.autobrain.data.ai.CalibrationResult.Error -> {
+                    _uiState.value = AudioDiagnosticState.Error(result.message)
+                }
+            }
+        }
+    }
+    
+    fun startDiagnostic(durationMs: Long = 12000L, retryAttempt: Int = 0) {
         if (currentCarId.isEmpty()) {
             _uiState.value = AudioDiagnosticState.Error(
                 "No car selected"
@@ -167,32 +190,41 @@ class AudioDiagnosticViewModel @Inject constructor(
                     onProgress = { progress, status ->
                         _progress.value = progress
                         _statusMessage.value = status
+                        
+                        // When recording completes (progress = 1.0), immediately show analyzing state
+                        if (progress >= 1.0f && _uiState.value is AudioDiagnosticState.Recording) {
+                            _uiState.value = AudioDiagnosticState.Analyzing
+                            _statusMessage.value = "Analyse de l'audio..."
+                        }
                     }
                 )
                 
                 when (result) {
                     is Result.Success -> {
                         var diagnostic = result.data
-                        
-                        // Gemini analysis is now handled in the Repository
-                        
                         _uiState.value = AudioDiagnosticState.Success(diagnostic)
                         
-                        // Send notification if critical
                         if (diagnostic.urgencyLevel == UrgencyLevel.CRITICAL.name) {
                             sendCriticalAlert(diagnostic)
                         }
                         
-                        // Trigger immediate sync
                         AudioDiagnosticSyncWorker.triggerImmediateSync(workManager)
+                        
+                        // Automatically trigger comprehensive Gemini analysis in background
+                        performComprehensiveAnalysis(diagnostic)
                     }
                     is Result.Error -> {
-                        _uiState.value = AudioDiagnosticState.Error(
-                            result.exception.message ?: "Diagnostic error"
-                        )
+                        val errorMsg = result.exception.message ?: "Diagnostic error"
+                        if (retryAttempt < 2 && (errorMsg.contains("quiet", true) || errorMsg.contains("noisy", true))) {
+                            _uiState.value = AudioDiagnosticState.RetryRequired(
+                                message = errorMsg,
+                                retryAction = { startDiagnostic(durationMs, retryAttempt + 1) }
+                            )
+                        } else {
+                            _uiState.value = AudioDiagnosticState.Error(errorMsg)
+                        }
                     }
                     is Result.Loading -> {
-                        // Should not happen here, but handle it
                         _uiState.value = AudioDiagnosticState.Analyzing
                     }
                 }
@@ -298,14 +330,14 @@ class AudioDiagnosticViewModel @Inject constructor(
             _isComprehensiveAnalyzing.value = true
             
             try {
-                _statusMessage.value = "⭐ Gemini: Comprehensive analysis in progress..."
+                _statusMessage.value = "🌟 Gemini AI: Analyse approfondie..."
                 
                 val result = audioDiagnosticRepository.performComprehensiveAudioAnalysis(audioData)
                 
                 when (result) {
                     is Result.Success -> {
                         _comprehensiveDiagnostic.value = result.data
-                        _statusMessage.value = "✅ Comprehensive analysis complete!"
+                        _statusMessage.value = "✅ Analyse complète terminée!"
                         
                         android.util.Log.d(
                             "AudioDiagnostic",
@@ -313,7 +345,7 @@ class AudioDiagnosticViewModel @Inject constructor(
                         )
                     }
                     is Result.Error -> {
-                        _statusMessage.value = "❌ Error: ${result.exception.message}"
+                        _statusMessage.value = "⚠️ Analyse de base disponible"
                         android.util.Log.e(
                             "AudioDiagnostic",
                             "Comprehensive analysis failed: ${result.exception.message}"
@@ -326,7 +358,7 @@ class AudioDiagnosticViewModel @Inject constructor(
                 
             } catch (e: Exception) {
                 android.util.Log.e("AudioDiagnostic", "Error during comprehensive analysis: ${e.message}", e)
-                _statusMessage.value = "Erreur d'analyse"
+                _statusMessage.value = "⚠️ Analyse de base disponible"
             } finally {
                 _isComprehensiveAnalyzing.value = false
             }
@@ -338,6 +370,58 @@ class AudioDiagnosticViewModel @Inject constructor(
      */
     fun clearComprehensiveDiagnostic() {
         _comprehensiveDiagnostic.value = null
+    }
+    
+    /**
+     * Export diagnostic to PDF
+     */
+    fun exportToPdf(
+        diagnostic: AudioDiagnosticData,
+        comprehensive: ComprehensiveAudioDiagnostic?
+    ) {
+        viewModelScope.launch {
+            try {
+                val user = audioDiagnosticRepository.fetchUserProfile(auth.currentUser?.uid ?: "")
+                val pdfFile = com.example.autobrain.core.utils.PdfReportGenerator.generateAudioDiagnosticReport(
+                    context = context,
+                    diagnostic = diagnostic,
+                    comprehensive = comprehensive,
+                    user = user
+                )
+                
+                if (pdfFile != null) {
+                    sharePdf(pdfFile)
+                    android.util.Log.d("AudioDiagnostic", "PDF exported: ${pdfFile.absolutePath}")
+                } else {
+                    android.util.Log.e("AudioDiagnostic", "PDF generation failed")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("AudioDiagnostic", "PDF export error: ${e.message}", e)
+            }
+        }
+    }
+    
+    private fun sharePdf(file: java.io.File) {
+        try {
+            val uri = androidx.core.content.FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                file
+            )
+            
+            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                putExtra(android.content.Intent.EXTRA_SUBJECT, "Rapport AutoBrain")
+                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            
+            val chooser = android.content.Intent.createChooser(intent, "Partager le rapport")
+            chooser.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(chooser)
+        } catch (e: Exception) {
+            android.util.Log.e("AudioDiagnostic", "Share failed: ${e.message}", e)
+        }
     }
     
     // =============================================================================
@@ -377,6 +461,11 @@ sealed class AudioDiagnosticState {
     object Idle : AudioDiagnosticState()
     
     /**
+     * Calibrating ambient noise
+     */
+    object Calibrating : AudioDiagnosticState()
+    
+    /**
      * Ready to start recording (permissions granted, car selected)
      */
     object Ready : AudioDiagnosticState()
@@ -395,6 +484,11 @@ sealed class AudioDiagnosticState {
      * Diagnostic complete with results
      */
     data class Success(val diagnostic: AudioDiagnosticData) : AudioDiagnosticState()
+    
+    /**
+     * Retry required due to quality issues
+     */
+    data class RetryRequired(val message: String, val retryAction: () -> Unit) : AudioDiagnosticState()
     
     /**
      * Error occurred during any phase

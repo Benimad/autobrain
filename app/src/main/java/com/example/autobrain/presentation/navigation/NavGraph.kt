@@ -1,6 +1,12 @@
 package com.example.autobrain.presentation.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -150,6 +156,47 @@ fun NavGraph(
         ) { backStackEntry ->
             val carId = backStackEntry.arguments?.getString("carId") ?: ""
             VideoDiagnosticsScreen(navController = navController)
+        }
+
+        composable(
+            route = Screen.ComprehensiveVideoReport.route,
+            arguments = listOf(navArgument("diagnosticId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val diagnosticId = backStackEntry.arguments?.getString("diagnosticId") ?: return@composable
+            val viewModel: com.example.autobrain.presentation.screens.diagnostics.VideoDiagnosticViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+            val diagnostic by viewModel.comprehensiveVideoDiagnostic.collectAsState(initial = null)
+            
+            diagnostic?.let { diag ->
+                com.example.autobrain.presentation.screens.diagnostics.ComprehensiveVideoReportScreen(
+                    navController = navController,
+                    diagnostic = diag
+                )
+            } ?: Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        composable(
+            route = Screen.VideoPlayback.route,
+            arguments = listOf(navArgument("diagnosticId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val diagnosticId = backStackEntry.arguments?.getString("diagnosticId") ?: return@composable
+            val viewModel: com.example.autobrain.presentation.screens.diagnostics.VideoDiagnosticViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+            val criticalFrames = viewModel.getCriticalFrameSnapshots()
+            
+            // Get video path from diagnostic - you'll need to implement this
+            val videoPath = "" // TODO: Get from diagnostic data
+            
+            if (videoPath.isNotEmpty()) {
+                com.example.autobrain.presentation.screens.diagnostics.VideoPlaybackScreen(
+                    navController = navController,
+                    videoPath = videoPath,
+                    criticalFrames = criticalFrames
+                )
+            }
         }
 
         // =====================================================================

@@ -73,43 +73,43 @@ service firebase.storage {
     }
     
     // =============================================================================
-    // DIAGNOSTICS FILES (Audio Analysis)
+    // AUDIO DIAGNOSTICS (Primary path used by app)
     // =============================================================================
     
-    match /diagnostics/audio/{userId}/{ts}/{fileName} {
-      // Read: Own files only
-      allow read: if isAuthenticated() && 
-                     request.auth.uid == userId;
-      
-      // Write: Own files, audio only, max 5MB
-      allow write: if isAuthenticated() && 
-                      request.auth.uid == userId &&
-                      isAudio() &&
-                      isValidFileSize(5); // Max 5MB
-      
-      // Delete: Own files only
-      allow delete: if isAuthenticated() && 
-                       request.auth.uid == userId;
+    match /audio_diagnostics/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId && isValidFileSize(5);
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
     
     // =============================================================================
-    // DIAGNOSTICS FILES (Video Analysis)
+    // VIDEO DIAGNOSTICS (Primary path used by app)
+    // =============================================================================
+    
+    match /video_diagnostics/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId && isValidFileSize(50);
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // DIAGNOSTICS FILES (Legacy paths - Audio Analysis)
+    // =============================================================================
+    
+    match /diagnostics/audio/{userId}/{ts}/{fileName} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId && isAudio() && isValidFileSize(5);
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // =============================================================================
+    // DIAGNOSTICS FILES (Legacy paths - Video Analysis)
     // =============================================================================
     
     match /diagnostics/video/{userId}/{ts}/{fileName} {
-      // Read: Own files only
-      allow read: if isAuthenticated() && 
-                     request.auth.uid == userId;
-      
-      // Write: Own files, video only, max 50MB
-      allow write: if isAuthenticated() && 
-                      request.auth.uid == userId &&
-                      isVideo() &&
-                      isValidFileSize(50); // Max 50MB
-      
-      // Delete: Own files only
-      allow delete: if isAuthenticated() && 
-                       request.auth.uid == userId;
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId && isVideo() && isValidFileSize(50);
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
     
     // =============================================================================

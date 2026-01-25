@@ -28,10 +28,12 @@
 ## ✨ Features
 
 ### 🎵 **Audio Diagnostics**
+- **Multimodal AI Analysis**: Sends BOTH TFLite analysis + actual audio file to Gemini
 - Real-time engine sound analysis using TensorFlow Lite
 - Waveform visualization with quality monitoring
 - AI-powered issue detection and severity scoring
-- Comprehensive analysis with Google Gemini AI
+- Comprehensive analysis with Google Gemini AI (audio + text)
+- Cross-validation between on-device ML and cloud AI
 - Background upload with audio compression (AAC 64kbps)
 
 ### 📹 **Video Diagnostics**

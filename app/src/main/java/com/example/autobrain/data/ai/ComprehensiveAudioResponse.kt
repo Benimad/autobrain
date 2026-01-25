@@ -44,7 +44,7 @@ data class ComprehensiveAudioDiagnostic(
     val autobrainAiConfidence: AutobrainAiConfidence,
     
     @SerializedName("legal_compliance")
-    val legalComplianceGeneral: LegalComplianceGeneral
+    val legalComplianceGeneral: LegalComplianceGeneral?
 )
 
 // =============================================================================
@@ -354,12 +354,14 @@ fun ComprehensiveAudioDiagnostic.toFirestoreMap(): Map<String, Any?> {
             "gemini_model_version" to autobrainAiConfidence.geminiModelVersion,
             "analysis_timestamp_utc" to autobrainAiConfidence.analysisTimestampUtc
         ),
-        "legal_compliance_general" to mapOf(
-            "inspection_requirements" to legalComplianceGeneral.inspectionRequirements,
-            "insurance_notification_required" to legalComplianceGeneral.insuranceNotificationRequired,
-            "roadworthiness" to legalComplianceGeneral.roadworthiness,
-            "legal_resale_obligations" to legalComplianceGeneral.legalResaleObligations
-        )
+        "legal_compliance_general" to legalComplianceGeneral?.let { legal ->
+            mapOf(
+                "inspection_requirements" to legal.inspectionRequirements,
+                "insurance_notification_required" to legal.insuranceNotificationRequired,
+                "roadworthiness" to legal.roadworthiness,
+                "legal_resale_obligations" to legal.legalResaleObligations
+            )
+        }
     )
 }
 

@@ -61,6 +61,12 @@ sealed class Screen(val route: String) {
     object VideoAnalysisResult : Screen("video_analysis_result/{analysisId}") {
         fun createRoute(analysisId: String) = "video_analysis_result/$analysisId"
     }
+    object ComprehensiveVideoReport : Screen("comprehensive_video_report/{diagnosticId}") {
+        fun createRoute(diagnosticId: String) = "comprehensive_video_report/$diagnosticId"
+    }
+    object VideoPlayback : Screen("video_playback/{diagnosticId}") {
+        fun createRoute(diagnosticId: String) = "video_playback/$diagnosticId"
+    }
 
     // =========================================================================
     // AI PRICE ESTIMATION

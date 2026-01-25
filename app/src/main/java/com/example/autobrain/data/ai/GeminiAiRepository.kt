@@ -4,17 +4,20 @@ import android.content.Context
 import android.util.Log
 import com.example.autobrain.BuildConfig
 import com.example.autobrain.data.local.entity.AudioDiagnosticData
+import com.example.autobrain.data.local.entity.VideoDiagnosticData
 import com.example.autobrain.domain.model.CarLog
 import com.example.autobrain.domain.model.GeminiPriceEstimation
 import com.example.autobrain.domain.model.MaintenanceReminder
 import com.example.autobrain.domain.model.PriceFactor
 import com.example.autobrain.domain.model.User
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
 import com.google.gson.Gson
 import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.HarmCategory
 import com.google.ai.client.generativeai.type.SafetySetting
 import com.google.ai.client.generativeai.type.generationConfig
+import java.io.File
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -289,15 +292,19 @@ Generate the URL now:
     // =============================================================================
     
     /**
-     * Perform COMPREHENSIVE Audio Diagnostic Analysis with FULL Firebase Data
+     * Perform COMPREHENSIVE Audio Diagnostic Analysis with MULTIMODAL INPUT
      * 
-     * This is the COMPLETE implementation integrating:
+     * 🎯 ENHANCED ARCHITECTURE:
+     * - Sends BOTH TFLite analysis (text) AND actual audio file (binary) to Gemini
+     * - Gemini 2.5 Pro analyzes audio directly for superior accuracy
+     * - Combines on-device TFLite insights with cloud AI audio analysis
      * - Real-time Firestore user profile & car details
      * - Complete maintenance history from CarLog
      * - Previous diagnostic trends
      * - Market context & legal compliance
      * 
      * @param audioData Current audio diagnostic data with TFLite classifications
+     * @param audioFilePath Path to the actual WAV audio file
      * @param carLog Complete car maintenance log from Firestore
      * @param user User profile with car details from Firestore
      * @param previousDiagnostics Historical audio diagnostics for trend analysis
@@ -305,45 +312,70 @@ Generate the URL now:
      */
     suspend fun performComprehensiveAudioAnalysis(
         audioData: AudioDiagnosticData,
+        audioFilePath: String,
         carLog: CarLog,
         user: User,
         previousDiagnostics: List<AudioDiagnosticData>
     ): Result<ComprehensiveAudioDiagnostic> = withContext(Dispatchers.IO) {
         try {
+            // Validate audio file exists
+            val audioFile = File(audioFilePath)
+            if (!audioFile.exists() || !audioFile.canRead()) {
+                Log.e(TAG, "❌ Audio file not found or unreadable: $audioFilePath")
+                return@withContext Result.failure(
+                    Exception("Audio file not accessible: $audioFilePath")
+                )
+            }
+            
+            Log.d(TAG, "📁 Audio file validated: ${audioFile.length() / 1024}KB")
+            
             // Build the comprehensive prompt with ALL dynamic data
-            val prompt = buildComprehensiveAudioAnalysisPrompt(
+            val textPrompt = buildComprehensiveAudioAnalysisPrompt(
                 audioData = audioData,
                 carLog = carLog,
                 user = user,
                 previousDiagnostics = previousDiagnostics
             )
             
-            Log.d(TAG, "Sending COMPREHENSIVE audio analysis to Gemini 2.5 Pro")
-            Log.d(TAG, "Audio Score: ${audioData.rawScore}, Top Sound: ${audioData.topSoundLabel}")
-            Log.d(TAG, "Car: ${user.carDetails?.make} ${user.carDetails?.model} ${user.carDetails?.year}")
-            Log.d(TAG, "Maintenance Records: ${carLog.maintenanceRecords.size}, Previous Diagnostics: ${previousDiagnostics.size}")
+            Log.d(TAG, "🎵 Sending MULTIMODAL analysis to Gemini 2.5 Pro")
+            Log.d(TAG, "   - TFLite Score: ${audioData.rawScore}/100")
+            Log.d(TAG, "   - Top Sound: ${audioData.topSoundLabel} (${(audioData.topSoundConfidence * 100).toInt()}%)")
+            Log.d(TAG, "   - Audio File: ${audioFile.name} (${audioFile.length() / 1024}KB)")
+            Log.d(TAG, "   - Car: ${user.carDetails?.make} ${user.carDetails?.model} ${user.carDetails?.year}")
+            Log.d(TAG, "   - Maintenance: ${carLog.maintenanceRecords.size} records")
+            Log.d(TAG, "   - History: ${previousDiagnostics.size} previous diagnostics")
             
-            // Send to Gemini 2.5 Pro (with extended token limit for comprehensive response)
-            val response = diagnosticsModel.generateContent(prompt)
+            // Create multimodal content with BOTH audio file and text analysis
+            val multimodalContent = content {
+                // Add the audio file for Gemini to analyze directly
+                blob("audio/wav", audioFile.readBytes())
+                
+                // Add the comprehensive text prompt with TFLite analysis
+                text(textPrompt)
+            }
+            
+            // Send to Gemini 2.5 Pro (multimodal analysis)
+            val response = diagnosticsModel.generateContent(multimodalContent)
             val responseText = response.text ?: return@withContext Result.failure(
                 Exception("Empty response from Gemini AI")
             )
             
-            Log.d(TAG, "Received comprehensive response from Gemini (${responseText.length} chars)")
+            Log.d(TAG, "✅ Received multimodal response from Gemini (${responseText.length} chars)")
             
             // Parse the JSON response
             val result = parseComprehensiveAudioResponse(responseText)
             
-            Log.d(TAG, "✅ Comprehensive analysis complete!")
-            Log.d(TAG, "Enhanced Health Score: ${result.enhancedHealthScore}/100")
-            Log.d(TAG, "Primary Diagnosis: ${result.primaryDiagnosis.issue}")
-            Log.d(TAG, "Severity: ${result.primaryDiagnosis.severity}")
-            Log.d(TAG, "Repair Scenarios: ${result.detailedRepairPlan.repairScenarios.size}")
+            Log.d(TAG, "🎯 Comprehensive multimodal analysis complete!")
+            Log.d(TAG, "   - Enhanced Health Score: ${result.enhancedHealthScore}/100")
+            Log.d(TAG, "   - Primary Diagnosis: ${result.primaryDiagnosis.issue}")
+            Log.d(TAG, "   - Severity: ${result.primaryDiagnosis.severity}")
+            Log.d(TAG, "   - Confidence: ${(result.primaryDiagnosis.confidence * 100).toInt()}%")
+            Log.d(TAG, "   - Repair Scenarios: ${result.detailedRepairPlan.repairScenarios.size}")
             
             Result.success(result)
             
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Comprehensive audio analysis error: ${e.message}", e)
+            Log.e(TAG, "❌ Comprehensive multimodal analysis error: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -790,37 +822,100 @@ Respond ONLY in valid JSON :
     // =============================================================================
     
     /**
-     * Perform comprehensive video diagnostic analysis with Gemini
+     * Perform COMPREHENSIVE Video Diagnostic Analysis with MULTIMODAL INPUT
      * 
-     * @param prompt Complete comprehensive video analysis prompt
-     * @return Comprehensive video diagnostic with 10 sections
+     * 🎯 ENHANCED ARCHITECTURE (Same as Audio):
+     * - Sends BOTH ML Kit analysis (text) AND actual video file (binary) to Gemini
+     * - Gemini 2.5 Pro analyzes video directly for superior accuracy
+     * - Combines on-device ML Kit insights with cloud AI video analysis
+     * - Real-time Firestore user profile & car details
+     * - Complete maintenance history from CarLog
+     * - Previous diagnostic trends
+     * - Audio diagnostics for multimodal correlation
+     * - Market context & legal compliance
+     * 
+     * @param videoData Current video diagnostic data with ML Kit results
+     * @param videoFilePath Path to the actual MP4 video file
+     * @param carLog Complete car maintenance log from Firestore
+     * @param user User profile with car details from Firestore
+     * @param previousVideoDiagnostics Historical video diagnostics for trend analysis
+     * @param audioDiagnostics Audio diagnostics for multimodal correlation
+     * @return Comprehensive diagnostic result with 10 detailed sections
      */
-    suspend fun performComprehensiveVideoAnalysis(
-        prompt: String
+    suspend fun performComprehensiveVideoAnalysisMultimodal(
+        videoData: VideoDiagnosticData,
+        videoFilePath: String,
+        carLog: CarLog,
+        user: User,
+        previousVideoDiagnostics: List<VideoDiagnosticData>,
+        audioDiagnostics: List<AudioDiagnosticData>
     ): Result<ComprehensiveVideoDiagnostic> = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "🎬 Sending COMPREHENSIVE video analysis to Gemini 2.5 Pro")
+            // Check if video file exists (optional for multimodal)
+            val videoFile = if (videoFilePath.isNotEmpty()) File(videoFilePath) else null
+            val hasVideoFile = videoFile?.exists() == true && videoFile.canRead()
+            
+            if (!hasVideoFile) {
+                Log.w(TAG, "⚠️ No video file available, using text-only analysis")
+            }
+            
+            Log.d(TAG, "📁 Video: ${if (hasVideoFile) "${videoFile!!.length() / 1024}KB" else "Not available"}")
+            
+            // Build the comprehensive prompt
+            val textPrompt = buildComprehensiveVideoAnalysisPrompt(
+                videoData = videoData,
+                carLog = carLog,
+                user = user,
+                previousVideoDiagnostics = previousVideoDiagnostics,
+                audioDiagnostics = audioDiagnostics
+            )
+            
+            Log.d(TAG, "🎬 Sending ${if (hasVideoFile) "MULTIMODAL" else "TEXT-ONLY"} analysis to Gemini 2.5 Pro")
+            Log.d(TAG, "   - ML Kit Score: ${videoData.rawScore}/100")
+            Log.d(TAG, "   - Smoke: ${if (videoData.smokeDetected) "${videoData.smokeType} (${videoData.smokeSeverity}/5)" else "None"}")
+            Log.d(TAG, "   - Vibration: ${if (videoData.vibrationDetected) "${videoData.vibrationLevel} (${videoData.vibrationSeverity}/5)" else "None"}")
+            if (hasVideoFile) {
+                Log.d(TAG, "   - Video File: ${videoFile!!.name} (${videoFile.length() / 1024}KB)")
+            }
+            Log.d(TAG, "   - Car: ${user.carDetails?.make} ${user.carDetails?.model} ${user.carDetails?.year}")
+            Log.d(TAG, "   - Maintenance: ${carLog.maintenanceRecords.size} records")
+            Log.d(TAG, "   - History: ${previousVideoDiagnostics.size} previous video diagnostics")
+            Log.d(TAG, "   - Audio Correlation: ${audioDiagnostics.size} audio diagnostics")
+            
+            // Create content (multimodal if video exists, text-only otherwise)
+            val content = if (hasVideoFile) {
+                content {
+                    blob("video/mp4", videoFile!!.readBytes())
+                    text(textPrompt)
+                }
+            } else {
+                content {
+                    text(textPrompt)
+                }
+            }
             
             // Send to Gemini 2.5 Pro
-            val response = diagnosticsModel.generateContent(prompt)
+            val response = diagnosticsModel.generateContent(content)
             val responseText = response.text ?: return@withContext Result.failure(
                 Exception("Empty response from Gemini AI")
             )
             
-            Log.d(TAG, "Received comprehensive video response from Gemini (${responseText.length} chars)")
+            Log.d(TAG, "✅ Received ${if (hasVideoFile) "multimodal" else "text-only"} video response from Gemini (${responseText.length} chars)")
             
             // Parse the JSON response
             val result = parseComprehensiveVideoResponse(responseText)
             
-            Log.d(TAG, "✅ Comprehensive video analysis complete!")
-            Log.d(TAG, "Enhanced Visual Score: ${result.enhancedVisualScore}/100")
-            Log.d(TAG, "Smoke Type: ${result.smokeDeepAnalysis.typeDetected}")
-            Log.d(TAG, "Safety: ${result.safetyAssessment.roadworthiness}")
+            Log.d(TAG, "🎯 Comprehensive multimodal video analysis complete!")
+            Log.d(TAG, "   - Enhanced Visual Score: ${result.enhancedVisualScore}/100")
+            Log.d(TAG, "   - Smoke Type: ${result.smokeDeepAnalysis.typeDetected}")
+            Log.d(TAG, "   - Safety: ${result.safetyAssessment.roadworthiness}")
+            Log.d(TAG, "   - Confidence: ${(result.autobrainVideoConfidence.confidenceThisAnalysis * 100).toInt()}%")
+            Log.d(TAG, "   - Repair Scenarios: ${result.repairScenariosVisual.size}")
             
             Result.success(result)
             
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Comprehensive video analysis error: ${e.message}", e)
+            Log.e(TAG, "❌ Comprehensive multimodal video analysis error: ${e.message}", e)
             Result.failure(e)
         }
     }

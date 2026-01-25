@@ -157,6 +157,11 @@ dependencies {
     // Google Gemini AI SDK
     implementation(libs.generativeai)
 
+    // Media3 ExoPlayer for video playback
+    implementation("androidx.media3:media3-exoplayer:1.2.0")
+    implementation("androidx.media3:media3-ui:1.2.0")
+    implementation("androidx.media3:media3-common:1.2.0")
+
     // Jsoup for web scraping
     implementation(libs.jsoup)
 
