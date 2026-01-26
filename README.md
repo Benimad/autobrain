@@ -9,7 +9,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#)
 
 > **Professional automotive diagnostics powered by multimodal AI**  
-> Analyze engine sounds, detect issues via video, track maintenance, and get AI-powered insights - all in your pocket.
+> **AutoBrain** is a professional automotive diagnostic application that leverages cutting-edge AI technologies to provide comprehensive vehicle health analysis through engine sound analysis, video diagnostics, and intelligent maintenance tracking..
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Production%20Ready-success" />
