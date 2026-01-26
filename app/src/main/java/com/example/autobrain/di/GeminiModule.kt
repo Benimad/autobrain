@@ -4,7 +4,9 @@ import android.content.Context
 import com.example.autobrain.BuildConfig
 import com.example.autobrain.data.ai.GeminiAiRepository
 import com.example.autobrain.data.ai.GeminiCarnetRepository
+import com.example.autobrain.data.remote.GeminiCarImageGenerator
 import com.example.autobrain.data.remote.GeminiCarImageService
+import com.example.autobrain.data.remote.GeminiImageGenerationService
 import com.example.autobrain.data.repository.AudioDiagnosticRepository
 import com.example.autobrain.data.repository.GeminiChatRepository
 import com.example.autobrain.data.repository.VideoDiagnosticRepository
@@ -62,11 +64,45 @@ object GeminiModule {
     
     @Provides
     @Singleton
+    @javax.inject.Named("imageGeneration")
+    fun provideImageGenerationModel(): GenerativeModel {
+        return GenerativeModel(
+            modelName = "gemini-2.0-flash-exp",
+            apiKey = BuildConfig.GEMINI_API_KEY,
+            generationConfig = generationConfig {
+                temperature = 0.4f
+                topK = 40
+                topP = 0.95f
+                maxOutputTokens = 8192
+            }
+        )
+    }
+    
+    @Provides
+    @Singleton
+    fun provideGeminiCarImageGenerator(
+        @javax.inject.Named("imageGeneration") imageGenModel: GenerativeModel,
+        okHttpClient: okhttp3.OkHttpClient,
+        firebaseStorage: com.google.firebase.storage.FirebaseStorage
+    ): GeminiCarImageGenerator {
+        return GeminiCarImageGenerator(imageGenModel, okHttpClient, firebaseStorage)
+    }
+    
+    @Provides
+    @Singleton
     fun provideGeminiCarImageService(
         generativeModel: GenerativeModel,
         okHttpClient: okhttp3.OkHttpClient
     ): GeminiCarImageService {
         return GeminiCarImageService(generativeModel, okHttpClient)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideGeminiImageGenerationService(
+        generativeModel: GenerativeModel
+    ): GeminiImageGenerationService {
+        return GeminiImageGenerationService(generativeModel)
     }
     
     @Provides

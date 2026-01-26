@@ -19,6 +19,9 @@ data class CarImageEntity(
     val isTransparent: Boolean = false,
     val source: String, // "gemini+firebase", "gemini+stock", etc.
     val cacheVersion: Int = 1, // Cache schema version for invalidation
+    val fetchStrategy: String? = null, // NEW: Track which strategy worked
+    val fetchDurationMs: Long? = null, // NEW: Track performance
+    val validationStatus: String = "valid", // NEW: Track if URL still works
     val cachedAt: Long = System.currentTimeMillis(),
     val lastAccessedAt: Long = System.currentTimeMillis()
 )

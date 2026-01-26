@@ -755,9 +755,13 @@ private fun CarImageSection(
     var imageLoadAttempt by remember(imageUrl) { mutableIntStateOf(0) }
     var imageLoadFailed by remember(imageUrl) { mutableStateOf(false) }
     var isImageLoading by remember(imageUrl) { mutableStateOf(true) }
+    var showPlaceholder by remember(imageUrl) { mutableStateOf(false) }
+    
+    // Check if URL is the placeholder resource
+    val isPlaceholderResource = currentImageUrl == "placeholder"
     
     LaunchedEffect(imageLoadFailed, imageLoadAttempt) {
-        if (imageLoadFailed && imageLoadAttempt < 5) {
+        if (imageLoadFailed && imageLoadAttempt < 5 && !isPlaceholderResource) {
             kotlinx.coroutines.delay(800)
             imageLoadAttempt++
             val newUrl = viewModel.getFallbackImageUrl(carMake, carModel, carYear, imageLoadAttempt)
@@ -765,6 +769,10 @@ private fun CarImageSection(
             currentImageUrl = newUrl
             imageLoadFailed = false
             isImageLoading = true
+        } else if (imageLoadFailed && imageLoadAttempt >= 5) {
+            // All attempts failed, show placeholder
+            showPlaceholder = true
+            isImageLoading = false
         }
     }
     
@@ -796,42 +804,73 @@ private fun CarImageSection(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                GlideImage(
-                    model = currentImageUrl,
-                    contentDescription = "$carYear $carMake $carModel",
-                    modifier = Modifier
-                        .fillMaxWidth(0.95f)
-                        .height(240.dp),
-                    contentScale = ContentScale.Fit
-                ) {
-                    it.error(com.example.autobrain.R.drawable.ic_launcher_foreground)
-                        .placeholder(com.example.autobrain.R.drawable.ic_launcher_foreground)
-                        .addListener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
-                            override fun onResourceReady(
-                                resource: android.graphics.drawable.Drawable,
-                                model: Any,
-                                target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
-                                dataSource: com.bumptech.glide.load.DataSource,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                isImageLoading = false
-                                return false
-                            }
-                            
-                            override fun onLoadFailed(
-                                e: com.bumptech.glide.load.engine.GlideException?,
-                                model: Any?,
-                                target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                imageLoadFailed = true
-                                isImageLoading = false
-                                return false
-                            }
-                        })
+                when {
+                    showPlaceholder || isPlaceholderResource -> {
+                        // Show vector drawable placeholder
+                        Icon(
+                            imageVector = Icons.Default.DirectionsCar,
+                            contentDescription = "$carYear $carMake $carModel",
+                            modifier = Modifier
+                                .size(120.dp),
+                            tint = ElectricTeal
+                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(top = 180.dp)
+                        ) {
+                            Text(
+                                text = "3D Model",
+                                fontSize = 14.sp,
+                                color = TextSecondary,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = "Coming Soon",
+                                fontSize = 12.sp,
+                                color = TextMuted,
+                                fontStyle = FontStyle.Italic
+                            )
+                        }
+                    }
+                    else -> {
+                        GlideImage(
+                            model = currentImageUrl,
+                            contentDescription = "$carYear $carMake $carModel",
+                            modifier = Modifier
+                                .fillMaxWidth(0.95f)
+                                .height(240.dp),
+                            contentScale = ContentScale.Fit
+                        ) {
+                            it.error(com.example.autobrain.R.drawable.ic_launcher_foreground)
+                                .placeholder(com.example.autobrain.R.drawable.ic_launcher_foreground)
+                                .addListener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                    override fun onResourceReady(
+                                        resource: android.graphics.drawable.Drawable,
+                                        model: Any,
+                                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                                        dataSource: com.bumptech.glide.load.DataSource,
+                                        isFirstResource: Boolean
+                                    ): Boolean {
+                                        isImageLoading = false
+                                        return false
+                                    }
+                                    
+                                    override fun onLoadFailed(
+                                        e: com.bumptech.glide.load.engine.GlideException?,
+                                        model: Any?,
+                                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
+                                        isFirstResource: Boolean
+                                    ): Boolean {
+                                        imageLoadFailed = true
+                                        isImageLoading = false
+                                        return false
+                                    }
+                                })
+                        }
+                    }
                 }
                 
-                if (isImageLoading) {
+                if (isImageLoading && !showPlaceholder && !isPlaceholderResource) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center

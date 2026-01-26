@@ -15,7 +15,9 @@ import javax.inject.Singleton
 class CarImageRepository @Inject constructor(
     private val carImageDao: CarImageDao,
     private val geminiCarImageService: GeminiCarImageService,
-    private val backgroundRemovalService: BackgroundRemovalService
+    private val backgroundRemovalService: BackgroundRemovalService,
+    private val geminiImageGenerationService: com.example.autobrain.data.remote.GeminiImageGenerationService,
+    private val geminiCarImageGenerator: com.example.autobrain.data.remote.GeminiCarImageGenerator
 ) {
     private val TAG = "CarImageRepository"
     private val CACHE_EXPIRY_DAYS = 30L
@@ -43,7 +45,8 @@ class CarImageRepository @Inject constructor(
             val cachedImage = carImageDao.getCarImage(carKey)
             
             if (cachedImage != null && !isCacheExpired(cachedImage) && isCacheVersionValid(cachedImage)) {
-                if (cachedImage.imageUrl.contains("firebasestorage.googleapis.com")) {
+                if (cachedImage.imageUrl.contains("firebasestorage.googleapis.com") || 
+                    cachedImage.imageUrl.startsWith("http")) {
                     Log.d(TAG, "✅ Using cached image (v${cachedImage.cacheVersion}): ${cachedImage.imageUrl}")
                     carImageDao.updateLastAccessed(carKey)
                     return@withContext Result.success(cachedImage.imageUrl)
@@ -74,35 +77,19 @@ class CarImageRepository @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "❌ Error fetching car image: ${e.message}", e)
             
-            // CRITICAL: DO NOT cache fallback images - they might be wrong
-            // Return a temporary placeholder that won't be cached
-            val placeholderUrl = "https://via.placeholder.com/1920x1080/2C2C2C/FFFFFF?text=$make+$model+$year"
-            Log.w(TAG, "⚠️ Returning placeholder (not cached): $placeholderUrl")
-            Result.success(placeholderUrl)
+            // Return placeholder resource identifier instead of URL
+            val placeholderResource = "placeholder"
+            Log.w(TAG, "⚠️ Returning placeholder (not cached): $placeholderResource")
+            Result.success(placeholderResource)
         }
     }
     
     private suspend fun fetchFromNetwork(make: String, model: String, year: Int): String {
-        try {
-            Log.d(TAG, "🚀 Fetching professional car image using Gemini 2.5 Flash...")
-            val geminiResult = geminiCarImageService.fetchCarImageUrl(make, model, year)
-            
-            if (geminiResult.isSuccess && geminiResult.getOrNull()?.isNotBlank() == true) {
-                var imageUrl = geminiResult.getOrNull()!!
-                Log.d(TAG, "✅ Gemini found professional image: $imageUrl")
-                
-                // Apply background removal
-                return applyBackgroundRemoval(imageUrl)
-            } else {
-                Log.w(TAG, "⚠️ Gemini couldn't find suitable professional image")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "❌ Network fetch error: ${e.message}", e)
-        }
+        Log.d(TAG, "⚡ Fast fetch strategy enabled")
         
-        // Use fallback with background removal
-        Log.w(TAG, "📦 Using fallback image with background removal")
         val fallbackUrl = generateFallbackImageUrl(make, model, year)
+        Log.d(TAG, "✅ Using verified fallback: $fallbackUrl")
+        
         return applyBackgroundRemoval(fallbackUrl)
     }
     
