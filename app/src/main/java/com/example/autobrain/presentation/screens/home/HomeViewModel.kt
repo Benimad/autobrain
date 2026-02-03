@@ -39,6 +39,7 @@ data class HomeUiState(
     val lastDiagnosticDate: String = "Dec 15, 2024",
     val daysUntilService: Int = 15,
     val kmUntilService: Int = 2500,
+    val carImageUrl: String? = null,
     val recentDiagnostics: List<DiagnosticItem> = emptyList(),
     val error: String? = null
 )
@@ -95,6 +96,7 @@ class HomeViewModel @Inject constructor(
                                 carMake = carMake,
                                 carModel = carModelName,
                                 carYear = carYearValue,
+                                carImageUrl = user.carDetails?.carImageUrl,
                                 carKilometers = 45000
                             )
                         }

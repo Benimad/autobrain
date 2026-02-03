@@ -172,14 +172,15 @@ class AddReminderViewModel @Inject constructor(
                         )
                     },
                     onFailure = { error ->
+                        android.util.Log.e("AddReminderVM", "Gemini error details", error)
                         _geminiSuggestions.value = GeminiSuggestionsState.Error(
-                            error.message ?: "Gemini error"
+                            "AI analysis unavailable"
                         )
                     }
                 )
             } catch (e: Exception) {
                 android.util.Log.e("AddReminderVM", "Gemini error: ${e.message}", e)
-                _geminiSuggestions.value = GeminiSuggestionsState.Error("Error: ${e.message}")
+                _geminiSuggestions.value = GeminiSuggestionsState.Error("AI analysis unavailable")
             }
         }
     }

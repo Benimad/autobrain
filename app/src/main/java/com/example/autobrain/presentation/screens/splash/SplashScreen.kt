@@ -2,6 +2,7 @@ package com.example.autobrain.presentation.screens.splash
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -19,9 +20,11 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.autobrain.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -147,136 +150,33 @@ fun SplashScreen(
                 scaleY = animatedScale
             )
         ) {
-            // AI Car Icon with glow effect
-            Box(
-                contentAlignment = Alignment.Center,
+            // AutoBrain PNG Logo
+            Image(
+                painter = painterResource(id = R.drawable.logowitoutbg),
+                contentDescription = "AutoBrain Logo",
                 modifier = Modifier.size(200.dp)
-            ) {
-                // Outer glow effect (wider)
-                Box(
-                    modifier = Modifier
-                        .size(160.dp)
-                        .blur(40.dp)
-                        .alpha(glowAlpha * 0.8f)
-                        .background(
-                            Brush.radialGradient(
-                                colors = listOf(
-                                    Color(0xFF00D9D9).copy(alpha = 0.4f),
-                                    Color(0xFF00D9D9).copy(alpha = 0.2f),
-                                    Color.Transparent
-                                )
-                            ),
-                            CircleShape
-                        )
-                )
-                
-                // Inner glow effect
-                Box(
-                    modifier = Modifier
-                        .size(140.dp)
-                        .blur(20.dp)
-                        .alpha(glowAlpha)
-                        .background(
-                            Color(0xFF00D9D9).copy(alpha = 0.3f),
-                            CircleShape
-                        )
-                )
-                
-                // Main car icon with circuit pattern
-                AICarIcon(
-                    modifier = Modifier.size(150.dp),
-                    tint = Color(0xFF00D9D9)
-                )
-                
-                // Plus icon in circle (top right) with glow
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = (-8).dp, y = 32.dp)
-                ) {
-                    // Plus icon glow
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .blur(10.dp)
-                            .alpha(glowAlpha * 0.6f)
-                            .background(
-                                Color(0xFF00D9D9).copy(alpha = 0.4f),
-                                CircleShape
-                            )
-                    )
-                    // Plus icon background
-                    Box(
-                        modifier = Modifier
-                            .size(38.dp)
-                            .background(
-                                Color(0xFF0D1B2A),
-                                CircleShape
-                            )
-                            .clip(CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        DiagnosticPlusIcon(
-                            modifier = Modifier.size(30.dp),
-                            tint = Color(0xFF00D9D9)
-                        )
-                    }
-                }
-            }
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // AutoBrain text with shadow
-            Box(contentAlignment = Alignment.Center) {
-                // Text shadow/glow
-                Text(
-                    text = "AutoBrain",
-                    fontSize = 44.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF00D9D9).copy(alpha = 0.2f),
-                    letterSpacing = 1.2.sp,
-                    modifier = Modifier
-                        .offset(y = 3.dp)
-                        .blur(6.dp)
-                )
-                // Main text
-                Text(
-                    text = "AutoBrain",
-                    fontSize = 44.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White,
-                    letterSpacing = 1.2.sp
-                )
-            }
+            // AutoBrain text
+            Text(
+                text = "AutoBrain",
+                fontSize = 44.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.White,
+                letterSpacing = 1.2.sp
+            )
             
-            // Cyan underline with glow
+            // Cyan underline
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp)
             ) {
-                // Underline glow
-                Box(
-                    modifier = Modifier
-                        .width(140.dp)
-                        .height(4.dp)
-                        .blur(6.dp)
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color(0xFF00D9D9).copy(alpha = 0.6f),
-                                    Color.Transparent
-                                )
-                            ),
-                            RoundedCornerShape(2.dp)
-                        )
-                )
-                // Main underline
                 Box(
                     modifier = Modifier
                         .width(130.dp)
                         .height(4.dp)
-                        .align(Alignment.Center)
                         .clip(RoundedCornerShape(2.dp))
                         .background(
                             Brush.horizontalGradient(
@@ -317,26 +217,6 @@ fun SplashScreen(
                             )
                         )
                 )
-                
-                // Glow effect on loading bar
-                if (progress > 0.1f) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(30.dp)
-                            .offset(x = ((progress * 220 - 15).coerceAtLeast(0f)).dp)
-                            .blur(8.dp)
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color.Transparent,
-                                        Color(0xFF00D9D9).copy(alpha = 0.6f),
-                                        Color.Transparent
-                                    )
-                                )
-                            )
-                    )
-                }
             }
         }
     }
@@ -384,128 +264,3 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawHexagon(
     drawPath(path, color, style = Stroke(width = 1.dp.toPx()))
 }
 
-@Composable
-private fun AICarIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = Color(0xFF00D9D9)
-) {
-    Canvas(modifier = modifier) {
-        val width = size.width
-        val height = size.height
-        val strokeWidth = 3.dp.toPx()
-        
-        // Car body outline - front view with hood open look
-        val carPath = Path().apply {
-            // Left mirror
-            moveTo(width * 0.1f, height * 0.45f)
-            lineTo(width * 0.18f, height * 0.45f)
-            lineTo(width * 0.18f, height * 0.55f)
-            lineTo(width * 0.1f, height * 0.55f)
-            close()
-            
-            // Right mirror
-            moveTo(width * 0.9f, height * 0.45f)
-            lineTo(width * 0.82f, height * 0.45f)
-            lineTo(width * 0.82f, height * 0.55f)
-            lineTo(width * 0.9f, height * 0.55f)
-            close()
-            
-            // Main car body
-            moveTo(width * 0.18f, height * 0.35f)
-            // Top left corner
-            lineTo(width * 0.25f, height * 0.2f)
-            // Roof line to right
-            lineTo(width * 0.75f, height * 0.2f)
-            // Top right corner
-            lineTo(width * 0.82f, height * 0.35f)
-            // Right side down
-            lineTo(width * 0.82f, height * 0.75f)
-            // Bottom right
-            lineTo(width * 0.75f, height * 0.85f)
-            // Bottom line
-            lineTo(width * 0.25f, height * 0.85f)
-            // Bottom left
-            lineTo(width * 0.18f, height * 0.75f)
-            close()
-        }
-        
-        drawPath(carPath, tint, style = Stroke(width = strokeWidth, cap = StrokeCap.Round, join = StrokeJoin.Round))
-        
-        // Windshield / hood area with circuit pattern
-        val windshieldPath = Path().apply {
-            moveTo(width * 0.28f, height * 0.25f)
-            lineTo(width * 0.72f, height * 0.25f)
-            lineTo(width * 0.78f, height * 0.4f)
-            lineTo(width * 0.22f, height * 0.4f)
-            close()
-        }
-        drawPath(windshieldPath, tint, style = Stroke(width = strokeWidth * 0.7f))
-        
-        // Circuit patterns inside the car (AI brain representation)
-        // Horizontal lines
-        drawLine(tint.copy(alpha = 0.7f), Offset(width * 0.3f, height * 0.5f), Offset(width * 0.7f, height * 0.5f), strokeWidth * 0.5f)
-        drawLine(tint.copy(alpha = 0.7f), Offset(width * 0.3f, height * 0.6f), Offset(width * 0.7f, height * 0.6f), strokeWidth * 0.5f)
-        drawLine(tint.copy(alpha = 0.7f), Offset(width * 0.3f, height * 0.7f), Offset(width * 0.7f, height * 0.7f), strokeWidth * 0.5f)
-        
-        // Vertical connector lines
-        drawLine(tint.copy(alpha = 0.7f), Offset(width * 0.4f, height * 0.45f), Offset(width * 0.4f, height * 0.75f), strokeWidth * 0.5f)
-        drawLine(tint.copy(alpha = 0.7f), Offset(width * 0.5f, height * 0.45f), Offset(width * 0.5f, height * 0.75f), strokeWidth * 0.5f)
-        drawLine(tint.copy(alpha = 0.7f), Offset(width * 0.6f, height * 0.45f), Offset(width * 0.6f, height * 0.75f), strokeWidth * 0.5f)
-        
-        // Circuit nodes (small circles)
-        val nodeRadius = 4.dp.toPx()
-        val nodePositions = listOf(
-            Offset(width * 0.4f, height * 0.5f),
-            Offset(width * 0.5f, height * 0.5f),
-            Offset(width * 0.6f, height * 0.5f),
-            Offset(width * 0.4f, height * 0.6f),
-            Offset(width * 0.6f, height * 0.6f),
-            Offset(width * 0.4f, height * 0.7f),
-            Offset(width * 0.5f, height * 0.7f),
-            Offset(width * 0.6f, height * 0.7f),
-        )
-        
-        nodePositions.forEach { pos ->
-            drawCircle(tint, nodeRadius, pos)
-        }
-        
-        // Front grille / bottom detail
-        drawLine(tint, Offset(width * 0.3f, height * 0.8f), Offset(width * 0.7f, height * 0.8f), strokeWidth * 0.7f)
-    }
-}
-
-@Composable
-private fun DiagnosticPlusIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = Color(0xFF00D9D9)
-) {
-    Canvas(modifier = modifier) {
-        val strokeWidth = 2.dp.toPx()
-        val padding = 6.dp.toPx()
-        
-        // Circle outline
-        drawCircle(
-            color = tint,
-            radius = size.minDimension / 2 - strokeWidth,
-            style = Stroke(width = strokeWidth)
-        )
-        
-        val center = Offset(size.width / 2, size.height / 2)
-        val crossSize = size.minDimension / 3.5f
-        
-        drawLine(
-            tint,
-            Offset(center.x - crossSize, center.y),
-            Offset(center.x + crossSize, center.y),
-            strokeWidth * 1.5f,
-            cap = StrokeCap.Round
-        )
-        drawLine(
-            tint,
-            Offset(center.x, center.y - crossSize),
-            Offset(center.x, center.y + crossSize),
-            strokeWidth * 1.5f,
-            cap = StrokeCap.Round
-        )
-    }
-}

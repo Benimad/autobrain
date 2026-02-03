@@ -1,45 +1,126 @@
-﻿package com.example.autobrain.presentation.screens.carlog
+package com.example.autobrain.presentation.screens.carlog
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.LocalGasStation
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.BatteryChargingFull
+import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.BuildCircle
+import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Speed
+import androidx.compose.material.icons.outlined.WaterDrop
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.autobrain.core.utils.toFormattedDate
+import androidx.navigation.compose.rememberNavController
 import com.example.autobrain.core.utils.toCurrency
+import com.example.autobrain.core.utils.toFormattedDate
 import com.example.autobrain.domain.model.MaintenanceRecord
 import com.example.autobrain.domain.model.MaintenanceReminder
 import com.example.autobrain.domain.model.MaintenanceType
 import com.example.autobrain.domain.model.ReminderPriority
 import com.example.autobrain.presentation.components.ModernBottomNavBar
 import com.example.autobrain.presentation.navigation.Screen
-import com.example.autobrain.presentation.theme.*
-import java.util.Calendar
+import com.example.autobrain.presentation.theme.AutoBrainTheme
+import com.example.autobrain.presentation.theme.DeepNavy
+import com.example.autobrain.presentation.theme.ElectricTeal
+import com.example.autobrain.presentation.theme.ErrorRed
+import com.example.autobrain.presentation.theme.MidnightBlack
+import com.example.autobrain.presentation.theme.SuccessGreen
+import com.example.autobrain.presentation.theme.TextMuted
+import com.example.autobrain.presentation.theme.TextOnAccent
+import com.example.autobrain.presentation.theme.TextPrimary
+import com.example.autobrain.presentation.theme.TextSecondary
+import com.example.autobrain.presentation.theme.WarningAmber
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 // Helper functions for maintenance calculations
@@ -103,17 +184,47 @@ private fun calculateAverageMonthlyCost(records: List<MaintenanceRecord>): Doubl
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
-fun CarLogScreen(
+fun CarLogScreenPreview() {
+    val navController = rememberNavController()
+    AutoBrainTheme {
+        CarLogScreenContent(navController = navController)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CarLogScreenContent(
     navController: NavController,
-    viewModel: CarLogViewModel = hiltViewModel()
+    modifier: Modifier = Modifier
 ) {
-    val carLogState by viewModel.carLogState.collectAsState()
-    val remindersState by viewModel.remindersState.collectAsState()
-    val smartRemindersState by viewModel.smartRemindersState.collectAsState()
+    val sampleRecords = listOf(
+        MaintenanceRecord(
+            id = "1",
+            type = MaintenanceType.OIL_CHANGE,
+            description = "Oil Change",
+            date = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30),
+            cost = 45.0,
+            mileage = 15000,
+            serviceProvider = "AutoService Pro",
+            notes = "Synthetic oil used"
+        ),
+        MaintenanceRecord(
+            id = "2",
+            type = MaintenanceType.BRAKE_SERVICE,
+            description = "Brake Pads Replacement",
+            date = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(90),
+            cost = 180.0,
+            mileage = 14500,
+            serviceProvider = "Brake Masters",
+            notes = "Front brake pads replaced"
+        )
+    )
     
-    // AI Advice dialog state
-    var showAIDialog by remember { mutableStateOf(false) }
+    val healthScore = calculateVehicleHealthScore(sampleRecords)
+    val nextMaintenance = predictNextMaintenance(sampleRecords)
+    val avgCostPerMonth = calculateAverageMonthlyCost(sampleRecords)
 
     Scaffold(
         containerColor = MidnightBlack,
@@ -122,7 +233,7 @@ fun CarLogScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            Icons.Default.MenuBook,
+                            Icons.AutoMirrored.Filled.MenuBook,
                             contentDescription = null,
                             tint = ElectricTeal,
                             modifier = Modifier.size(28.dp)
@@ -144,7 +255,7 @@ fun CarLogScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate(Screen.AddMaintenance.route) }) {
+                    IconButton(onClick = { navController.navigate(Screen.AddMaintenance.createRoute("default")) }) {
                         Icon(Icons.Default.Add, contentDescription = "Add", tint = ElectricTeal)
                     }
                 },
@@ -156,6 +267,214 @@ fun CarLogScreen(
                 )
             )
         },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.AddMaintenance.createRoute("default")) },
+                containerColor = ElectricTeal,
+                contentColor = MidnightBlack,
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
+        }
+    ) { padding ->
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentPadding = PaddingValues(16.dp, 80.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Enhanced Summary Card
+            item {
+                EnhancedSmartSummaryCard(
+                    totalRecords = sampleRecords.size,
+                    totalExpenses = sampleRecords.sumOf { it.cost },
+                    nextMaintenance = nextMaintenance,
+                    healthScore = healthScore,
+                    avgCostPerMonth = avgCostPerMonth,
+                    lastMaintenanceDate = sampleRecords.maxByOrNull { it.date }?.date
+                )
+            }
+            
+            // Recent Records
+            items(sampleRecords) { record ->
+                MaintenanceRecordCard(
+                    record = record,
+                    onClick = {}
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MaintenanceRecordCard(
+    modifier: Modifier = Modifier,
+    record: MaintenanceRecord,
+    onClick: () -> Unit
+) {
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(if (isPressed) 0.98f else 1f, label = "card_scale")
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .scale(scale)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        isPressed = true
+                        tryAwaitRelease()
+                        isPressed = false
+                        onClick()
+                    }
+                )
+            },
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = DeepNavy.copy(alpha = 0.7f)),
+        border = BorderStroke(0.5.dp, Color.White.copy(alpha = 0.05f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Service Icon with dynamic background
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .background(
+                        ElectricTeal.copy(alpha = 0.1f),
+                        RoundedCornerShape(16.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = getMaintenanceTypeIcon(record.type),
+                    contentDescription = null,
+                    tint = ElectricTeal,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = record.description,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = TextPrimary,
+                    letterSpacing = (-0.3).sp
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.CalendarToday, null, tint = TextMuted, modifier = Modifier.size(10.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = record.date.toFormattedDate(),
+                        fontSize = 11.sp,
+                        color = TextSecondary,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Icon(Icons.Default.Speed, null, tint = TextMuted, modifier = Modifier.size(10.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "${record.mileage} km",
+                        fontSize = 11.sp,
+                        color = TextSecondary,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+            
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = record.cost.toCurrency(),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                    color = TextPrimary
+                )
+                Text(
+                    text = "Total Paid",
+                    fontSize = 9.sp,
+                    color = ElectricTeal,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CarLogScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: CarLogViewModel = hiltViewModel()
+) {
+    val carLogState by viewModel.carLogState.collectAsState()
+    val remindersState by viewModel.remindersState.collectAsState()
+    val smartRemindersState by viewModel.smartRemindersState.collectAsState()
+    
+    // AI Advice dialog state
+    var showAIDialog by remember { mutableStateOf(false) }
+
+    Box(modifier = modifier.fillMaxSize().background(MidnightBlack)) {
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                "Smart Logbook",
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 20.sp,
+                                color = TextPrimary,
+                                letterSpacing = 0.5.sp
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .background(SuccessGreen, CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    "Connected & Live",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimary, modifier = Modifier.size(20.dp))
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { /* Settings or Filter */ },
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .background(DeepNavy.copy(alpha = 0.5f), CircleShape)
+                        ) {
+                            Icon(Icons.Default.Tune, contentDescription = "Filter", tint = ElectricTeal, modifier = Modifier.size(20.dp))
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = TextPrimary
+                    )
+                )
+            },
         bottomBar = {
             ModernBottomNavBar(
                 currentRoute = "car_logbook",
@@ -170,20 +489,21 @@ fun CarLogScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = {
                     val carId = when (val state = carLogState) {
-                        is CarLogState.Success -> state.carLog.userId
-                        else -> "default"
+                        is CarLogState.Success -> state.carLog.id
+                        else -> ""
                     }
                     navController.navigate(Screen.AddMaintenance.createRoute(carId))
                 },
                 containerColor = ElectricTeal,
-                contentColor = TextOnAccent,
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-            }
+                contentColor = MidnightBlack,
+                shape = RoundedCornerShape(20.dp),
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp),
+                icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                text = { Text("Log Service", fontWeight = FontWeight.Bold) }
+            )
         }
     ) { padding ->
         LazyColumn(
@@ -343,8 +663,12 @@ fun CarLogScreen(
 
                 is CarLogState.Empty -> {
                     item {
+                        val user by viewModel.currentUser.collectAsState()
                         EmptyMaintenanceCard(
-                            onAddMaintenance = { navController.navigate(Screen.AddMaintenance.route) }
+                            onAddMaintenance = { 
+                                val carId = user?.uid ?: "default"
+                                navController.navigate(Screen.AddMaintenance.createRoute(carId)) 
+                            }
                         )
                     }
                 }
@@ -372,377 +696,123 @@ fun CarLogScreen(
             }
         )
     }
-}
-
-@Composable
-private fun SmartSummaryCard(
-    totalRecords: Int,
-    totalExpenses: Double,
-    nextMaintenance: String
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(
-                            DeepNavy,
-                            DarkNavy,
-                            Color(0xFF1A2332)
-                        )
-                    )
-                )
-        ) {
-            // Decorative circles
-            Box(
-                modifier = Modifier
-                    .size(150.dp)
-                    .offset(x = (-40).dp, y = (-40).dp)
-                    .background(
-                        Color.White.copy(alpha = 0.03f),
-                        CircleShape
-                    )
-            )
-
-            Column(
-                modifier = Modifier.padding(24.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = "Vehicle summary",
-                            fontSize = 14.sp,
-                            color = TextSecondary
-                        )
-                        Text(
-                            text = totalExpenses.toCurrency(),
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = TextPrimary
-                        )
-                        Text(
-                            text = "Total expenses",
-                            fontSize = 12.sp,
-                            color = TextMuted
-                        )
-                    }
-
-                    // Records count badge
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(70.dp)
-                                .background(
-                                    ElectricTeal.copy(alpha = 0.2f),
-                                    CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = totalRecords.toString(),
-                                    fontSize = 28.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = ElectricTeal
-                                )
-                                Text(
-                                    text = "entries",
-                                    fontSize = 10.sp,
-                                    color = ElectricTeal.copy(alpha = 0.8f)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Next maintenance alert
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = SlateGray
-                    ),
-                    shape = RoundedCornerShape(14.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Schedule,
-                            contentDescription = null,
-                            tint = ElectricTeal,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = "Next maintenance",
-                                fontSize = 12.sp,
-                                color = TextSecondary
-                            )
-                            Text(
-                                text = nextMaintenance,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = TextPrimary
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun QuickActionsSection(
-    onAddMaintenance: () -> Unit,
-    onViewReminders: () -> Unit,
-    onViewDocuments: () -> Unit,
-    onAIAdvice: () -> Unit
-) {
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        item {
-            QuickActionCard(
-                icon = Icons.Default.Add,
-                title = "Add",
-                subtitle = "Maintenance",
-                gradientColors = listOf(ElectricTeal, TealDark),
-                onClick = onAddMaintenance
-            )
-        }
-        item {
-            QuickActionCard(
-                icon = Icons.Default.AutoAwesome,
-                title = "AI Advice",
-                subtitle = "Gemini Smart",
-                gradientColors = listOf(WarningAmber, Color(0xFFFBBF24)),
-                onClick = onAIAdvice
-            )
-        }
-        item {
-            QuickActionCard(
-                icon = Icons.Default.Notifications,
-                title = "Reminders",
-                subtitle = "Due dates",
-                gradientColors = listOf(Color(0xFFB794F4), Color(0xFF9F7AEA)),
-                onClick = onViewReminders
-            )
-        }
-        item {
-            QuickActionCard(
-                icon = Icons.Default.Description,
-                title = "Documents",
-                subtitle = "Insurance, Inspection",
-                gradientColors = listOf(SuccessGreen, SuccessGreenLight),
-                onClick = onViewDocuments
-            )
-        }
-    }
-}
-
-@Composable
-private fun QuickActionCard(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    gradientColors: List<Color>,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .width(120.dp)
-            .height(100.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Brush.linearGradient(gradientColors))
-                .padding(14.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    tint = Color.White,
-                    modifier = Modifier.size(28.dp)
-                )
-                Column {
-                    Text(
-                        text = title,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Text(
-                        text = subtitle,
-                        fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-                }
-            }
-        }
     }
 }
 
 @Composable
 private fun SectionHeader(
+    modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
-    actionText: String?,
-    onActionClick: (() -> Unit)?
+    actionText: String? = null,
+    onActionClick: (() -> Unit)? = null
 ) {
-    Row(
-        modifier = Modifier
+    val infiniteTransition = rememberInfiniteTransition(label = "section_header_glow")
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 0.8f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "header_glow"
+    )
+    
+    Column(
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
-        Column {
-            Text(
-                text = title,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary
-            )
-            Text(
-                text = subtitle,
-                fontSize = 13.sp,
-                color = TextSecondary
-            )
-        }
-
-        if (actionText != null && onActionClick != null) {
-            TextButton(onClick = onActionClick) {
-                Text(
-                    text = actionText,
-                    fontSize = 14.sp,
-                    color = ElectricTeal,
-                    fontWeight = FontWeight.Medium
-                )
-                Icon(
-                    imageVector = Icons.Default.ChevronRight,
-                    contentDescription = null,
-                    tint = ElectricTeal,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SmartReminderCard(
-    reminder: com.example.autobrain.domain.model.MaintenanceReminder,
-    onComplete: () -> Unit
-) {
-    val (iconColor, backgroundColor) = when {
-        reminder.title.contains("Visite", ignoreCase = true) ->
-            ErrorRed to ErrorRed.copy(alpha = 0.15f)
-
-        reminder.title.contains("Assurance", ignoreCase = true) ->
-            WarningAmber to WarningAmber.copy(alpha = 0.15f)
-
-        reminder.title.contains("Oil change", ignoreCase = true) ->
-            ElectricTeal to ElectricTeal.copy(alpha = 0.15f)
-
-        else -> SuccessGreen to SuccessGreen.copy(alpha = 0.15f)
-    }
-
-    Card(
-        modifier = Modifier.width(200.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = DeepNavy),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
             ) {
                 Box(
                     modifier = Modifier
-                        .size(44.dp)
-                        .background(backgroundColor, RoundedCornerShape(12.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = null,
-                        tint = iconColor,
-                        modifier = Modifier.size(24.dp)
+                        .width(4.dp)
+                        .height(32.dp)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    ElectricTeal.copy(alpha = glowAlpha),
+                                    ElectricTeal.copy(alpha = glowAlpha * 0.4f)
+                                )
+                            ),
+                            shape = RoundedCornerShape(2.dp)
+                        )
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = title,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Black,
+                        color = TextPrimary,
+                        letterSpacing = (-0.8).sp
                     )
-                }
-
-                IconButton(
-                    onClick = onComplete,
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.CheckCircle,
-                        contentDescription = "Mark done",
-                        tint = SuccessGreen
-                    )
+                    Spacer(modifier = Modifier.height(3.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(5.dp)
+                                .background(
+                                    ElectricTeal.copy(alpha = glowAlpha),
+                                    CircleShape
+                                )
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = subtitle,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = TextSecondary
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = reminder.title,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = TextPrimary,
-                maxLines = 1
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.CalendarToday,
-                    contentDescription = null,
-                    tint = TextSecondary,
-                    modifier = Modifier.size(14.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = reminder.dueDate.toFormattedDate(),
-                    fontSize = 12.sp,
-                    color = TextSecondary
-                )
+            if (actionText != null && onActionClick != null) {
+                Box(
+                    modifier = Modifier
+                        .clickable { onActionClick() }
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    ElectricTeal.copy(alpha = 0.2f),
+                                    ElectricTeal.copy(alpha = 0.1f)
+                                )
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .border(
+                            1.dp,
+                            ElectricTeal.copy(alpha = 0.4f),
+                            RoundedCornerShape(12.dp)
+                        )
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = actionText,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = ElectricTeal,
+                            letterSpacing = 0.3.sp
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = ElectricTeal,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
             }
         }
     }
@@ -750,10 +820,11 @@ private fun SmartReminderCard(
 
 @Composable
 private fun EmptyRemindersCard(
+    modifier: Modifier = Modifier,
     onAddReminder: () -> Unit
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
@@ -806,10 +877,11 @@ private fun EmptyRemindersCard(
 
 @Composable
 private fun EmptyMaintenanceCard(
+    modifier: Modifier = Modifier,
     onAddMaintenance: () -> Unit
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(20.dp),
@@ -828,7 +900,7 @@ private fun EmptyMaintenanceCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.MenuBook,
+                    imageVector = Icons.AutoMirrored.Filled.MenuBook,
                     contentDescription = null,
                     tint = ElectricTeal,
                     modifier = Modifier.size(40.dp)
@@ -880,9 +952,9 @@ private fun EmptyMaintenanceCard(
 
 @Composable
 private fun ErrorCard(
+    modifier: Modifier = Modifier,
     message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    onRetry: () -> Unit
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -1149,215 +1221,271 @@ private fun AIAdviceDialog(
 
 @Composable
 private fun TimelineNode(
+    modifier: Modifier = Modifier,
     record: MaintenanceRecord,
     isLast: Boolean,
     onClick: () -> Unit
 ) {
-    val (iconColor, glowColor) = when {
-        record.type.name.contains("OIL", ignoreCase = true) ->
-            ElectricTeal to ElectricTeal.copy(alpha = 0.3f)
-
-        record.type.name.contains("BRAKE", ignoreCase = true) ->
-            ErrorRed to ErrorRed.copy(alpha = 0.3f)
-
-        record.type.name.contains("TIRE", ignoreCase = true) ->
-            SuccessGreen to SuccessGreen.copy(alpha = 0.3f)
-
-        record.type.name.contains("INSPECTION", ignoreCase = true) ->
-            WarningAmber to WarningAmber.copy(alpha = 0.3f)
-
-        else -> ElectricTeal to ElectricTeal.copy(alpha = 0.3f)
+    val iconColor = when {
+        record.type.name.contains("OIL", ignoreCase = true) -> ElectricTeal
+        record.type.name.contains("BRAKE", ignoreCase = true) -> ErrorRed
+        record.type.name.contains("TIRE", ignoreCase = true) -> SuccessGreen
+        record.type.name.contains("INSPECTION", ignoreCase = true) -> WarningAmber
+        else -> ElectricTeal
     }
+    
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.98f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "timeline_scale"
+    )
+    
+    val infiniteTransition = rememberInfiniteTransition(label = "timeline_glow")
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse_alpha"
+    )
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 20.dp)
     ) {
-        // Timeline Line & Dot
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(32.dp)
+            modifier = Modifier.width(36.dp)
         ) {
-            // Top Line (connect to previous)
             Box(
                 modifier = Modifier
-                    .width(2.dp)
-                    .height(24.dp)
-                    .background(BorderDark)
-            )
-
-            // Node Dot
-            Box(
-                modifier = Modifier
-                    .size(16.dp)
-                    .background(MidnightBlack, CircleShape)
-                    .border(2.dp, iconColor, CircleShape)
-                    .drawBehind {
-                        drawCircle(
-                            color = glowColor,
-                            radius = size.width,
-                            alpha = 0.5f
+                    .width(3.dp)
+                    .height(28.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                iconColor.copy(alpha = 0.4f)
+                            )
                         )
-                    }
+                    )
             )
 
-            // Bottom Line (connect to next)
+            Box(
+                modifier = Modifier
+                    .size(18.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                iconColor.copy(alpha = 0.3f),
+                                Color.Transparent
+                            ),
+                            radius = 50f
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .background(DeepNavy, CircleShape)
+                        .border(
+                            width = 2.5.dp,
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    iconColor.copy(alpha = pulseAlpha),
+                                    iconColor.copy(alpha = pulseAlpha * 0.6f)
+                                )
+                            ),
+                            shape = CircleShape
+                        )
+                )
+            }
+
             if (!isLast) {
                 Box(
                     modifier = Modifier
-                        .width(2.dp)
+                        .width(3.dp)
                         .weight(1f)
-                        .background(BorderDark)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    iconColor.copy(alpha = 0.4f),
+                                    iconColor.copy(alpha = 0.1f),
+                                    Color.Transparent
+                                )
+                            )
+                        )
                 )
             } else {
                 Spacer(modifier = Modifier.weight(1f))
             }
         }
         
-        // Card content
         Card(
-            onClick = onClick,
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 12.dp, bottom = 24.dp),
-            shape = RoundedCornerShape(16.dp),
+                .padding(start = 16.dp, bottom = 28.dp)
+                .scale(scale)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = {
+                            isPressed = true
+                            tryAwaitRelease()
+                            isPressed = false
+                            onClick()
+                        }
+                    )
+                },
+            shape = RoundedCornerShape(22.dp),
             colors = CardDefaults.cardColors(
-                containerColor = DeepNavy
+                containerColor = Color.Transparent
             ),
-            border = BorderStroke(1.dp, BorderDark)
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                DeepNavy.copy(alpha = 0.85f),
+                                DeepNavy.copy(alpha = 0.65f)
+                            )
+                        )
+                    )
+                    .border(
+                        width = 1.5.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                iconColor.copy(alpha = 0.4f),
+                                iconColor.copy(alpha = 0.15f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(22.dp)
+                    )
+                    .padding(18.dp)
             ) {
-                // Icon Box
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(iconColor.copy(alpha = 0.1f), RoundedCornerShape(10.dp)),
-                    contentAlignment = Alignment.Center
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Build,
-                        contentDescription = null,
-                        tint = iconColor,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // Info
-                Column(modifier = Modifier.weight(1f)) {
-                    // Maintenance Type Title
-                    Text(
-                        text = record.type.name.replace("_", " ").lowercase()
-                            .replaceFirstChar { it.uppercase() },
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextPrimary
-                    )
-                    
-                    // Description
-                    Text(
-                        text = record.description,
-                        fontSize = 13.sp,
-                        color = TextSecondary,
-                        maxLines = 2,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                        lineHeight = 18.sp
-                    )
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // Date & Mileage Row
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        iconColor.copy(alpha = 0.25f),
+                                        iconColor.copy(alpha = 0.15f)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .border(
+                                1.dp,
+                                iconColor.copy(alpha = 0.4f),
+                                RoundedCornerShape(16.dp)
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.CalendarToday,
+                            imageVector = getMaintenanceTypeIcon(record.type),
                             contentDescription = null,
                             tint = iconColor,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(26.dp)
                         )
-                        Text(
-                            text = " ${record.date.toFormattedDate()}",
-                            fontSize = 12.sp,
-                            color = TextMuted,
-                            fontWeight = FontWeight.Medium
-                        )
-                        if (record.mileage > 0) {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Icon(
-                                imageVector = Icons.Default.Speed,
-                                contentDescription = null,
-                                tint = iconColor,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Text(
-                                text = " ${String.format("%,d", record.mileage)} km",
-                                fontSize = 12.sp,
-                                color = TextMuted,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
                     }
                     
-                    // Service Provider
-                    if (record.serviceProvider.isNotBlank()) {
+                    Spacer(modifier = Modifier.width(14.dp))
+                    
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = record.description,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = TextPrimary,
+                            letterSpacing = (-0.3).sp
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
                         Row(
-                            modifier = Modifier.padding(top = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.LocationOn,
-                                contentDescription = null,
-                                tint = iconColor,
-                                modifier = Modifier.size(14.dp)
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.CalendarToday,
+                                    null,
+                                    tint = iconColor.copy(alpha = 0.7f),
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = record.date.toFormattedDate(),
+                                    fontSize = 11.sp,
+                                    color = TextSecondary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.Speed,
+                                    null,
+                                    tint = iconColor.copy(alpha = 0.7f),
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "${record.mileage} km",
+                                    fontSize = 11.sp,
+                                    color = TextSecondary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = record.cost.toCurrency(),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Black,
+                            color = TextPrimary,
+                            letterSpacing = (-0.5).sp
+                        )
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    SuccessGreen.copy(alpha = 0.2f),
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .border(
+                                    1.dp,
+                                    SuccessGreen.copy(alpha = 0.4f),
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
                             Text(
-                                text = " ${record.serviceProvider}",
-                                fontSize = 12.sp,
-                                color = TextSecondary,
-                                fontWeight = FontWeight.Medium
+                                text = "Completed",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = SuccessGreen,
+                                letterSpacing = 0.5.sp
                             )
                         }
                     }
-                }
-                
-                // Cost Badge
-                Surface(
-                    color = DeepNavy,
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = "$${record.cost.toInt()}",
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = ElectricTeal
-                    )
-                }
-            }
-            
-            // Next Service Due
-            if (record.nextServiceDue > 0) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Surface(
-                    color = ElectricTeal.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = "Next: ${record.nextServiceDue.toFormattedDate()}",
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = ElectricTeal
-                    )
                 }
             }
         }
@@ -1370,14 +1498,14 @@ private fun TimelineNode(
  */
 @Composable
 private fun SmartReminderCard(
+    modifier: Modifier = Modifier,
     reminder: MaintenanceReminder,
-    onComplete: () -> Unit,
-    modifier: Modifier = Modifier
+    onComplete: () -> Unit
 ) {
     val priorityColor = when (reminder.priority) {
         ReminderPriority.CRITICAL -> ErrorRed
-        ReminderPriority.HIGH -> Color(0xFFFB923C) // Orange
-        ReminderPriority.MEDIUM -> Color(0xFFFBBF24) // Amber
+        ReminderPriority.HIGH -> Color(0xFFFB923C)
+        ReminderPriority.MEDIUM -> Color(0xFFFBBF24)
         ReminderPriority.LOW -> ElectricTeal
     }
     
@@ -1393,157 +1521,286 @@ private fun SmartReminderCard(
     val daysRemaining = ((reminder.dueDate - System.currentTimeMillis()) / (1000 * 60 * 60 * 24)).toInt()
     val isOverdue = daysRemaining < 0
     
-    Card(
-        modifier = modifier.width(280.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = DeepNavy
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
         ),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        label = "reminder_card_scale"
+    )
+    
+    val infiniteTransition = rememberInfiniteTransition(label = "reminder_glow")
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 0.8f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glow_alpha"
+    )
+    
+    Card(
+        modifier = modifier
+            .width(300.dp)
+            .scale(scale)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        isPressed = true
+                        tryAwaitRelease()
+                        isPressed = false
+                    }
+                )
+            },
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            DeepNavy.copy(alpha = 0.9f),
+                            DeepNavy.copy(alpha = 0.7f)
+                        )
+                    )
+                )
+                .border(
+                    width = 1.5.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            priorityColor.copy(alpha = glowAlpha * 0.6f),
+                            priorityColor.copy(alpha = glowAlpha * 0.3f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(20.dp)
         ) {
-            // Header: Icon + Priority Badge
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Type Icon
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            priorityColor.copy(alpha = 0.2f),
-                            RoundedCornerShape(12.dp)
-                        ),
-                    contentAlignment = Alignment.Center
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = typeIcon,
-                        contentDescription = null,
-                        tint = priorityColor,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                
-                // Priority Badge
-                Surface(
-                    color = priorityColor.copy(alpha = 0.2f),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Text(
-                        text = when (reminder.priority) {
-                            ReminderPriority.CRITICAL -> "CRITICAL"
-                            ReminderPriority.HIGH -> "HIGH"
-                            ReminderPriority.MEDIUM -> "MEDIUM"
-                            ReminderPriority.LOW -> "LOW"
-                        },
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = priorityColor
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Title
-            Text(
-                text = reminder.title.ifEmpty { getMaintenanceTypeLabel(reminder.type) },
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary,
-                maxLines = 1,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-            )
-            
-            // Description
-            if (reminder.description.isNotBlank()) {
-                Text(
-                    text = reminder.description,
-                    fontSize = 13.sp,
-                    color = TextSecondary,
-                    maxLines = 2,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Due Date & Mileage
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Date
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        priorityColor.copy(alpha = 0.25f),
+                                        priorityColor.copy(alpha = 0.15f)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = priorityColor.copy(alpha = 0.4f),
+                                shape = RoundedCornerShape(16.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Icon(
-                            imageVector = Icons.Outlined.CalendarToday,
+                            imageVector = typeIcon,
                             contentDescription = null,
-                            tint = TextMuted,
-                            modifier = Modifier.size(14.dp)
+                            tint = priorityColor,
+                            modifier = Modifier.size(28.dp)
                         )
+                    }
+                    
+                    Surface(
+                        color = priorityColor.copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(20.dp),
+                        border = BorderStroke(1.dp, priorityColor.copy(alpha = 0.4f))
+                    ) {
                         Text(
-                            text = if (isOverdue) {
-                                " Overdue by ${-daysRemaining} days"
-                            } else {
-                                " In $daysRemaining days"
+                            text = when (reminder.priority) {
+                                ReminderPriority.CRITICAL -> "CRITICAL"
+                                ReminderPriority.HIGH -> "HIGH"
+                                ReminderPriority.MEDIUM -> "MEDIUM"
+                                ReminderPriority.LOW -> "LOW"
                             },
-                            fontSize = 12.sp,
-                            color = if (isOverdue) ErrorRed else TextSecondary,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(start = 4.dp)
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = priorityColor,
+                            letterSpacing = 1.sp
                         )
                     }
                 }
                 
-                // Mileage
-                if (reminder.dueMileage > 0) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.Speed,
-                            contentDescription = null,
-                            tint = TextMuted,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Text(
-                            text = " ${String.format("%,d", reminder.dueMileage)} km",
-                            fontSize = 12.sp,
-                            color = TextSecondary,
-                            fontWeight = FontWeight.Medium
-                        )
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = reminder.title.ifEmpty { getMaintenanceTypeLabel(reminder.type) },
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = TextPrimary,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    letterSpacing = (-0.5).sp
+                )
+                
+                if (reminder.description.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = reminder.description,
+                        fontSize = 13.sp,
+                        color = TextSecondary,
+                        maxLines = 2,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        lineHeight = 18.sp
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(
+                                if (isOverdue) ErrorRed.copy(alpha = 0.15f) else ElectricTeal.copy(alpha = 0.1f),
+                                RoundedCornerShape(14.dp)
+                            )
+                            .border(
+                                1.dp,
+                                if (isOverdue) ErrorRed.copy(alpha = 0.3f) else ElectricTeal.copy(alpha = 0.2f),
+                                RoundedCornerShape(14.dp)
+                            )
+                            .padding(12.dp)
+                    ) {
+                        Column {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Outlined.CalendarToday,
+                                    contentDescription = null,
+                                    tint = if (isOverdue) ErrorRed else ElectricTeal,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = if (isOverdue) "Overdue" else "Due in",
+                                    fontSize = 10.sp,
+                                    color = TextSecondary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = if (isOverdue) "${-daysRemaining}d ago" else "${daysRemaining}d",
+                                fontSize = 16.sp,
+                                color = if (isOverdue) ErrorRed else TextPrimary,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        }
+                    }
+                    
+                    if (reminder.dueMileage > 0) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(
+                                    priorityColor.copy(alpha = 0.1f),
+                                    RoundedCornerShape(14.dp)
+                                )
+                                .border(
+                                    1.dp,
+                                    priorityColor.copy(alpha = 0.2f),
+                                    RoundedCornerShape(14.dp)
+                                )
+                                .padding(12.dp)
+                        ) {
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Speed,
+                                        contentDescription = null,
+                                        tint = priorityColor,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "Mileage",
+                                        fontSize = 10.sp,
+                                        color = TextSecondary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "${String.format("%,d", reminder.dueMileage)}km",
+                                    fontSize = 14.sp,
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
+                            }
+                        }
                     }
                 }
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Complete Button
-            Button(
-                onClick = onComplete,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = priorityColor.copy(alpha = 0.2f),
-                    contentColor = priorityColor
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Mark as done",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Button(
+                    onClick = onComplete,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        priorityColor.copy(alpha = 0.3f),
+                                        priorityColor.copy(alpha = 0.2f)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(14.dp)
+                            )
+                            .border(
+                                1.dp,
+                                priorityColor.copy(alpha = 0.5f),
+                                RoundedCornerShape(14.dp)
+                            )
+                            .padding(vertical = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = priorityColor,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Mark as Done",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = priorityColor,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                    }
+                }
             }
         }
     }

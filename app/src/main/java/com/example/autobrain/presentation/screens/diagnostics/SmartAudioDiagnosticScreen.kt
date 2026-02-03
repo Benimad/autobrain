@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,8 +37,7 @@ import androidx.navigation.NavController
 import com.example.autobrain.data.ai.getMostLikelyRepairCost
 import com.example.autobrain.data.ai.isSafeToDrive
 import com.example.autobrain.data.local.entity.AudioDiagnosticData
-import com.example.autobrain.presentation.components.AudioWaveform
-import com.example.autobrain.presentation.components.GeminiIcon
+import com.example.autobrain.presentation.components.*
 import com.example.autobrain.presentation.theme.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -125,10 +125,6 @@ fun SmartAudioDiagnosticScreen(
                         onClick = { navController.popBackStack() },
                         modifier = Modifier
                             .padding(4.dp)
-                            .background(
-                                PremiumDarkCard.copy(alpha = 0.5f),
-                                CircleShape
-                            )
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
@@ -138,27 +134,18 @@ fun SmartAudioDiagnosticScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent
                 )
             )
         }
     ) { paddingValues ->
-        // Premium animated background
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            PremiumGradientTop,
-                            PremiumDarkBackground,
-                            PremiumGradientBottom
-                        )
-                    )
-                )
+                .background(MidnightBlack)
         ) {
-            // Animated background particles/grid effect
-            PremiumBackgroundEffect()
+            AnimatedBackground()
             
             // Main content
             Box(
@@ -238,115 +225,6 @@ fun SmartAudioDiagnosticScreen(
 }
 
 // =============================================================================
-// PREMIUM BACKGROUND EFFECT
-// =============================================================================
-
-@Composable
-private fun PremiumBackgroundEffect() {
-    val infiniteTransition = rememberInfiniteTransition(label = "bgEffect")
-    
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(60000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "rotation"
-    )
-    
-    val rotation2 by infiniteTransition.animateFloat(
-        initialValue = 360f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(40000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "rotation2"
-    )
-    
-    val pulseAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.02f,
-        targetValue = 0.06f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(3000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulseAlpha"
-    )
-    
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        val centerX = size.width / 2
-        val centerY = size.height / 2
-        val maxRadius = size.width.coerceAtLeast(size.height) * 0.8f
-        
-        // Draw multiple layered radial gradient circles with pulse
-        for (i in 0..5) {
-            val radius = maxRadius * (0.25f + i * 0.15f)
-            val alpha = (pulseAlpha - (i * 0.008f)).coerceAtLeast(0.003f)
-            drawCircle(
-                color = PremiumCyan.copy(alpha = alpha),
-                radius = radius,
-                center = Offset(centerX, centerY),
-                style = Stroke(width = 1.5.dp.toPx())
-            )
-        }
-        
-        // Draw rotating accent arcs with gradient
-        rotate(rotation, Offset(centerX, centerY)) {
-            drawArc(
-                brush = Brush.sweepGradient(
-                    colors = listOf(
-                        PremiumCyan.copy(alpha = 0.08f),
-                        PremiumCyan.copy(alpha = 0.02f),
-                        Color.Transparent
-                    )
-                ),
-                startAngle = 0f,
-                sweepAngle = 90f,
-                useCenter = false,
-                topLeft = Offset(centerX - maxRadius * 0.6f, centerY - maxRadius * 0.6f),
-                size = Size(maxRadius * 1.2f, maxRadius * 1.2f),
-                style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
-            )
-        }
-        
-        // Draw counter-rotating accent arcs
-        rotate(rotation2, Offset(centerX, centerY)) {
-            drawArc(
-                brush = Brush.sweepGradient(
-                    colors = listOf(
-                        Color.Transparent,
-                        PremiumCyanDark.copy(alpha = 0.06f),
-                        PremiumCyanDark.copy(alpha = 0.02f)
-                    )
-                ),
-                startAngle = 180f,
-                sweepAngle = 120f,
-                useCenter = false,
-                topLeft = Offset(centerX - maxRadius * 0.4f, centerY - maxRadius * 0.4f),
-                size = Size(maxRadius * 0.8f, maxRadius * 0.8f),
-                style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round)
-            )
-        }
-        
-        // Add subtle particles effect
-        for (i in 0..8) {
-            val angle = (rotation + i * 40f) * (Math.PI / 180).toFloat()
-            val particleRadius = maxRadius * 0.4f
-            val x = centerX + cos(angle) * particleRadius
-            val y = centerY + sin(angle) * particleRadius
-            
-            drawCircle(
-                color = PremiumCyan.copy(alpha = (0.04f - i * 0.003f).coerceAtLeast(0.01f)),
-                radius = (4f - i * 0.3f).coerceAtLeast(1f).dp.toPx(),
-                center = Offset(x, y)
-            )
-        }
-    }
-}
-
-// =============================================================================
 // IDLE / READY STATE - PREMIUM DESIGN
 // =============================================================================
 
@@ -360,6 +238,12 @@ private fun IdleReadyState(
     val screenHeight = configuration.screenHeightDp.dp
     val isCompactScreen = screenHeight < 700.dp
     
+    var isVisible by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(Unit) {
+        isVisible = true
+    }
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -369,54 +253,109 @@ private fun IdleReadyState(
     ) {
         Spacer(modifier = Modifier.height(if (isCompactScreen) 12.dp else 24.dp))
         
-        // Premium Animated Microphone with Glow
-        PremiumMicrophoneIcon(
-            size = if (isCompactScreen) 140.dp else 180.dp
-        )
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn(tween(600)) + scaleIn(
+                tween(600, easing = FastOutSlowInEasing),
+                initialScale = 0.8f
+            )
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                UltraPremiumMicrophoneIcon(
+                    size = if (isCompactScreen) 160.dp else 220.dp
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(if (isCompactScreen) 24.dp else 36.dp))
+        
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn(tween(500, delayMillis = 200)) + 
+                    slideInVertically(tween(500, delayMillis = 200)) { it / 2 }
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "DIAGNOSE YOUR",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextSecondary,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 3.sp
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Text(
+                    text = "Engine Sound",
+                    style = androidx.compose.ui.text.TextStyle(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color.White,
+                                PremiumCyan,
+                                Color(0xFF00D4FF)
+                            )
+                        ),
+                        fontSize = if (isCompactScreen) 32.sp else 42.sp,
+                        fontWeight = FontWeight.Black,
+                        textAlign = TextAlign.Center
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(SuccessGreen, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "AI-Powered • 100% Local • Instant Results",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center,
+                        letterSpacing = 0.8.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
         
         Spacer(modifier = Modifier.height(if (isCompactScreen) 20.dp else 32.dp))
         
-        // Title with gradient effect
-        Text(
-            text = "Record Sound",
-            style = if (isCompactScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.headlineMedium,
-            color = TextPrimary,
-            textAlign = TextAlign.Center
-        )
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn(tween(500, delayMillis = 400)) + 
+                    slideInVertically(tween(500, delayMillis = 400)) { it / 2 }
+        ) {
+            EnhancedInstructionsCard(isCompact = isCompactScreen)
+        }
         
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(if (isCompactScreen) 24.dp else 36.dp))
         
-        Text(
-            text = "Engine",
-            style = if (isCompactScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.headlineMedium,
-            color = PremiumCyan,
-            textAlign = TextAlign.Center
-        )
-        
-        Spacer(modifier = Modifier.height(if (isCompactScreen) 14.dp else 20.dp))
-        
-        // Subtitle
-        Text(
-            text = "100% Local Analysis • No cloud",
-            style = MaterialTheme.typography.labelMedium,
-            color = TextSecondary,
-            textAlign = TextAlign.Center,
-            letterSpacing = 0.8.sp
-        )
-        
-        Spacer(modifier = Modifier.height(if (isCompactScreen) 18.dp else 28.dp))
-        
-        // Premium Instructions Card
-        PremiumInstructionsCard(isCompact = isCompactScreen)
-        
-        Spacer(modifier = Modifier.height(if (isCompactScreen) 20.dp else 32.dp))
-        
-        // Premium Start Button
-        PremiumActionButton(
-            text = if (hasPermission) "Start Recording" else "Enable Microphone",
-            icon = if (hasPermission) Icons.Rounded.PlayArrow else Icons.Rounded.Lock,
-            onClick = if (hasPermission) onStartDiagnostic else onRequestPermission
-        )
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn(tween(500, delayMillis = 600)) + 
+                    scaleIn(
+                        tween(600, delayMillis = 600, easing = FastOutSlowInEasing),
+                        initialScale = 0.9f
+                    )
+        ) {
+            UltraActionButton(
+                text = if (hasPermission) "TAP TO RECORD" else "ENABLE MICROPHONE",
+                icon = if (hasPermission) Icons.Rounded.Mic else Icons.Rounded.Lock,
+                onClick = if (hasPermission) onStartDiagnostic else onRequestPermission
+            )
+        }
         
         Spacer(modifier = Modifier.height(if (isCompactScreen) 16.dp else 32.dp))
     }
@@ -651,6 +590,583 @@ private fun PremiumMicrophoneIcon(size: Dp) {
 }
 
 @Composable
+private fun UltraPremiumMicrophoneIcon(size: Dp) {
+    val infiniteTransition = rememberInfiniteTransition(label = "ultraMicAnim")
+    
+    val mainPulse by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.15f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "mainPulse"
+    )
+    
+    val outerGlow by infiniteTransition.animateFloat(
+        initialValue = 0.6f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1800, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "outerGlow"
+    )
+    
+    val ring1Rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(8000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "ring1"
+    )
+    
+    val ring2Rotation by infiniteTransition.animateFloat(
+        initialValue = 360f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(12000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "ring2"
+    )
+    
+    val ring3Rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(15000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "ring3"
+    )
+    
+    val shimmer by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(3000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shimmer"
+    )
+    
+    Box(
+        modifier = Modifier.size(size),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(size * mainPulse * 1.3f)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            PremiumCyan.copy(alpha = outerGlow * 0.3f),
+                            PremiumCyan.copy(alpha = outerGlow * 0.15f),
+                            Color(0xFF00D4FF).copy(alpha = outerGlow * 0.08f),
+                            Color.Transparent
+                        )
+                    ),
+                    shape = CircleShape
+                )
+                .blur(20.dp)
+        )
+        
+        Box(
+            modifier = Modifier
+                .size(size * mainPulse * 1.15f)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            PremiumCyan.copy(alpha = outerGlow * 0.5f),
+                            PremiumCyan.copy(alpha = outerGlow * 0.25f),
+                            Color.Transparent
+                        )
+                    ),
+                    shape = CircleShape
+                )
+                .blur(15.dp)
+        )
+        
+        Canvas(
+            modifier = Modifier
+                .size(size)
+                .rotate(ring1Rotation)
+        ) {
+            val strokeWidth = 4.dp.toPx()
+            drawArc(
+                brush = Brush.sweepGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        PremiumCyan.copy(alpha = 0.3f),
+                        PremiumCyan.copy(alpha = 0.7f),
+                        PremiumCyan,
+                        PremiumCyan.copy(alpha = 0.7f),
+                        PremiumCyan.copy(alpha = 0.3f),
+                        Color.Transparent
+                    )
+                ),
+                startAngle = 0f,
+                sweepAngle = 300f,
+                useCenter = false,
+                topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                size = Size(this.size.width - strokeWidth, this.size.height - strokeWidth),
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+            )
+        }
+        
+        Canvas(
+            modifier = Modifier
+                .size(size * 0.88f)
+                .rotate(ring2Rotation)
+        ) {
+            val strokeWidth = 3.dp.toPx()
+            drawArc(
+                brush = Brush.sweepGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color(0xFF00D4FF).copy(alpha = 0.5f),
+                        Color(0xFF00D4FF),
+                        Color(0xFF00D4FF).copy(alpha = 0.5f),
+                        Color.Transparent
+                    )
+                ),
+                startAngle = 45f,
+                sweepAngle = 200f,
+                useCenter = false,
+                topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                size = Size(this.size.width - strokeWidth, this.size.height - strokeWidth),
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+            )
+        }
+        
+        Canvas(
+            modifier = Modifier
+                .size(size * 0.76f)
+                .rotate(ring3Rotation)
+        ) {
+            val strokeWidth = 2.5.dp.toPx()
+            drawArc(
+                brush = Brush.sweepGradient(
+                    colors = listOf(
+                        PremiumCyan.copy(alpha = 0.4f),
+                        Color.Transparent,
+                        PremiumCyan.copy(alpha = 0.6f),
+                        Color.Transparent
+                    )
+                ),
+                startAngle = 90f,
+                sweepAngle = 270f,
+                useCenter = false,
+                topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                size = Size(this.size.width - strokeWidth, this.size.height - strokeWidth),
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+            )
+        }
+        
+        Box(
+            modifier = Modifier
+                .size(size * 0.7f)
+                .shadow(
+                    elevation = 20.dp,
+                    shape = CircleShape,
+                    spotColor = PremiumCyan.copy(alpha = 0.5f)
+                )
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            DeepNavy,
+                            MidnightBlack,
+                            Color(0xFF000814)
+                        )
+                    ),
+                    shape = CircleShape
+                )
+                .border(
+                    width = 2.dp,
+                    brush = Brush.sweepGradient(
+                        colors = listOf(
+                            PremiumCyan.copy(alpha = 0.8f),
+                            Color(0xFF00D4FF).copy(alpha = 0.5f),
+                            PremiumCyan.copy(alpha = 0.8f)
+                        ),
+                        center = Offset(0f, 0f)
+                    ),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(size * 0.45f)
+                    .scale(mainPulse * 0.98f)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                PremiumCyan.copy(alpha = 0.3f),
+                                PremiumCyan.copy(alpha = 0.15f),
+                                Color.Transparent
+                            )
+                        ),
+                        shape = CircleShape
+                    )
+            )
+            
+            Icon(
+                imageVector = Icons.Rounded.Mic,
+                contentDescription = "Microphone",
+                tint = PremiumCyan,
+                modifier = Modifier
+                    .size(size * 0.4f)
+                    .scale(mainPulse * 0.98f)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = CircleShape,
+                        spotColor = PremiumCyan.copy(alpha = 0.6f)
+                    )
+            )
+        }
+        
+        Canvas(
+            modifier = Modifier
+                .size(size * 0.7f)
+                .rotate(shimmer)
+        ) {
+            val strokeWidth = 3.dp.toPx()
+            drawArc(
+                brush = Brush.sweepGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color.White.copy(alpha = 0.4f),
+                        Color.Transparent
+                    )
+                ),
+                startAngle = 0f,
+                sweepAngle = 60f,
+                useCenter = false,
+                topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                size = Size(this.size.width - strokeWidth, this.size.height - strokeWidth),
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+            )
+        }
+    }
+}
+
+@Composable
+private fun EnhancedInstructionsCard(isCompact: Boolean) {
+    val infiniteTransition = rememberInfiniteTransition(label = "cardGlow")
+    val borderGlow by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 0.9f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "borderGlow"
+    )
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 12.dp,
+                shape = RoundedCornerShape(24.dp),
+                spotColor = PremiumCyan.copy(alpha = borderGlow * 0.3f)
+            )
+            .border(
+                width = 1.5.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        PremiumCyan.copy(alpha = borderGlow * 0.6f),
+                        Color(0xFF00D4FF).copy(alpha = borderGlow * 0.4f),
+                        PremiumCyan.copy(alpha = borderGlow * 0.6f)
+                    )
+                ),
+                shape = RoundedCornerShape(24.dp)
+            ),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = DeepNavy.copy(alpha = 0.6f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    PremiumCyan,
+                                    Color(0xFF00D4FF)
+                                )
+                            ),
+                            shape = RoundedCornerShape(8.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Info,
+                        contentDescription = null,
+                        tint = MidnightBlack,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Quick Setup Guide",
+                    fontSize = if (isCompact) 17.sp else 19.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = TextPrimary,
+                    letterSpacing = 0.5.sp
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(if (isCompact) 16.dp else 20.dp))
+            
+            EnhancedInstructionItem(
+                number = "1",
+                text = "Park on flat surface",
+                icon = Icons.Rounded.Check,
+                isCompact = isCompact
+            )
+            EnhancedInstructionItem(
+                number = "2",
+                text = "Point mic toward engine",
+                icon = Icons.Rounded.Check,
+                isCompact = isCompact
+            )
+            EnhancedInstructionItem(
+                number = "3",
+                text = "Keep 1-2 feet distance",
+                icon = Icons.Rounded.Check,
+                isCompact = isCompact
+            )
+            EnhancedInstructionItem(
+                number = "4",
+                text = "Ensure quiet environment",
+                icon = Icons.Rounded.Check,
+                isCompact = isCompact,
+                isLast = true
+            )
+        }
+    }
+}
+
+@Composable
+private fun EnhancedInstructionItem(
+    number: String,
+    text: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    isCompact: Boolean,
+    isLast: Boolean = false
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = if (isCompact) 8.dp else 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(if (isCompact) 36.dp else 40.dp)
+                .shadow(
+                    elevation = 8.dp,
+                    shape = CircleShape,
+                    spotColor = PremiumCyan.copy(alpha = 0.4f)
+                )
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            PremiumCyan,
+                            Color(0xFF00D4FF)
+                        )
+                    ),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = number,
+                style = MaterialTheme.typography.titleMedium,
+                color = MidnightBlack,
+                fontWeight = FontWeight.Black
+            )
+        }
+        
+        Spacer(modifier = Modifier.width(16.dp))
+        
+        Text(
+            text = text,
+            style = if (isCompact) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
+            color = TextPrimary,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = SuccessGreen,
+            modifier = Modifier.size(22.dp)
+        )
+    }
+    
+    if (!isLast) {
+        Box(
+            modifier = Modifier
+                .padding(start = if (isCompact) 52.dp else 56.dp)
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            PremiumCyan.copy(alpha = 0.3f),
+                            Color.Transparent
+                        )
+                    )
+                )
+        )
+    }
+}
+
+@Composable
+private fun UltraActionButton(
+    text: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    var isPressed by remember { mutableStateOf(false) }
+    
+    val infiniteTransition = rememberInfiniteTransition(label = "ultraButtonGlow")
+    
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.7f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glowAlpha"
+    )
+    
+    val shimmerX by infiniteTransition.animateFloat(
+        initialValue = -1000f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shimmer"
+    )
+    
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.03f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse"
+    )
+    
+    val pressScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessHigh
+        ),
+        label = "press"
+    )
+    
+    Button(
+        onClick = {
+            isPressed = true
+            onClick()
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .height(72.dp)
+            .scale(pressScale * pulseScale)
+            .shadow(
+                elevation = 24.dp,
+                shape = RoundedCornerShape(36.dp),
+                spotColor = PremiumCyan.copy(alpha = glowAlpha * 0.7f)
+            ),
+        shape = RoundedCornerShape(36.dp),
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = MidnightBlack
+        ),
+        contentPadding = PaddingValues(0.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            PremiumCyan,
+                            Color(0xFF00D4FF),
+                            PremiumCyan
+                        ),
+                        start = Offset(shimmerX - 500f, 0f),
+                        end = Offset(shimmerX + 500f, 0f)
+                    )
+                )
+                .border(
+                    width = 2.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.5f),
+                            Color.White.copy(alpha = 0.2f),
+                            Color.White.copy(alpha = 0.5f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(36.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = MidnightBlack
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Black,
+                    color = MidnightBlack,
+                    letterSpacing = 1.sp
+                )
+            }
+        }
+    }
+    
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            kotlinx.coroutines.delay(150)
+            isPressed = false
+        }
+    }
+}
+
+@Composable
 private fun PremiumInstructionsCard(isCompact: Boolean) {
     val infiniteTransition = rememberInfiniteTransition(label = "cardGlow")
     val borderGlowAlpha by infiniteTransition.animateFloat(
@@ -663,100 +1179,64 @@ private fun PremiumInstructionsCard(isCompact: Boolean) {
         label = "borderGlow"
     )
     
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 16.dp,
-                shape = RoundedCornerShape(20.dp),
-                spotColor = PremiumCyan.copy(alpha = 0.12f)
-            ),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            width = 1.2.dp,
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    PremiumCyan.copy(alpha = borderGlowAlpha * 0.6f),
-                    PremiumBorderLight.copy(alpha = borderGlowAlpha * 0.4f),
-                    PremiumBorder.copy(alpha = 0.25f),
-                    PremiumCyan.copy(alpha = borderGlowAlpha * 0.5f)
-                )
-            )
-        )
+    GlassmorphicCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            PremiumDarkCard.copy(alpha = 0.8f),
-                            PremiumDarkCard.copy(alpha = 0.7f)
-                        )
-                    )
-                )
-        ) {
-            Column(
-                modifier = Modifier.padding(if (isCompact) 14.dp else 18.dp)
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(7.dp)
-                            .background(
-                                brush = Brush.radialGradient(
-                                    colors = listOf(
-                                        PremiumCyan,
-                                        PremiumCyanDark
-                                    )
-                                ),
-                                shape = CircleShape
-                            )
-                            .shadow(
-                                elevation = 3.dp,
-                                shape = CircleShape,
-                                spotColor = PremiumCyan
-                            )
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "Instructions",
-                        fontSize = if (isCompact) 16.sp else 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextPrimary,
-                        letterSpacing = 0.4.sp
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(if (isCompact) 12.dp else 16.dp))
-                
-                PremiumInstructionItem(
-                    number = "1",
-                    text = "Garez sur une surface plane",
-                    isCompact = isCompact
+                Box(
+                    modifier = Modifier
+                        .size(7.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    PremiumCyan,
+                                    PremiumCyanDark
+                                )
+                            ),
+                            shape = CircleShape
+                        )
+                        .shadow(
+                            elevation = 3.dp,
+                            shape = CircleShape,
+                            spotColor = PremiumCyan
+                        )
                 )
-                PremiumInstructionItem(
-                    number = "2",
-                    text = "Pointez le micro vers le moteur",
-                    isCompact = isCompact
-                )
-                PremiumInstructionItem(
-                    number = "3",
-                    text = "Gardez une distance de 1-2 pieds",
-                    isCompact = isCompact
-                )
-                PremiumInstructionItem(
-                    number = "4",
-                    text = "Assurez un environnement calme",
-                    isCompact = isCompact,
-                    isLast = true
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "Instructions",
+                    fontSize = if (isCompact) 16.sp else 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary,
+                    letterSpacing = 0.4.sp
                 )
             }
+            
+            Spacer(modifier = Modifier.height(if (isCompact) 12.dp else 16.dp))
+            
+            PremiumInstructionItem(
+                number = "1",
+                text = "Garez sur une surface plane",
+                isCompact = isCompact
+            )
+            PremiumInstructionItem(
+                number = "2",
+                text = "Pointez le micro vers le moteur",
+                isCompact = isCompact
+            )
+            PremiumInstructionItem(
+                number = "3",
+                text = "Gardez une distance de 1-2 pieds",
+                isCompact = isCompact
+            )
+            PremiumInstructionItem(
+                number = "4",
+                text = "Assurez un environnement calme",
+                isCompact = isCompact,
+                isLast = true
+            )
         }
     }
 }
@@ -1087,15 +1567,6 @@ private fun PremiumWaveformCard(
     isCompact: Boolean
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "waveformGlow")
-    val borderGlowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.8f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "borderGlow"
-    )
     
     val backgroundPulse by infiniteTransition.animateFloat(
         initialValue = 0.02f,
@@ -1107,44 +1578,14 @@ private fun PremiumWaveformCard(
         label = "bgPulse"
     )
     
-    Card(
+    GlassmorphicCard(
         modifier = Modifier
             .fillMaxWidth()
-            .height(if (isCompact) 150.dp else 190.dp)
-            .shadow(
-                elevation = 24.dp,
-                shape = RoundedCornerShape(28.dp),
-                spotColor = PremiumCyan.copy(alpha = 0.3f)
-            ),
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            width = 1.5.dp,
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    PremiumCyan.copy(alpha = borderGlowAlpha * 0.6f),
-                    PremiumBorder.copy(alpha = 0.3f),
-                    PremiumCyan.copy(alpha = borderGlowAlpha * 0.7f),
-                    PremiumBorder.copy(alpha = 0.3f),
-                    PremiumCyan.copy(alpha = borderGlowAlpha * 0.6f)
-                )
-            )
-        )
+            .height(if (isCompact) 150.dp else 190.dp),
+        borderColor = PremiumCyan.copy(alpha = 0.3f)
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            PremiumDarkCard.copy(alpha = 0.9f),
-                            PremiumDarkCard.copy(alpha = 0.8f),
-                            PremiumDarkCard.copy(alpha = 0.9f)
-                        )
-                    )
-                )
+            modifier = Modifier.fillMaxSize()
         ) {
             // Animated background glow
             Box(
@@ -1168,7 +1609,7 @@ private fun PremiumWaveformCard(
                 amplitudes = waveformData,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 24.dp, vertical = 20.dp),
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
                 color = PremiumCyan
             )
             
@@ -2194,37 +2635,19 @@ private fun PremiumCriticalWarningCard(warning: String) {
         label = "pulseAlpha"
     )
     
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(16.dp),
-                spotColor = Color.Red.copy(alpha = 0.3f)
-            ),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2D0A0A).copy(alpha = pulseAlpha)
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            width = 2.dp,
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    Color.Red.copy(alpha = 0.8f),
-                    Color.Red.copy(alpha = 0.4f)
-                )
-            )
-        )
+    GlassmorphicCard(
+        modifier = Modifier.fillMaxWidth(),
+        borderColor = Color.Red.copy(alpha = 0.5f)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Rounded.Warning,
                 contentDescription = null,
                 tint = Color(0xFFFF5252),
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(28.dp).alpha(pulseAlpha)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
@@ -2272,29 +2695,11 @@ private fun PremiumIssueCard(issue: com.example.autobrain.data.local.entity.Issu
         else -> Color(0xFF76FF03)
     }
     
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(16.dp),
-                spotColor = severityColor.copy(alpha = 0.2f)
-            ),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = PremiumDarkCard.copy(alpha = 0.9f)
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            width = 1.dp,
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    severityColor.copy(alpha = 0.4f),
-                    PremiumBorder.copy(alpha = 0.3f)
-                )
-            )
-        )
+    GlassmorphicCard(
+        modifier = Modifier.fillMaxWidth(),
+        borderColor = severityColor.copy(alpha = 0.3f)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -2373,43 +2778,35 @@ private fun PremiumIssueCard(issue: com.example.autobrain.data.local.entity.Issu
 
 @Composable
 private fun PremiumRecommendationCard(text: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(
-                        PremiumDarkCard.copy(alpha = 0.8f),
-                        PremiumDarkCard.copy(alpha = 0.4f)
-                    )
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
-            .border(
-                width = 1.dp,
-                brush = Brush.horizontalGradient(
-                    colors = listOf(
-                        PremiumCyan.copy(alpha = 0.3f),
-                        PremiumBorder.copy(alpha = 0.2f)
-                    )
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(14.dp),
-        verticalAlignment = Alignment.Top
+    GlassmorphicCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Icon(
-            imageVector = Icons.Rounded.CheckCircle,
-            contentDescription = null,
-            tint = PremiumCyan,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.9f)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(PremiumCyan.copy(alpha = 0.15f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.CheckCircle,
+                    contentDescription = null,
+                    tint = PremiumCyan,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.9f)
+            )
+        }
     }
 }
 
@@ -2915,33 +3312,19 @@ private fun PremiumHealthScoreBanner(
     isSafe: Boolean,
     glowAlpha: Float
 ) {
-    val backgroundColor = when {
+    val accentColor = when {
         score >= 80 -> Color(0xFF1B5E20)
         score >= 60 -> Color(0xFF5D4037)
         score >= 40 -> Color(0xFFE65100)
         else -> Color(0xFFB71C1C)
     }
     
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 16.dp,
-                shape = RoundedCornerShape(20.dp),
-                spotColor = backgroundColor.copy(alpha = glowAlpha)
-            ),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor.copy(alpha = 0.9f)
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            width = 1.dp,
-            color = Color.White.copy(alpha = 0.2f)
-        )
+    GlassmorphicCard(
+        modifier = Modifier.fillMaxWidth(),
+        borderColor = accentColor.copy(alpha = 0.5f),
+        backgroundColor = accentColor.copy(alpha = 0.2f)
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
+        Column {
             Text(
                 text = "Score Santé Amélioré",
                 fontSize = 14.sp,

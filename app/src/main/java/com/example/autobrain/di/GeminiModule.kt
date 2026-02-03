@@ -67,7 +67,7 @@ object GeminiModule {
     @javax.inject.Named("imageGeneration")
     fun provideImageGenerationModel(): GenerativeModel {
         return GenerativeModel(
-            modelName = "gemini-2.0-flash-exp",
+            modelName = "gemini-1.5-flash",
             apiKey = BuildConfig.GEMINI_API_KEY,
             generationConfig = generationConfig {
                 temperature = 0.4f

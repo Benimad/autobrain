@@ -36,9 +36,9 @@ class GeminiCarnetRepository @Inject constructor(
     private val apiKey = BuildConfig.GEMINI_API_KEY
     private val gson = Gson()
     
-    // Gemini 2.0 Flash - Faster, smarter, more efficient
+    // Gemini 1.5 Flash - Faster, smarter, more efficient
     private val carnetModel = GenerativeModel(
-        modelName = "gemini-2.0-flash-exp",
+        modelName = "gemini-1.5-flash",
         apiKey = apiKey,
         generationConfig = generationConfig {
             temperature = 1f  // Creative but controlled

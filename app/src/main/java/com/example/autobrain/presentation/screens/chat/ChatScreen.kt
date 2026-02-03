@@ -12,6 +12,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,8 +21,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -35,11 +38,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.autobrain.R
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.autobrain.presentation.components.*
 import com.example.autobrain.presentation.navigation.Screen
 import com.example.autobrain.presentation.theme.*
@@ -99,70 +108,72 @@ fun ChatScreen(
     }
 
     Scaffold(
-        containerColor = MidnightBlack,
+        containerColor = Color.Transparent,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    brush = Brush.linearGradient(
-                                        colors = listOf(ElectricTeal, Color(0xFF14B8A6))
-                                    ),
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
+            Box(
+                modifier = Modifier
+                    .background(MidnightBlack.copy(alpha = 0.5f))
+            ) {
+                TopAppBar(
+                    title = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(
+                                        color = Color.White,
+                                        shape = CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.logowitoutbg),
+                                    contentDescription = "AI Assistant",
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                            Column {
+                                Text(
+                                    text = "AutoBrain AI",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "Diagnostic Assistant",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
-                                imageVector = Icons.Filled.Psychology,
-                                contentDescription = "AI Assistant",
-                                tint = MidnightBlack,
-                                modifier = Modifier.size(24.dp)
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back",
+                                tint = ElectricTeal
                             )
                         }
-                        Column {
-                            Text(
-                                text = "AutoBrain AI",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Diagnostic Assistant",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = TextSecondary
+                    },
+                    actions = {
+                        IconButton(onClick = { viewModel.clearChat() }) {
+                            Icon(
+                                imageVector = Icons.Outlined.DeleteOutline,
+                                contentDescription = "Clear Chat",
+                                tint = TextMuted
                             )
                         }
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = ElectricTeal
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { viewModel.clearChat() }) {
-                        Icon(
-                            imageVector = Icons.Outlined.DeleteOutline,
-                            contentDescription = "Clear Chat",
-                            tint = TextMuted
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DeepNavy
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
                 )
-            )
+            }
         },
         bottomBar = {
             ModernBottomNavBar(
@@ -178,24 +189,41 @@ fun ChatScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .background(MidnightBlack)
         ) {
+            AnimatedBackground()
+            
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .imePadding()
+            ) {
             if (uiState.messages.isEmpty()) {
-                WelcomeScreen(
-                    onQuickAction = { action ->
-                        viewModel.sendMessage(action)
-                    }
-                )
+                Box(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    WelcomeScreen(
+                        onQuickAction = { action ->
+                            viewModel.sendMessage(action)
+                        }
+                    )
+                }
             } else {
                 LazyColumn(
                     state = listState,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth(),
-                    contentPadding = PaddingValues(16.dp),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 16.dp,
+                        bottom = 16.dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(uiState.messages) { message ->
@@ -237,14 +265,18 @@ fun ChatScreen(
         }
     }
 }
+}
 
 @Composable
 private fun WelcomeScreen(
     onQuickAction: (String) -> Unit
 ) {
+    val scrollState = rememberScrollState()
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -304,34 +336,25 @@ private fun WelcomeScreen(
                 modifier = Modifier
                     .size(85.dp)
                     .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                ElectricTeal, 
-                                Color(0xFF14B8A6),
-                                ElectricTeal
-                            ),
-                            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                            end = androidx.compose.ui.geometry.Offset(100f, 100f)
-                        ),
+                        color = Color.White,
                         shape = CircleShape
                     )
                     .border(
                         width = 2.dp,
                         brush = Brush.linearGradient(
                             colors = listOf(
-                                Color.White.copy(alpha = 0.3f),
-                                Color.Transparent
+                                ElectricTeal.copy(alpha = 0.6f),
+                                Color(0xFF14B8A6).copy(alpha = 0.6f)
                             )
                         ),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Psychology,
+                Image(
+                    painter = painterResource(id = R.drawable.logowitoutbg),
                     contentDescription = "AI Assistant",
-                    tint = MidnightBlack,
-                    modifier = Modifier.size(44.dp)
+                    modifier = Modifier.size(50.dp)
                 )
             }
         }
@@ -427,39 +450,18 @@ private fun QuickActionChip(
         label = "scale"
     )
     
-    Card(
+    GlassmorphicCard(
         modifier = Modifier
             .fillMaxWidth()
-            .scale(scale)
-            .clickable(
-                onClick = {
-                    android.util.Log.d("QuickActionChip", "Button clicked: $text")
-                    isPressed = true
-                    onClick()
-                },
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = DeepNavy
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        )
+            .scale(scale),
+        onClick = {
+            android.util.Log.d("QuickActionChip", "Button clicked: $text")
+            isPressed = true
+            onClick()
+        }
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            DeepNavy,
-                            DeepNavy.copy(alpha = 0.8f)
-                        )
-                    )
-                )
-                .padding(18.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
@@ -535,62 +537,60 @@ private fun MessageBubble(
                     modifier = Modifier
                         .size(glowSize.dp)
                         .background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    ElectricTeal.copy(alpha = 0.4f),
-                                    ElectricTeal
-                                )
-                            ),
+                            color = Color.White,
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Psychology,
+                    Image(
+                        painter = painterResource(id = R.drawable.logowitoutbg),
                         contentDescription = "AI",
-                        tint = MidnightBlack,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
             }
 
-            Card(
-                modifier = Modifier
-                    .widthIn(max = 280.dp)
-                    .animateContentSize(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ),
-                shape = RoundedCornerShape(
-                    topStart = if (message.isUser) 20.dp else 4.dp,
-                    topEnd = if (message.isUser) 4.dp else 20.dp,
-                    bottomStart = 20.dp,
-                    bottomEnd = 20.dp
-                ),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (message.isUser) ElectricTeal else DeepNavy
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = if (message.isUser) 2.dp else 4.dp
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(14.dp)
+            if (message.isUser) {
+                Box(
+                    modifier = Modifier
+                        .widthIn(max = 280.dp)
+                        .clip(RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 4.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp
+                        ))
+                        .background(ElectricTeal)
+                        .padding(14.dp)
                 ) {
                     Text(
                         text = message.content,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             lineHeight = 22.sp
                         ),
-                        color = if (message.isUser) MidnightBlack else TextPrimary
+                        color = MidnightBlack
                     )
-                    
-                    message.riskLevel?.let { risk ->
-                        Spacer(modifier = Modifier.height(10.dp))
-                        RiskBadge(risk = risk)
+                }
+            } else {
+                GlassmorphicCard(
+                    modifier = Modifier.widthIn(max = 280.dp),
+                    backgroundColor = Color.White.copy(alpha = 0.08f),
+                    borderColor = Color.White.copy(alpha = 0.12f)
+                ) {
+                    Column {
+                        Text(
+                            text = message.content,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                lineHeight = 22.sp
+                            ),
+                            color = TextPrimary
+                        )
+                        
+                        message.riskLevel?.let { risk ->
+                            Spacer(modifier = Modifier.height(10.dp))
+                            RiskBadge(risk = risk)
+                        }
                     }
                 }
             }
@@ -687,14 +687,13 @@ private fun TypingIndicator() {
             )
         }
         Spacer(modifier = Modifier.width(8.dp))
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = DeepNavy
-            )
+        GlassmorphicCard(
+            modifier = Modifier.padding(bottom = 8.dp),
+            backgroundColor = Color.White.copy(alpha = 0.05f),
+            borderColor = Color.White.copy(alpha = 0.1f)
         ) {
             Row(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(12.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 repeat(3) { index ->
@@ -733,138 +732,336 @@ private fun ChatInputField(
     isLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = DeepNavy
+    val infiniteTransition = rememberInfiniteTransition(label = "input_glow")
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.2f,
+        targetValue = 0.5f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                IconButton(
-                    onClick = onCameraClick,
-                    enabled = !isLoading
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Videocam,
-                        contentDescription = "Camera",
-                        tint = if (isLoading) TextMuted else ElectricTeal
-                    )
-                }
-                IconButton(
-                    onClick = onImageClick,
-                    enabled = !isLoading
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Image,
-                        contentDescription = "Image",
-                        tint = if (isLoading) TextMuted else ElectricTeal
-                    )
-                }
-                IconButton(
-                    onClick = onMicClick,
-                    enabled = !isLoading
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Mic,
-                        contentDescription = "Microphone",
-                        tint = if (isLoading) TextMuted else ElectricTeal
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                TextField(
-                    value = message,
-                    onValueChange = onMessageChange,
-                    modifier = Modifier
-                        .weight(1f)
-                        .animateContentSize(),
-                    placeholder = {
-                        Text(
-                            text = "Ask your question about your vehicle...",
-                            color = TextMuted,
-                            style = MaterialTheme.typography.bodyMedium
+        label = "glow"
+    )
+    
+    val iconScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "icon_scale"
+    )
+    
+    Box(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            ElectricTeal.copy(alpha = glowAlpha),
+                            Color(0xFF14B8A6).copy(alpha = glowAlpha),
+                            Color.Transparent
                         )
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = DarkNavy,
-                        unfocusedContainerColor = DarkNavy,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
-                        cursorColor = ElectricTeal,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    shape = RoundedCornerShape(28.dp),
-                    enabled = !isLoading,
-                    textStyle = MaterialTheme.typography.bodyMedium
-                )
-
-                val buttonRotation by animateFloatAsState(
-                    targetValue = if (isLoading) 360f else 0f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1000, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart
-                    ),
-                    label = "rotation"
-                )
-                
-                val buttonScale by animateFloatAsState(
-                    targetValue = if (message.isNotBlank() && !isLoading) 1.1f else 1f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    ),
-                    label = "scale"
-                )
-
-                FloatingActionButton(
-                    onClick = onSendClick,
-                    containerColor = if (message.isNotBlank()) ElectricTeal else DarkNavy,
-                    contentColor = MidnightBlack,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .scale(buttonScale),
-                    shape = CircleShape,
-                    elevation = FloatingActionButtonDefaults.elevation(
-                        defaultElevation = if (message.isNotBlank()) 6.dp else 2.dp
                     )
+                )
+        )
+        
+        Surface(
+            modifier = Modifier.padding(top = 2.dp),
+            color = Color.Transparent,
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                DeepNavy.copy(alpha = 0.95f),
+                                MidnightBlack.copy(alpha = 0.98f)
+                            )
+                        )
+                    )
+                    .border(
+                        width = 1.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                ElectricTeal.copy(alpha = 0.2f),
+                                Color(0xFF14B8A6).copy(alpha = 0.15f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+                    )
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(26.dp),
-                                color = MidnightBlack,
-                                strokeWidth = 3.dp
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Send,
-                                contentDescription = "Send",
-                                modifier = Modifier.size(24.dp),
-                                tint = if (message.isNotBlank()) MidnightBlack else TextMuted
-                            )
+                        ActionIconButton(
+                            icon = Icons.Outlined.Videocam,
+                            contentDescription = "Camera",
+                            onClick = onCameraClick,
+                            enabled = !isLoading,
+                            iconScale = iconScale
+                        )
+                        ActionIconButton(
+                            icon = Icons.Outlined.Image,
+                            contentDescription = "Image",
+                            onClick = onImageClick,
+                            enabled = !isLoading,
+                            iconScale = iconScale
+                        )
+                        ActionIconButton(
+                            icon = Icons.Outlined.Mic,
+                            contentDescription = "Microphone",
+                            onClick = onMicClick,
+                            enabled = !isLoading,
+                            iconScale = iconScale
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(28.dp))
+                                    .background(
+                                        Brush.horizontalGradient(
+                                            colors = listOf(
+                                                DarkNavy.copy(alpha = 0.8f),
+                                                DeepNavy.copy(alpha = 0.6f)
+                                            )
+                                        )
+                                    )
+                                    .border(
+                                        width = 1.dp,
+                                        color = ElectricTeal.copy(alpha = if (message.isNotBlank()) 0.3f else 0.1f),
+                                        shape = RoundedCornerShape(28.dp)
+                                    )
+                            ) {
+                                TextField(
+                                    value = message,
+                                    onValueChange = onMessageChange,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateContentSize(),
+                                    placeholder = {
+                                        Text(
+                                            text = "Ask your question about your vehicle...",
+                                            color = TextMuted.copy(alpha = 0.6f),
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    },
+                                    colors = TextFieldDefaults.colors(
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent,
+                                        focusedTextColor = TextPrimary,
+                                        unfocusedTextColor = TextPrimary,
+                                        cursorColor = ElectricTeal,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent
+                                    ),
+                                    shape = RoundedCornerShape(28.dp),
+                                    enabled = !isLoading,
+                                    textStyle = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 4
+                                )
+                            }
+                        }
+
+                        val buttonScale by animateFloatAsState(
+                            targetValue = if (message.isNotBlank() && !isLoading) 1.1f else 1f,
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessMedium
+                            ),
+                            label = "scale"
+                        )
+                        
+                        val sendRotation by infiniteTransition.animateFloat(
+                            initialValue = 0f,
+                            targetValue = if (isLoading) 360f else 0f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(1000, easing = LinearEasing),
+                                repeatMode = RepeatMode.Restart
+                            ),
+                            label = "rotation"
+                        )
+
+                        Box(
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (message.isNotBlank()) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(64.dp)
+                                        .scale(buttonScale * 0.9f)
+                                        .background(
+                                            brush = Brush.radialGradient(
+                                                colors = listOf(
+                                                    ElectricTeal.copy(alpha = glowAlpha * 0.4f),
+                                                    Color.Transparent
+                                                )
+                                            ),
+                                            shape = CircleShape
+                                        )
+                                )
+                            }
+                            
+                            FloatingActionButton(
+                                onClick = onSendClick,
+                                containerColor = Color.Transparent,
+                                contentColor = MidnightBlack,
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .scale(buttonScale),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(
+                                    defaultElevation = 0.dp
+                                )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            brush = if (message.isNotBlank()) {
+                                                Brush.linearGradient(
+                                                    colors = listOf(
+                                                        ElectricTeal,
+                                                        Color(0xFF14B8A6)
+                                                    )
+                                                )
+                                            } else {
+                                                Brush.linearGradient(
+                                                    colors = listOf(
+                                                        DarkNavy,
+                                                        DeepNavy
+                                                    )
+                                                )
+                                            },
+                                            shape = CircleShape
+                                        )
+                                        .border(
+                                            width = 2.dp,
+                                            color = if (message.isNotBlank()) {
+                                                Color.White.copy(alpha = 0.2f)
+                                            } else {
+                                                Color.White.copy(alpha = 0.05f)
+                                            },
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (isLoading) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(26.dp),
+                                            color = if (message.isNotBlank()) MidnightBlack else ElectricTeal,
+                                            strokeWidth = 3.dp
+                                        )
+                                    } else {
+                                        Icon(
+                                            imageVector = Icons.Default.Send,
+                                            contentDescription = "Send",
+                                            modifier = Modifier.size(24.dp),
+                                            tint = if (message.isNotBlank()) MidnightBlack else TextMuted
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ActionIconButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    enabled: Boolean,
+    iconScale: Float
+) {
+    var isPressed by remember { mutableStateOf(false) }
+    
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.9f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessHigh
+        ),
+        label = "button_scale"
+    )
+    
+    Box(
+        modifier = Modifier
+            .size(44.dp)
+            .scale(scale)
+            .clip(CircleShape)
+            .background(
+                if (enabled) {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            ElectricTeal.copy(alpha = 0.15f),
+                            Color(0xFF14B8A6).copy(alpha = 0.1f)
+                        )
+                    )
+                } else {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.03f),
+                            Color.White.copy(alpha = 0.01f)
+                        )
+                    )
+                }
+            )
+            .border(
+                width = 1.dp,
+                color = if (enabled) ElectricTeal.copy(alpha = 0.2f) else Color.White.copy(alpha = 0.05f),
+                shape = CircleShape
+            )
+            .clickable(
+                enabled = enabled,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                isPressed = true
+                onClick()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = if (enabled) ElectricTeal else TextMuted,
+            modifier = Modifier
+                .size(22.dp)
+                .scale(if (enabled) iconScale else 1f)
+        )
+    }
+    
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            delay(100)
+            isPressed = false
         }
     }
 }
@@ -884,3 +1081,85 @@ data class ChatUiState(
     val isLoading: Boolean = false,
     val error: String? = null
 )
+
+@Preview(showBackground = true)
+@Composable
+fun ChatScreenPreview() {
+    AutoBrainTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MidnightBlack)
+        ) {
+            AnimatedBackground()
+            
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(
+                        listOf(
+                            ChatMessage(
+                                id = "1",
+                                content = "Hello! Can you check the engine noise?",
+                                isUser = true
+                            ),
+                            ChatMessage(
+                                id = "2",
+                                content = "Of course! I'd be happy to help analyze your engine noise. Could you provide more details about the sound? Is it a rattling, knocking, or squealing noise?",
+                                isUser = false
+                            ),
+                            ChatMessage(
+                                id = "3",
+                                content = "It's a rattling sound when I start the car",
+                                isUser = true
+                            ),
+                            ChatMessage(
+                                id = "4",
+                                content = "A rattling sound on startup could indicate several issues. Based on my analysis, this might be related to your timing chain or heat shield. I recommend getting this checked soon.",
+                                isUser = false,
+                                riskLevel = "MEDIUM"
+                            )
+                        )
+                    ) { message ->
+                        MessageBubble(message = message)
+                    }
+                }
+                
+                ChatInputField(
+                    message = "",
+                    onMessageChange = {},
+                    onSendClick = {},
+                    onCameraClick = {},
+                    onImageClick = {},
+                    onMicClick = {},
+                    isLoading = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WelcomeScreenPreview() {
+    AutoBrainTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MidnightBlack)
+        ) {
+            AnimatedBackground()
+            WelcomeScreen(onQuickAction = {})
+        }
+    }
+}

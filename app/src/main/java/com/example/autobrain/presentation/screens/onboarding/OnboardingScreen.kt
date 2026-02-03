@@ -24,12 +24,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.autobrain.core.preferences.PreferencesManager
 import com.example.autobrain.presentation.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,6 +57,131 @@ data class OnboardingPage(
     val description: String,
     val pageNumber: Int
 )
+
+@Preview(showBackground = true)
+@Composable
+fun OnboardingScreenPreview() {
+    OnboardingScreenContent(
+        navController = rememberNavController()
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun OnboardingScreenContent(
+    navController: NavController
+) {
+    val pages = listOf(
+        OnboardingPage(
+            title = "Know the real\ncondition of any car",
+            description = "Instantly see beyond the surface.\nUncover hidden issues before you\ncommit.",
+            pageNumber = 1
+        ),
+        OnboardingPage(
+            title = "AI-powered\ndiagnostics using\nyour phone",
+            description = "Our advanced AI analyzes photos and\nsounds to generate professional\nhealth reports.",
+            pageNumber = 2
+        ),
+        OnboardingPage(
+            title = "Buy and sell\nwith confidence",
+            description = "Avoid scams and unfair deals with\nobjective, transparent vehicle grading.",
+            pageNumber = 3
+        )
+    )
+
+    val pagerState = rememberPagerState(pageCount = { pages.size })
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF0A1628),
+                        Color(0xFF0D1B2A),
+                        Color(0xFF102030)
+                    )
+                )
+            )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Top Bar with Skip (Placeholder for preview)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 20.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Skip",
+                    color = Color(0xFF00D9D9),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+
+            // Progress bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                repeat(pages.size) { index ->
+                    val isSelected = index == 0 // Preview first page
+                    Box(
+                        modifier = Modifier
+                            .width(if (isSelected) 32.dp else 12.dp)
+                            .height(6.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (isSelected)
+                                    Color(0xFF00D9D9)
+                                else
+                                    Color(0xFF1E3A4C)
+                            )
+                    )
+                }
+            }
+
+            // Show first page content in preview
+            Box(modifier = Modifier.weight(1f)) {
+                OnboardingPageContent(
+                    page = pages[0]
+                )
+            }
+
+            // Bottom section with button
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+                    .padding(bottom = 24.dp)
+            ) {
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF00D9D9),
+                        contentColor = Color(0xFF0A1628)
+                    )
+                ) {
+                    Text(
+                        text = "Next",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -99,19 +226,52 @@ fun OnboardingScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Progress bar at top
+            // Top Bar with Skip
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                    .padding(horizontal = 24.dp, vertical = 20.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (pagerState.currentPage < pages.size - 1) {
+                    TextButton(
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(pages.size - 1)
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = "Skip",
+                            color = Color(0xFF00D9D9),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
+
+            // Progress bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 repeat(pages.size) { index ->
+                    val isSelected = pagerState.currentPage == index
+                    val width by animateDpAsState(
+                        targetValue = if (isSelected) 32.dp else 12.dp,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "width"
+                    )
+                    
                     Box(
                         modifier = Modifier
-                            .weight(1f)
-                            .height(4.dp)
-                            .clip(RoundedCornerShape(2.dp))
+                            .width(width)
+                            .height(6.dp)
+                            .clip(CircleShape)
                             .background(
                                 if (index <= pagerState.currentPage)
                                     Color(0xFF00D9D9)
@@ -124,52 +284,53 @@ fun OnboardingScreen(
 
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                userScrollEnabled = true
             ) { page ->
                 OnboardingPageContent(
-                    page = pages[page],
-                    isLastPage = page == pages.size - 1
+                    page = pages[page]
                 )
             }
 
             // Bottom section with button
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 48.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(24.dp)
+                    .padding(bottom = 24.dp)
             ) {
-                if (pagerState.currentPage == pages.size - 1) {
-                    Button(
-                        onClick = {
-                            // Mark onboarding as completed
+                Button(
+                    onClick = {
+                        if (pagerState.currentPage < pages.size - 1) {
+                            scope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            }
+                        } else {
                             viewModel.completeOnboarding()
-
-                            // Navigate to Sign In
                             navController.navigate(Screen.SignIn.route) {
                                 popUpTo(Screen.Onboarding.route) { inclusive = true }
                             }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF00D9D9),
-                            contentColor = Color(0xFF0A1628)
-                        ),
-                        elevation = ButtonDefaults.buttonElevation(
-                            defaultElevation = 8.dp,
-                            pressedElevation = 4.dp
-                        )
-                    ) {
-                        Text(
-                            text = "Get Started",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF00D9D9),
+                        contentColor = Color(0xFF0A1628)
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 2.dp
+                    )
+                ) {
+                    Text(
+                        text = if (pagerState.currentPage == pages.size - 1) "Get Started" else "Next",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp
+                    )
                 }
             }
         }
@@ -178,8 +339,7 @@ fun OnboardingScreen(
 
 @Composable
 private fun OnboardingPageContent(
-    page: OnboardingPage,
-    isLastPage: Boolean
+    page: OnboardingPage
 ) {
     Column(
         modifier = Modifier
