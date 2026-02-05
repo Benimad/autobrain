@@ -765,7 +765,7 @@ class VideoDiagnosticRepository @Inject constructor(
             Log.d(TAG, "✅ Found ${audioDiagnostics.size} audio diagnostics")
             
             // Step 5: Call Gemini AI with MULTIMODAL input (ML Kit + Video File)
-            Log.d(TAG, "⭐ Gemini: Step 5: Calling Gemini 2.5 Pro for MULTIMODAL video analysis...")
+            Log.d(TAG, "⭐ Gemini: Step 5: Calling Gemini 3 Pro for MULTIMODAL video analysis...")
             Log.d(TAG, "   🎬 Sending BOTH ML Kit analysis AND actual video file")
             
             val result = geminiAiRepository.performComprehensiveVideoAnalysisMultimodal(

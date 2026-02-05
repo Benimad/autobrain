@@ -1,22 +1,77 @@
 package com.example.autobrain.presentation.screens.carlog
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.autobrain.domain.model.MaintenanceType
-import com.example.autobrain.presentation.theme.*
+import com.example.autobrain.presentation.theme.DeepNavy
+import com.example.autobrain.presentation.theme.ElectricTeal
+import com.example.autobrain.presentation.theme.ErrorRed
+import com.example.autobrain.presentation.theme.MidnightBlack
+import com.example.autobrain.presentation.theme.TextMuted
+import com.example.autobrain.presentation.theme.TextOnAccent
+import com.example.autobrain.presentation.theme.TextPrimary
+import com.example.autobrain.presentation.theme.TextSecondary
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,6 +79,7 @@ import java.util.*
 @Composable
 fun AddMaintenanceScreen(
     navController: NavController,
+    modifier: Modifier = Modifier,
     viewModel: CarLogViewModel = hiltViewModel()
 ) {
     var selectedType by remember { mutableStateOf(MaintenanceType.OIL_CHANGE) }
@@ -45,26 +101,28 @@ fun AddMaintenanceScreen(
     }
 
     Scaffold(
+        modifier = modifier,
         containerColor = MidnightBlack,
         topBar = {
             TopAppBar(
                 title = { 
                     Text(
-                        "Add Maintenance",
+                        "Log Service",
+                        fontWeight = FontWeight.Bold,
                         color = TextPrimary
                     ) 
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            Icons.Default.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
                             tint = ElectricTeal
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DeepNavy,
+                    containerColor = MidnightBlack,
                     titleContentColor = TextPrimary,
                     navigationIconContentColor = ElectricTeal
                 )
@@ -76,38 +134,26 @@ fun AddMaintenanceScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // Type of maintenance
             ExposedDropdownMenuBox(
                 expanded = showTypeMenu,
                 onExpandedChange = { showTypeMenu = it }
             ) {
-                OutlinedTextField(
+                AttractiveTextField(
                     value = getMaintenanceTypeLabel(selectedType),
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Maintenance type", color = TextSecondary) },
+                    label = "Maintenance type",
+                    leadingIcon = getMaintenanceTypeIcon(selectedType),
                     trailingIcon = { 
                         ExposedDropdownMenuDefaults.TrailingIcon(
                             expanded = showTypeMenu
                         ) 
                     },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
-                        focusedBorderColor = ElectricTeal,
-                        unfocusedBorderColor = TextMuted,
-                        focusedLabelColor = ElectricTeal,
-                        unfocusedLabelColor = TextSecondary,
-                        cursorColor = ElectricTeal,
-                        focusedContainerColor = DeepNavy,
-                        unfocusedContainerColor = DeepNavy
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
                 )
 
                 ExposedDropdownMenu(
@@ -115,9 +161,20 @@ fun AddMaintenanceScreen(
                     onDismissRequest = { showTypeMenu = false },
                     containerColor = DeepNavy
                 ) {
-                    MaintenanceType.values().forEach { type ->
+                    MaintenanceType.entries.forEach { type ->
                         DropdownMenuItem(
-                            text = { Text(getMaintenanceTypeLabel(type), color = TextPrimary) },
+                            text = { 
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        getMaintenanceTypeIcon(type),
+                                        contentDescription = null,
+                                        tint = ElectricTeal,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text(getMaintenanceTypeLabel(type), color = TextPrimary)
+                                }
+                            },
                             onClick = {
                                 selectedType = type
                                 showTypeMenu = false
@@ -131,34 +188,22 @@ fun AddMaintenanceScreen(
             }
 
             // Description
-            OutlinedTextField(
+            AttractiveTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description", color = TextSecondary) },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 2,
-                placeholder = { Text("Ex: Motor oil change 5W-30", color = TextMuted) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    focusedBorderColor = ElectricTeal,
-                    unfocusedBorderColor = TextMuted,
-                    focusedLabelColor = ElectricTeal,
-                    unfocusedLabelColor = TextSecondary,
-                    cursorColor = ElectricTeal,
-                    focusedContainerColor = DeepNavy,
-                    unfocusedContainerColor = DeepNavy,
-                    focusedPlaceholderColor = TextMuted,
-                    unfocusedPlaceholderColor = TextMuted
-                )
+                label = "Description",
+                leadingIcon = Icons.Default.Description,
+                placeholder = "Ex: Motor oil change 5W-30",
+                minLines = 2
             )
 
             // Date
-            OutlinedTextField(
+            AttractiveTextField(
                 value = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).format(Date(date)),
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Date", color = TextSecondary) },
+                label = "Date",
+                leadingIcon = Icons.Default.CalendarToday,
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
                         Icon(
@@ -167,106 +212,46 @@ fun AddMaintenanceScreen(
                             tint = ElectricTeal
                         )
                     }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    focusedBorderColor = ElectricTeal,
-                    unfocusedBorderColor = TextMuted,
-                    focusedLabelColor = ElectricTeal,
-                    unfocusedLabelColor = TextSecondary,
-                    cursorColor = ElectricTeal,
-                    focusedContainerColor = DeepNavy,
-                    unfocusedContainerColor = DeepNavy
-                ),
-                modifier = Modifier.fillMaxWidth()
+                }
             )
 
             // Mileage
-            OutlinedTextField(
+            AttractiveTextField(
                 value = mileage,
                 onValueChange = { mileage = it.filter { char -> char.isDigit() } },
-                label = { Text("Kilometers", color = TextSecondary) },
+                label = "Kilometers",
+                leadingIcon = Icons.Default.Speed,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                suffix = { Text("km", color = TextSecondary) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    focusedBorderColor = ElectricTeal,
-                    unfocusedBorderColor = TextMuted,
-                    focusedLabelColor = ElectricTeal,
-                    unfocusedLabelColor = TextSecondary,
-                    cursorColor = ElectricTeal,
-                    focusedContainerColor = DeepNavy,
-                    unfocusedContainerColor = DeepNavy
-                ),
-                modifier = Modifier.fillMaxWidth()
+                suffix = { Text("km", color = TextSecondary, fontWeight = FontWeight.Bold) }
             )
 
             // Cost
-            OutlinedTextField(
+            AttractiveTextField(
                 value = cost,
                 onValueChange = { cost = it.filter { char -> char.isDigit() || char == '.' } },
-                label = { Text("Cost", color = TextSecondary) },
+                label = "Cost",
+                leadingIcon = Icons.Default.AttachMoney,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                suffix = { Text("$", color = TextSecondary) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    focusedBorderColor = ElectricTeal,
-                    unfocusedBorderColor = TextMuted,
-                    focusedLabelColor = ElectricTeal,
-                    unfocusedLabelColor = TextSecondary,
-                    cursorColor = ElectricTeal,
-                    focusedContainerColor = DeepNavy,
-                    unfocusedContainerColor = DeepNavy
-                ),
-                modifier = Modifier.fillMaxWidth()
+                suffix = { Text("$", color = TextSecondary, fontWeight = FontWeight.Bold) }
             )
 
             // Service provider
-            OutlinedTextField(
+            AttractiveTextField(
                 value = serviceProvider,
                 onValueChange = { serviceProvider = it },
-                label = { Text("Service Provider", color = TextSecondary) },
-                placeholder = { Text("Garage or mechanic name", color = TextMuted) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    focusedBorderColor = ElectricTeal,
-                    unfocusedBorderColor = TextMuted,
-                    focusedLabelColor = ElectricTeal,
-                    unfocusedLabelColor = TextSecondary,
-                    cursorColor = ElectricTeal,
-                    focusedContainerColor = DeepNavy,
-                    unfocusedContainerColor = DeepNavy,
-                    focusedPlaceholderColor = TextMuted,
-                    unfocusedPlaceholderColor = TextMuted
-                ),
-                modifier = Modifier.fillMaxWidth()
+                label = "Service Provider",
+                leadingIcon = Icons.Default.Business,
+                placeholder = "Garage or mechanic name"
             )
 
             // Notes
-            OutlinedTextField(
+            AttractiveTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Notes (optional)", color = TextSecondary) },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 3,
-                placeholder = { Text("Additional notes...", color = TextMuted) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    focusedBorderColor = ElectricTeal,
-                    unfocusedBorderColor = TextMuted,
-                    focusedLabelColor = ElectricTeal,
-                    unfocusedLabelColor = TextSecondary,
-                    cursorColor = ElectricTeal,
-                    focusedContainerColor = DeepNavy,
-                    unfocusedContainerColor = DeepNavy,
-                    focusedPlaceholderColor = TextMuted,
-                    unfocusedPlaceholderColor = TextMuted
-                )
+                label = "Notes (optional)",
+                leadingIcon = Icons.AutoMirrored.Filled.StickyNote2,
+                placeholder = "Additional notes...",
+                minLines = 3
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -294,31 +279,38 @@ fun AddMaintenanceScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(60.dp),
                 enabled = description.isNotBlank() && saveState !is SaveState.Saving,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = ElectricTeal,
-                    contentColor = TextOnAccent,
-                    disabledContainerColor = TextMuted,
+                    contentColor = MidnightBlack,
+                    disabledContainerColor = Color(0xFF30363D),
                     disabledContentColor = Color.Gray
                 ),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(18.dp),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 8.dp,
+                    pressedElevation = 2.dp
+                )
             ) {
                 if (saveState is SaveState.Saving) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
-                        color = TextOnAccent
+                        color = MidnightBlack
                     )
                 } else {
                     Icon(
                         Icons.Default.Save,
                         contentDescription = null,
-                        tint = TextOnAccent
+                        tint = MidnightBlack,
+                        modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        "Save",
-                        color = TextOnAccent
+                        "Save Record",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MidnightBlack
                     )
                 }
             }
@@ -374,21 +366,5 @@ fun AddMaintenanceScreen(
                 )
             )
         }
-    }
-}
-
-fun getMaintenanceTypeLabel(type: MaintenanceType): String {
-    return when (type) {
-        MaintenanceType.OIL_CHANGE -> "Oil change"
-        MaintenanceType.TIRE_ROTATION -> "Tire rotation"
-        MaintenanceType.BRAKE_SERVICE -> "Brake service"
-        MaintenanceType.ENGINE_TUNE_UP -> "Engine tune-up"
-        MaintenanceType.BATTERY_REPLACEMENT -> "Battery replacement"
-        MaintenanceType.AIR_FILTER -> "Air filter"
-        MaintenanceType.TRANSMISSION_SERVICE -> "Transmission service"
-        MaintenanceType.COOLANT_FLUSH -> "Coolant flush"
-        MaintenanceType.GENERAL_INSPECTION -> "General inspection"
-        MaintenanceType.REPAIR -> "Repair"
-        MaintenanceType.OTHER -> "Other"
     }
 }

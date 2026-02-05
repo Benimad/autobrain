@@ -17,7 +17,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Gemini 2.0 Flash Carnet Intelligent Repository
+ * gemini-3-flash-preview Carnet Intelligent Repository
  * AI-Powered Smart Maintenance System for AutoBrain
  * 
  * Features:
@@ -36,9 +36,9 @@ class GeminiCarnetRepository @Inject constructor(
     private val apiKey = BuildConfig.GEMINI_API_KEY
     private val gson = Gson()
     
-    // Gemini 2.0 Flash - Faster, smarter, more efficient
+    // Gemini 1.5 Flash - Faster, smarter, more efficient
     private val carnetModel = GenerativeModel(
-        modelName = "gemini-2.0-flash-exp",
+        modelName = "gemini-3-flash-preview",
         apiKey = apiKey,
         generationConfig = generationConfig {
             temperature = 1f  // Creative but controlled
@@ -64,7 +64,7 @@ class GeminiCarnetRepository @Inject constructor(
     ): Result<MaintenanceAnalysis> = withContext(Dispatchers.IO) {
         try {
             val prompt = buildComprehensiveAnalysisPrompt(carDetails, maintenanceRecords)
-            Log.d(TAG, "🔍 Analyzing maintenance with Gemini 2.0 Flash...")
+            Log.d(TAG, "🔍 Analyzing maintenance with gemini 3 Flash...")
             
             val response = carnetModel.generateContent(prompt)
             val responseText = response.text ?: return@withContext Result.failure(
@@ -92,7 +92,7 @@ class GeminiCarnetRepository @Inject constructor(
     ): Result<List<SmartReminder>> = withContext(Dispatchers.IO) {
         try {
             val prompt = buildSmartRemindersPrompt(carDetails, currentMileage, lastMaintenanceDates)
-            Log.d(TAG, "🔔 Generating smart reminders with Gemini 2.0 Flash...")
+            Log.d(TAG, "🔔 Generating smart reminders with gemini 3 Flash...")
             
             val response = carnetModel.generateContent(prompt)
             val responseText = response.text ?: return@withContext Result.failure(

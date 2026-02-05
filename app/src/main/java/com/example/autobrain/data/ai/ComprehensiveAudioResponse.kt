@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * AUTOBRAIN - COMPREHENSIVE GEMINI AI RESPONSE MODELS
- * Data classes for parsing complete Gemini 2.5 Pro JSON responses
+ * Data classes for parsing complete Gemini 3 Pro JSON responses
  * 
  * This matches the exact JSON structure expected from the comprehensive prompt
  */

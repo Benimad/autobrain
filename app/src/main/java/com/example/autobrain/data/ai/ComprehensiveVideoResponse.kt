@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * AUTOBRAIN - COMPREHENSIVE VIDEO DIAGNOSTIC RESPONSE MODELS
- * Data classes for parsing Gemini 2.5 Pro video analysis JSON
+ * Data classes for parsing Gemini 3 Pro video analysis JSON
  * 
  * Matches the exact JSON structure from buildComprehensiveVideoAnalysisPrompt
  */

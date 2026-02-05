@@ -16,7 +16,7 @@ import java.util.*
  * - Real-time Firestore data integration
  * - Dynamic car profile and maintenance history
  * - Diagnostic trend analysis
- * - Complete JSON output structure for Gemini 2.5 Pro
+ * - Complete JSON output structure for Gemini 3 Pro
  * - Market context and legal compliance
  */
 
@@ -258,7 +258,7 @@ Provide an ULTRA-DETAILED analysis in JSON with these MANDATORY fields:
     "Possible ambient noise"
   ],
   "recommend_second_opinion": ${audioData.rawScore < 50},
-  "gemini_model_version": "gemini-2.5-pro",
+  "gemini_model_version": "gemini-3-pro-preview",
   "analysis_timestamp_utc": "${System.currentTimeMillis()}"
 }
 

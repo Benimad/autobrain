@@ -270,6 +270,28 @@ enum class TrustLevel { HIGH, MEDIUM, LOW }
 // =============================================================================
 
 @Composable
+fun GlassmorphicCard(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    borderColor: Color = Color.White.copy(alpha = 0.1f),
+    backgroundColor: Color = Color(0xFF1F2937).copy(alpha = 0.4f),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(24.dp))
+            .background(backgroundColor)
+            .border(1.dp, borderColor, RoundedCornerShape(24.dp))
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            content = content
+        )
+    }
+}
+
+@Composable
 fun AutoBrainCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
@@ -1214,3 +1236,96 @@ fun GeminiAnalyzingIndicator(
 
 // Note: Adaptive components (AdaptiveScaffold, AdaptiveContentContainer, AdaptiveCard, AdaptiveGrid)
 // are defined in AdaptiveScaffold.kt for better organization
+
+// =============================================================================
+// BRAND ICONS & LOGO
+// =============================================================================
+
+
+@Composable
+fun GoogleIcon(modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier) {
+        val size = size.minDimension
+        val strokeWidth = size * 0.15f
+        
+        val colors = listOf(
+            Color(0xFFEA4335),
+            Color(0xFFFBBC05),
+            Color(0xFF34A853),
+            Color(0xFF4285F4)
+        )
+        
+        val radius = size * 0.4f
+        val center = Offset(size / 2, size / 2)
+        
+        drawArc(
+            color = colors[0],
+            startAngle = -45f,
+            sweepAngle = 90f,
+            useCenter = false,
+            topLeft = Offset(center.x - radius, center.y - radius),
+            size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Butt)
+        )
+        
+        drawArc(
+            color = colors[1],
+            startAngle = 45f,
+            sweepAngle = 90f,
+            useCenter = false,
+            topLeft = Offset(center.x - radius, center.y - radius),
+            size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Butt)
+        )
+        
+        drawArc(
+            color = colors[2],
+            startAngle = 135f,
+            sweepAngle = 90f,
+            useCenter = false,
+            topLeft = Offset(center.x - radius, center.y - radius),
+            size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Butt)
+        )
+        
+        drawArc(
+            color = colors[3],
+            startAngle = 225f,
+            sweepAngle = 90f,
+            useCenter = false,
+            topLeft = Offset(center.x - radius, center.y - radius),
+            size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Butt)
+        )
+        
+        drawLine(
+            color = colors[3],
+            start = Offset(center.x, center.y),
+            end = Offset(center.x + radius, center.y),
+            strokeWidth = strokeWidth
+        )
+    }
+}
+
+@Composable
+fun XIcon(modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier) {
+        val color = Color(0xFF9CA3AF)
+        val strokeWidth = 2.5.dp.toPx()
+        
+        drawLine(
+            color = color,
+            start = Offset(size.width * 0.15f, size.height * 0.15f),
+            end = Offset(size.width * 0.85f, size.height * 0.85f),
+            strokeWidth = strokeWidth,
+            cap = StrokeCap.Round
+        )
+        drawLine(
+            color = color,
+            start = Offset(size.width * 0.85f, size.height * 0.15f),
+            end = Offset(size.width * 0.15f, size.height * 0.85f),
+            strokeWidth = strokeWidth,
+            cap = StrokeCap.Round
+        )
+    }
+}

@@ -383,7 +383,7 @@ class CarLogViewModel @Inject constructor(
     }
     
     /**
-     * Generate smart reminders using Gemini 2.0 Flash
+     * Generate smart reminders using Gemini 3 Flash
      */
     private suspend fun generateGeminiSmartReminders(
         carDetails: com.example.autobrain.data.ai.GeminiCarDetails,
@@ -427,11 +427,11 @@ class CarLogViewModel @Inject constructor(
     }
     
     // =========================================================================
-    // 🚀 GEMINI 2.0 FLASH AI-POWERED FEATURES
+    // 🚀 GEMINI 3 FLASH AI-POWERED FEATURES
     // =========================================================================
     
     /**
-     * Comprehensive AI Analysis with Gemini 2.0 Flash
+     * Comprehensive AI Analysis with Gemini 3 Flash
      */
     fun performComprehensiveAIAnalysis() {
         viewModelScope.launch {
@@ -474,7 +474,7 @@ class CarLogViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _aiAnalysisState.value = AIAnalysisState.Error(
-                            error.message ?: "Gemini 2.0 Flash analysis error"
+                            error.message ?: "Gemini 3 Flash analysis error"
                         )
                     }
                 )
@@ -525,7 +525,7 @@ class CarLogViewModel @Inject constructor(
                 result.fold(
                     onSuccess = { reminders ->
                         _smartRemindersState.value = SmartRemindersState.Success(
-                            advice = "Gemini 2.0 Flash generated ${reminders.size} smart reminders",
+                            advice = "Gemini 3 Flash generated ${reminders.size} smart reminders",
                             suggestedMaintenance = reminders.map { it.title }
                         )
                     },

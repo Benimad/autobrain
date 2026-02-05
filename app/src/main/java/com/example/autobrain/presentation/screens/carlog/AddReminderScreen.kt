@@ -1,14 +1,58 @@
 ﻿package com.example.autobrain.presentation.screens.carlog
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,7 +65,18 @@ import androidx.navigation.NavController
 import com.example.autobrain.domain.logic.ReminderCalculation
 import com.example.autobrain.domain.model.MaintenanceType
 import com.example.autobrain.presentation.components.GeminiIconWithGlow
-import com.example.autobrain.presentation.theme.*
+import com.example.autobrain.presentation.theme.BorderDark
+import com.example.autobrain.presentation.theme.DeepNavy
+import com.example.autobrain.presentation.theme.ElectricTeal
+import com.example.autobrain.presentation.theme.ErrorRed
+import com.example.autobrain.presentation.theme.MidnightBlack
+import com.example.autobrain.presentation.theme.SlateGray
+import com.example.autobrain.presentation.theme.SuccessGreen
+import com.example.autobrain.presentation.theme.TextOnAccent
+import com.example.autobrain.presentation.theme.TextPrimary
+import com.example.autobrain.presentation.theme.TextSecondary
+import com.example.autobrain.presentation.theme.TextMuted
+import com.example.autobrain.presentation.theme.WarningAmber
 
 /**
  * 🎯 ADD REMINDER SCREEN
@@ -33,6 +88,7 @@ import com.example.autobrain.presentation.theme.*
 @Composable
 fun AddReminderScreen(
     navController: NavController,
+    modifier: Modifier = Modifier,
     viewModel: AddReminderViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -53,12 +109,13 @@ fun AddReminderScreen(
     }
     
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = { Text("Add reminder", color = TextPrimary) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, null, tint = ElectricTeal)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = ElectricTeal)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -92,10 +149,10 @@ fun AddReminderScreen(
                     LoadingCard()
                 }
                 is CalculationState.Success -> {
-                    IntelligentCalculationCard(calcState.calculation)
+                    IntelligentCalculationCard(calculation = calcState.calculation)
                 }
                 is CalculationState.Error -> {
-                    ErrorCard(calcState.message)
+                    ErrorCard(message = calcState.message)
                 }
                 else -> {}
             }
@@ -112,10 +169,34 @@ fun AddReminderScreen(
                     }
                 }
                 is GeminiSuggestionsState.Success -> {
-                    GeminiSuggestionsCard(geminiState.suggestions)
+                    GeminiSuggestionsCard(suggestions = geminiState.suggestions)
                 }
                 is GeminiSuggestionsState.Error -> {
-                    Text("❌ ${geminiState.message}", color = ErrorRed, fontSize = 12.sp)
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = DeepNavy.copy(alpha = 0.5f)
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                tint = TextMuted,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = geminiState.message,
+                                color = TextSecondary,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
                 }
                 else -> {}
             }
@@ -140,12 +221,12 @@ fun AddReminderScreen(
             
             // Warning message
             if (uiState is AddReminderUiState.Warning) {
-                WarningCard((uiState as AddReminderUiState.Warning).message)
+                WarningCard(message = (uiState as AddReminderUiState.Warning).message)
             }
             
             // Error message
             if (uiState is AddReminderUiState.Error) {
-                ErrorCard((uiState as AddReminderUiState.Error).message)
+                ErrorCard(message = (uiState as AddReminderUiState.Error).message)
             }
             
             // Save button
@@ -189,12 +270,14 @@ fun AddReminderScreen(
 @Composable
 private fun MaintenanceTypeSelector(
     selectedType: MaintenanceType?,
-    onTypeSelected: (MaintenanceType) -> Unit
+    onTypeSelected: (MaintenanceType) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DeepNavy),
-        shape = RoundedCornerShape(16.dp)
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = DeepNavy.copy(alpha = 0.5f)),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -212,7 +295,7 @@ private fun MaintenanceTypeSelector(
             
             // Grid of maintenance types
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                MaintenanceType.values().filter { it != MaintenanceType.REPAIR && it != MaintenanceType.OTHER }
+                MaintenanceType.entries.filter { it != MaintenanceType.REPAIR && it != MaintenanceType.OTHER }
                     .chunked(2).forEach { row ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -262,32 +345,44 @@ private fun MaintenanceTypeChip(
         modifier = modifier,
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
-        color = if (isSelected) ElectricTeal.copy(alpha = 0.2f) else SlateGray,
+        color = if (isSelected) ElectricTeal.copy(alpha = 0.15f) else DeepNavy.copy(alpha = 0.5f),
         border = androidx.compose.foundation.BorderStroke(
-            width = if (isSelected) 2.dp else 1.dp,
-            color = if (isSelected) ElectricTeal else BorderDark
+            width = if (isSelected) 1.5.dp else 1.dp,
+            color = if (isSelected) ElectricTeal else BorderDark.copy(alpha = 0.5f)
         )
     ) {
-        Box(
-            modifier = Modifier.padding(12.dp),
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
+            Icon(
+                imageVector = getMaintenanceTypeIcon(type),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = if (isSelected) ElectricTeal else TextSecondary
+            )
+            Spacer(Modifier.width(8.dp))
             Text(
                 text = label,
                 fontSize = 12.sp,
                 color = if (isSelected) ElectricTeal else TextSecondary,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
             )
         }
     }
 }
 
 @Composable
-private fun IntelligentCalculationCard(calculation: ReminderCalculation) {
+private fun IntelligentCalculationCard(
+    calculation: ReminderCalculation,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DeepNavy),
-        shape = RoundedCornerShape(16.dp)
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = DeepNavy.copy(alpha = 0.7f)),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, ElectricTeal.copy(alpha = 0.2f))
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -357,9 +452,12 @@ private fun IntelligentCalculationCard(calculation: ReminderCalculation) {
 }
 
 @Composable
-private fun GeminiSuggestionsCard(suggestions: List<String>) {
+private fun GeminiSuggestionsCard(
+    suggestions: List<String>,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = WarningAmber.copy(alpha = 0.1f)),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -385,45 +483,32 @@ private fun CustomFieldsSection(
     customTitle: String,
     onTitleChange: (String) -> Unit,
     customDescription: String,
-    onDescriptionChange: (String) -> Unit
+    onDescriptionChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = DeepNavy),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("Customize (optional)", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             
-            OutlinedTextField(
+            AttractiveTextField(
                 value = customTitle,
                 onValueChange = onTitleChange,
-                label = { Text("Custom title") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = ElectricTeal,
-                    unfocusedBorderColor = BorderDark,
-                    focusedLabelColor = ElectricTeal,
-                    unfocusedLabelColor = TextSecondary,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary
-                )
+                label = "Custom title",
+                leadingIcon = Icons.AutoMirrored.Filled.StickyNote2,
+                modifier = Modifier.fillMaxWidth()
             )
             
-            OutlinedTextField(
+            AttractiveTextField(
                 value = customDescription,
                 onValueChange = onDescriptionChange,
-                label = { Text("Description") },
+                label = "Description",
+                leadingIcon = Icons.Default.Description,
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 2,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = ElectricTeal,
-                    unfocusedBorderColor = BorderDark,
-                    focusedLabelColor = ElectricTeal,
-                    unfocusedLabelColor = TextSecondary,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary
-                )
+                minLines = 2
             )
         }
     }
@@ -434,10 +519,11 @@ private fun NotificationSettingsSection(
     enabled: Boolean,
     onEnabledChange: (Boolean) -> Unit,
     daysBefore: Int,
-    onDaysBeforeChange: (Int) -> Unit
+    onDaysBeforeChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = DeepNavy),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -447,29 +533,58 @@ private fun NotificationSettingsSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Notifications", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = null,
+                        tint = ElectricTeal,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "Notifications",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextPrimary
+                    )
+                }
                 Switch(
                     checked = enabled,
                     onCheckedChange = onEnabledChange,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = ElectricTeal,
-                        checkedTrackColor = ElectricTeal.copy(alpha = 0.5f)
+                        checkedTrackColor = ElectricTeal.copy(alpha = 0.5f),
+                        uncheckedThumbColor = SlateGray,
+                        uncheckedTrackColor = BorderDark
                     )
                 )
             }
             
             if (enabled) {
                 Spacer(Modifier.height(8.dp))
-                Text("Remind $daysBefore days before", fontSize = 12.sp, color = TextSecondary)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Schedule,
+                        contentDescription = null,
+                        tint = TextSecondary,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text("Remind $daysBefore days before", fontSize = 12.sp, color = TextSecondary)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun InfoRow(label: String, value: String) {
+private fun InfoRow(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(label, fontSize = 14.sp, color = TextSecondary)
@@ -478,7 +593,10 @@ private fun InfoRow(label: String, value: String) {
 }
 
 @Composable
-private fun PriorityBadge(priority: com.example.autobrain.domain.model.ReminderPriority) {
+private fun PriorityBadge(
+    priority: com.example.autobrain.domain.model.ReminderPriority,
+    modifier: Modifier = Modifier
+) {
     val (color, label) = when (priority) {
         com.example.autobrain.domain.model.ReminderPriority.CRITICAL -> ErrorRed to "CRITICAL"
         com.example.autobrain.domain.model.ReminderPriority.HIGH -> WarningAmber to "HIGH"
@@ -487,6 +605,7 @@ private fun PriorityBadge(priority: com.example.autobrain.domain.model.ReminderP
     }
     
     Surface(
+        modifier = modifier,
         color = color.copy(alpha = 0.2f),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -501,8 +620,11 @@ private fun PriorityBadge(priority: com.example.autobrain.domain.model.ReminderP
 }
 
 @Composable
-private fun UrgencyBar(score: Int) {
-    Column {
+private fun UrgencyBar(
+    score: Int,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -512,7 +634,7 @@ private fun UrgencyBar(score: Int) {
         }
         Spacer(Modifier.height(4.dp))
         LinearProgressIndicator(
-            progress = score / 100f,
+            progress = { score / 100f },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(8.dp)
@@ -528,9 +650,9 @@ private fun UrgencyBar(score: Int) {
 }
 
 @Composable
-private fun LoadingCard() {
+private fun LoadingCard(modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = DeepNavy)
     ) {
         Row(
@@ -545,9 +667,12 @@ private fun LoadingCard() {
 }
 
 @Composable
-private fun WarningCard(message: String) {
+private fun WarningCard(
+    message: String,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = WarningAmber.copy(alpha = 0.1f))
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
@@ -559,9 +684,12 @@ private fun WarningCard(message: String) {
 }
 
 @Composable
-private fun ErrorCard(message: String) {
+private fun ErrorCard(
+    message: String,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = ErrorRed.copy(alpha = 0.1f))
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {

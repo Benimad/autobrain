@@ -27,13 +27,13 @@ import javax.inject.Singleton
 /**
  * Google Gemini AI Repository for AutoBrain
  * 
- * Integrates Gemini 2.5 Pro/Flash for:
+ * Integrates Gemini 3 Pro/Flash for:
  * - Audio diagnostics (engine sound analysis)
  * - Video diagnostics (smoke, vibration detection)
  * - Price estimation (market context)
  * - Combined smart analysis
  * 
- * Models: gemini-2.5-pro (main), gemini-2.5-flash (fast)
+ * Models: gemini-3-pro-preview (main), gemini-3-flash-preview (fast)
  * Context: 1M tokens input, 65K tokens output
  * Free tier: 15 requests/min, 1,000 requests/day
  */
@@ -46,9 +46,9 @@ class GeminiAiRepository @Inject constructor(
     // Gemini API Key from BuildConfig (loaded from local.properties)
     private val apiKey = BuildConfig.GEMINI_API_KEY
     
-    // Gemini 2.5 Pro model for multimodal analysis (Latest, June 2025)
+    // Gemini 3 Pro model for multimodal analysis
     private val diagnosticsModel = GenerativeModel(
-        modelName = "gemini-2.5-pro",
+        modelName = "gemini-3-pro-preview",
         apiKey = apiKey,
         generationConfig = generationConfig {
             temperature = 0.5f  // Lower for factual diagnostics
@@ -64,9 +64,9 @@ class GeminiAiRepository @Inject constructor(
         )
     )
     
-    // Gemini 2.5 Flash for faster responses (Latest, June 2025)
+    // Gemini 3 Flash for faster responses
     private val fastModel = GenerativeModel(
-        modelName = "gemini-2.5-flash",
+        modelName = "gemini-3-flash-preview",
         apiKey = apiKey,
         generationConfig = generationConfig {
             temperature = 0.7f
@@ -296,7 +296,7 @@ Generate the URL now:
      * 
      * 🎯 ENHANCED ARCHITECTURE:
      * - Sends BOTH TFLite analysis (text) AND actual audio file (binary) to Gemini
-     * - Gemini 2.5 Pro analyzes audio directly for superior accuracy
+     * - Gemini 3 Pro analyzes audio directly for superior accuracy
      * - Combines on-device TFLite insights with cloud AI audio analysis
      * - Real-time Firestore user profile & car details
      * - Complete maintenance history from CarLog
@@ -337,7 +337,7 @@ Generate the URL now:
                 previousDiagnostics = previousDiagnostics
             )
             
-            Log.d(TAG, "🎵 Sending MULTIMODAL analysis to Gemini 2.5 Pro")
+            Log.d(TAG, "🎵 Sending MULTIMODAL analysis to Gemini 3 Pro")
             Log.d(TAG, "   - TFLite Score: ${audioData.rawScore}/100")
             Log.d(TAG, "   - Top Sound: ${audioData.topSoundLabel} (${(audioData.topSoundConfidence * 100).toInt()}%)")
             Log.d(TAG, "   - Audio File: ${audioFile.name} (${audioFile.length() / 1024}KB)")
@@ -354,7 +354,7 @@ Generate the URL now:
                 text(textPrompt)
             }
             
-            // Send to Gemini 2.5 Pro (multimodal analysis)
+            // Send to Gemini 3 Pro (multimodal analysis)
             val response = diagnosticsModel.generateContent(multimodalContent)
             val responseText = response.text ?: return@withContext Result.failure(
                 Exception("Empty response from Gemini AI")
@@ -826,7 +826,7 @@ Respond ONLY in valid JSON :
      * 
      * 🎯 ENHANCED ARCHITECTURE (Same as Audio):
      * - Sends BOTH ML Kit analysis (text) AND actual video file (binary) to Gemini
-     * - Gemini 2.5 Pro analyzes video directly for superior accuracy
+     * - Gemini 3 Pro analyzes video directly for superior accuracy
      * - Combines on-device ML Kit insights with cloud AI video analysis
      * - Real-time Firestore user profile & car details
      * - Complete maintenance history from CarLog
@@ -870,7 +870,7 @@ Respond ONLY in valid JSON :
                 audioDiagnostics = audioDiagnostics
             )
             
-            Log.d(TAG, "🎬 Sending ${if (hasVideoFile) "MULTIMODAL" else "TEXT-ONLY"} analysis to Gemini 2.5 Pro")
+            Log.d(TAG, "🎬 Sending ${if (hasVideoFile) "MULTIMODAL" else "TEXT-ONLY"} analysis to Gemini 3 Pro")
             Log.d(TAG, "   - ML Kit Score: ${videoData.rawScore}/100")
             Log.d(TAG, "   - Smoke: ${if (videoData.smokeDetected) "${videoData.smokeType} (${videoData.smokeSeverity}/5)" else "None"}")
             Log.d(TAG, "   - Vibration: ${if (videoData.vibrationDetected) "${videoData.vibrationLevel} (${videoData.vibrationSeverity}/5)" else "None"}")
@@ -894,7 +894,7 @@ Respond ONLY in valid JSON :
                 }
             }
             
-            // Send to Gemini 2.5 Pro
+            // Send to Gemini 3 Pro
             val response = diagnosticsModel.generateContent(content)
             val responseText = response.text ?: return@withContext Result.failure(
                 Exception("Empty response from Gemini AI")
@@ -997,7 +997,7 @@ Respond ONLY in valid JSON :
                     mlKitAccuracy = "87%",
                     confidenceThisAnalysis = 0.3f,
                     factorsAffectingConfidence = listOf("Erreur de parsing JSON", "Réponse Gemini invalide"),
-                    geminiModel = "gemini-2.5-pro",
+                    geminiModel = "gemini-3-pro-preview",
                     analysisTimestamp = System.currentTimeMillis()
                 )
             )
@@ -1018,9 +1018,9 @@ Respond ONLY in valid JSON :
         prompt: String
     ): Result<UltimateSmartAnalysis> = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "🎯 Sending ULTIMATE smart analysis to Gemini 2.5 Pro")
+            Log.d(TAG, "🎯 Sending ULTIMATE smart analysis to Gemini 3 Pro")
             
-            // Send to Gemini 2.5 Pro with extended tokens
+            // Send to Gemini 3 Pro with extended tokens
             val response = diagnosticsModel.generateContent(prompt)
             val responseText = response.text ?: return@withContext Result.failure(
                 Exception("Empty response from Gemini AI")
@@ -1080,7 +1080,7 @@ Respond ONLY in valid JSON :
         prompt: String
     ): Result<GeminiPriceEstimation> = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "💰 Sending price estimation to Gemini 2.5 Pro")
+            Log.d(TAG, "💰 Sending price estimation to Gemini 3 Pro")
             
             // Send to Gemini
             val response = diagnosticsModel.generateContent(prompt)
@@ -1223,7 +1223,7 @@ Respond ONLY in valid JSON :
                     factorsBoostingConfidence = emptyList(),
                     uncertaintyFactors = listOf("Erreur de parsing JSON", "Réponse Gemini invalide"),
                     recommendSecondOpinion = true,
-                    geminiModelVersion = "gemini-2.5-pro",
+                    geminiModelVersion = "gemini-3-pro-preview",
                     analysisTimestampUtc = System.currentTimeMillis().toString()
                 ),
                 legalComplianceGeneral = LegalComplianceGeneral(

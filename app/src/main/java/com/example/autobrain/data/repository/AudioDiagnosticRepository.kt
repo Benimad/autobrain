@@ -577,7 +577,7 @@ class AudioDiagnosticRepository @Inject constructor(
             Log.d(TAG, "✅ Found ${previousDiagnostics.size} previous diagnostics")
             
             // Step 4: Call Gemini AI with Comprehensive Prompt + Audio File
-            Log.d(TAG, "🎵 Step 4: Calling Gemini 2.5 Pro for MULTIMODAL analysis...")
+            Log.d(TAG, "🎵 Step 4: Calling Gemini 3 Pro for MULTIMODAL analysis...")
             Log.d(TAG, "   📁 Audio File: ${audioData.audioFilePath}")
             Log.d(TAG, "   📊 TFLite Score: ${audioData.rawScore}/100")
             Log.d(TAG, "   🔊 Top Sound: ${audioData.topSoundLabel} (${(audioData.topSoundConfidence * 100).toInt()}%)")

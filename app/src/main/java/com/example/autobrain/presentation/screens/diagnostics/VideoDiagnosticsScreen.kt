@@ -1,9 +1,10 @@
-﻿package com.example.autobrain.presentation.screens.diagnostics
+package com.example.autobrain.presentation.screens.diagnostics
 
 import android.Manifest
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,9 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.autobrain.R
 import com.example.autobrain.data.ai.getMostLikelyRepairScenario
 import com.example.autobrain.data.ai.isSafeToDrive
 import com.example.autobrain.data.local.entity.VideoDiagnosticData
@@ -167,85 +171,316 @@ fun VideoDiagnosticsScreen(
 private fun CaptureVideoState(
     onStartCapture: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Capture Diagnostic Video",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            color = TextPrimary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(60.dp))
-
-        Box(
+    val infiniteTransition = rememberInfiniteTransition(label = "capture_animations")
+    
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 0.95f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse"
+    )
+    
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 0.8f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glow"
+    )
+    
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(20000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rotation"
+    )
+    
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CarWireframeIllustration()
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF0F2838)
-            ),
-            border = BorderStroke(1.dp, Color(0xFF1C2838))
-        ) {
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                ElectricTeal.copy(alpha = 0.15f),
+                                Color.Transparent
+                            )
+                        ),
+                        RoundedCornerShape(20.dp)
+                    )
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    ElectricTeal,
+                                    ElectricTeal.copy(alpha = glowAlpha)
+                                )
+                            ),
+                            CircleShape
+                        )
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "AI-POWERED DIAGNOSTICS",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Black,
+                    color = ElectricTeal,
+                    letterSpacing = 1.2.sp
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
             Text(
-                text = "Focus camera on exhaust & engine bay for 10s",
-                fontSize = 18.sp,
+                text = "Unlock Your Car's",
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = "Hidden Secrets",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Black,
+                color = ElectricTeal,
                 textAlign = TextAlign.Center,
+                letterSpacing = (-0.5).sp
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = "10-second scan reveals what mechanics see",
+                fontSize = 14.sp,
+                color = TextSecondary,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .background(
-                    color = ElectricTeal,
-                    shape = CircleShape
+                    .height(320.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(250.dp)
+                        .rotate(rotation * 0.1f)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    ElectricTeal.copy(alpha = 0.08f * glowAlpha),
+                                    Color.Transparent
+                                )
+                            ),
+                            CircleShape
+                        )
                 )
-                .clickable(onClick = onStartCapture),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.CameraAlt,
-                contentDescription = "Capture",
-                tint = Color.Black,
-                modifier = Modifier.size(40.dp)
+                
+                Box(
+                    modifier = Modifier
+                        .size(180.dp)
+                        .rotate(-rotation * 0.15f)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0xFF00FF88).copy(alpha = 0.06f * glowAlpha),
+                                    Color.Transparent
+                                )
+                            ),
+                            CircleShape
+                        )
+                )
+                
+                EnhancedCarIllustration(rotation = rotation, glowAlpha = glowAlpha, pulseScale = pulseScale)
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                AIFeatureChip(
+                    icon = Icons.Default.Speed,
+                    text = "Real-time AI",
+                    modifier = Modifier.weight(1f)
+                )
+                AIFeatureChip(
+                    icon = Icons.Default.Shield,
+                    text = "Safety Score",
+                    modifier = Modifier.weight(1f)
+                )
+                AIFeatureChip(
+                    icon = Icons.Default.Build,
+                    text = "Instant Fix",
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF0F2838)
+                ),
+                border = BorderStroke(
+                    width = 1.5.dp,
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            ElectricTeal.copy(alpha = 0.3f),
+                            Color(0xFF00FF88).copy(alpha = 0.2f),
+                            ElectricTeal.copy(alpha = 0.3f)
+                        )
+                    )
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Videocam,
+                            contentDescription = null,
+                            tint = ElectricTeal,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Recording Instructions",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = ElectricTeal,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    InstructionRow(
+                        number = "1",
+                        text = "Focus on exhaust & engine bay"
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    InstructionRow(
+                        number = "2",
+                        text = "Keep engine running (idle)"
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    InstructionRow(
+                        number = "3",
+                        text = "Record for 10 seconds minimum"
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Box(
+                modifier = Modifier
+                    .size(90.dp)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                ElectricTeal.copy(alpha = 0.3f * glowAlpha),
+                                Color.Transparent
+                            )
+                        ),
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(82.dp * pulseScale)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    ElectricTeal,
+                                    Color(0xFF00D9C0)
+                                )
+                            ),
+                            CircleShape
+                        )
+                        .clickable(onClick = onStartCapture),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CameraAlt,
+                        contentDescription = "Start Recording",
+                        tint = Color.Black,
+                        modifier = Modifier.size(44.dp)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(
+                text = "TAP TO START",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Black,
+                color = ElectricTeal,
+                letterSpacing = 2.sp
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .background(
+                        Color(0xFF0A1F2E).copy(alpha = 0.6f),
+                        RoundedCornerShape(12.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Security,
+                    contentDescription = null,
+                    tint = SuccessGreen,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "100% Private • No data shared • AI on-device",
+                    fontSize = 11.sp,
+                    color = TextSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "Ensure car is parked on a level surface,\nengine running for sound check.",
-            fontSize = 13.sp,
-            color = TextSecondary,
-            textAlign = TextAlign.Center,
-            lineHeight = 20.sp
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -945,90 +1180,158 @@ private fun ObservationItem(
 }
 
 @Composable
-private fun CarWireframeIllustration() {
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(280.dp)
+private fun AIFeatureChip(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF0F2838).copy(alpha = 0.6f)
+        ),
+        border = BorderStroke(1.dp, ElectricTeal.copy(alpha = 0.2f))
     ) {
-        val centerX = size.width / 2
-        val centerY = size.height / 2
-        val color = Color(0xFF2DD4BF)
-        val strokeWidth = 2.dp.toPx()
-
-        val brakeRadius = 60f
-        val brakeX = centerX - 80f
-        val brakeY = centerY + 40f
-
-        drawCircle(
-            color = color,
-            radius = brakeRadius,
-            center = Offset(brakeX, brakeY),
-            style = Stroke(width = strokeWidth)
-        )
-
-        for (i in 0..5) {
-            val angle = (i * 60f) * (Math.PI / 180f).toFloat()
-            val x1 = brakeX + (brakeRadius * 0.3f) * cos(angle)
-            val y1 = brakeY + (brakeRadius * 0.3f) * sin(angle)
-            val x2 = brakeX + brakeRadius * cos(angle)
-            val y2 = brakeY + brakeRadius * sin(angle)
-            
-            drawLine(
-                color = color,
-                start = Offset(x1, y1),
-                end = Offset(x2, y2),
-                strokeWidth = strokeWidth
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                ElectricTeal.copy(alpha = 0.25f),
+                                Color.Transparent
+                            )
+                        ),
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = ElectricTeal,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = text,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary,
+                textAlign = TextAlign.Center
             )
         }
+    }
+}
 
-        drawCircle(
-            color = color,
-            radius = 8f,
-            center = Offset(brakeX, brakeY),
-            style = Stroke(width = strokeWidth)
-        )
-
-        val framePoints = listOf(
-            Offset(centerX - 120f, centerY - 60f),
-            Offset(centerX + 120f, centerY - 60f),
-            Offset(centerX + 100f, centerY + 60f),
-            Offset(centerX - 100f, centerY + 60f)
-        )
-
-        val path = Path().apply {
-            moveTo(framePoints[0].x, framePoints[0].y)
-            framePoints.forEach { point ->
-                lineTo(point.x, point.y)
-            }
-            close()
+@Composable
+private fun InstructionRow(
+    number: String,
+    text: String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            ElectricTeal.copy(alpha = 0.3f),
+                            ElectricTeal.copy(alpha = 0.1f)
+                        )
+                    ),
+                    CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = number,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Black,
+                color = ElectricTeal
+            )
         }
-
-        drawPath(
-            path = path,
-            color = color.copy(alpha = 0.4f),
-            style = Stroke(width = strokeWidth)
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = TextPrimary,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
         )
+    }
+}
 
-        drawLine(
-            color = color.copy(alpha = 0.3f),
-            start = Offset(centerX - 100f, centerY - 40f),
-            end = Offset(centerX + 100f, centerY - 40f),
-            strokeWidth = strokeWidth
-        )
-
-        val highlightRadius = 85f
-        drawCircle(
-            color = color.copy(alpha = 0.1f),
-            radius = highlightRadius,
-            center = Offset(brakeX, brakeY)
-        )
-
-        drawCircle(
-            color = color.copy(alpha = 0.3f),
-            radius = highlightRadius,
-            center = Offset(brakeX, brakeY),
-            style = Stroke(width = strokeWidth * 2)
+@Composable
+private fun EnhancedCarIllustration(
+    rotation: Float,
+    glowAlpha: Float,
+    pulseScale: Float
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(380.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val centerX = size.width / 2
+            val centerY = size.height / 2
+            val accentColor = Color(0xFF00FF88)
+            val scanRadius = 220f
+            
+            for (i in 0..2) {
+                val scanLineY = centerY - scanRadius + (i * 150f) + ((rotation * 3f) % 450f)
+                if (scanLineY >= centerY - scanRadius && scanLineY <= centerY + scanRadius) {
+                    drawLine(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                accentColor.copy(alpha = 0.3f * glowAlpha),
+                                accentColor.copy(alpha = 0.7f * glowAlpha),
+                                accentColor.copy(alpha = 0.9f * glowAlpha),
+                                accentColor.copy(alpha = 0.7f * glowAlpha),
+                                accentColor.copy(alpha = 0.3f * glowAlpha),
+                                Color.Transparent
+                            )
+                        ),
+                        start = Offset(centerX - scanRadius, scanLineY),
+                        end = Offset(centerX + scanRadius, scanLineY),
+                        strokeWidth = 6.dp.toPx()
+                    )
+                }
+            }
+            
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        accentColor.copy(alpha = 0.2f * glowAlpha),
+                        Color.Transparent
+                    ),
+                    center = Offset(centerX, centerY),
+                    radius = 250f
+                ),
+                radius = 250f,
+                center = Offset(centerX, centerY)
+            )
+        }
+        
+        Image(
+            painter = painterResource(id = R.drawable.noslogon),
+            contentDescription = "Logo",
+            modifier = Modifier
+                .size(350.dp * pulseScale)
         )
     }
 }

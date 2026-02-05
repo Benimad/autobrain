@@ -111,7 +111,7 @@ class SmartAnalysisRepository @Inject constructor(
             )
             
             // Step 9: Call Gemini AI
-            Log.d(TAG, "⭐ Gemini: Step 9: Calling Gemini 2.5 Pro for ultimate analysis...")
+            Log.d(TAG, "⭐ Gemini: Step 9: Calling Gemini 3 Pro for ultimate analysis...")
             val result = geminiAiRepository.performUltimateSmartAnalysis(prompt)
             
             result.fold(

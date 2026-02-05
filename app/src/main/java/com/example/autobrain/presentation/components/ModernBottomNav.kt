@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -95,26 +96,52 @@ fun ModernBottomNavBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(72.dp)
-                .shadow(
-                    elevation = 24.dp,
-                    spotColor = Color.Black.copy(alpha = 0.6f),
-                    ambientColor = ElectricTeal.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(36.dp)
-                )
-                .background(
-                    color = DeepNavy.copy(alpha = 0.96f),
-                    shape = RoundedCornerShape(36.dp)
-                )
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.06f),
-                            Color.White.copy(alpha = 0.02f)
-                        )
-                    ),
-                    shape = RoundedCornerShape(36.dp)
-                )
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shadow(
+                        elevation = 24.dp,
+                        spotColor = ElectricTeal.copy(alpha = 0.3f),
+                        ambientColor = Color.Black.copy(alpha = 0.6f),
+                        shape = RoundedCornerShape(36.dp)
+                    )
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFF1F2937).copy(alpha = 0.7f),
+                                Color(0xFF111827).copy(alpha = 0.85f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(36.dp)
+                    )
+                    .border(
+                        width = 1.5.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                ElectricTeal.copy(alpha = 0.4f),
+                                Color.White.copy(alpha = 0.2f),
+                                ElectricTeal.copy(alpha = 0.4f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(36.dp)
+                    )
+            )
+            
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.08f),
+                                Color.Transparent
+                            )
+                        ),
+                        shape = RoundedCornerShape(36.dp)
+                    )
+            )
+            
             Row(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly,

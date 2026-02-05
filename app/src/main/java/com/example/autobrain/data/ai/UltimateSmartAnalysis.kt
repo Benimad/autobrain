@@ -289,7 +289,7 @@ Generate the ULTIMATE AUTOBRAIN REPORT in JSON with these 15 sections:
     "Conditions réelles inconnues"
   ],
   "recommend_professional_inspection": ${recommendInspection(audioData, videoData)},
-  "gemini_model": "gemini-2.5-pro",
+  "gemini_model": "gemini-3-pro-preview",
   "analysis_date": "${formatDate(System.currentTimeMillis())}"
 }
 

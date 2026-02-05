@@ -272,7 +272,7 @@ Provide a ULTRA-COMPLETE JSON analysis with these sections:
     "Number of frames: ${videoData.totalFramesAnalyzed}",
     "Stability: ${videoData.isStableVideo}"
   ],
-  "gemini_model": "gemini-2.5-pro",
+  "gemini_model": "gemini-3-pro-preview",
   "analysis_timestamp": ${System.currentTimeMillis()}
 }
 

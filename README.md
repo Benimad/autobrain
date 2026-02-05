@@ -100,8 +100,8 @@ echo "REMOVE_BG_API_KEY=your_key" >> local.properties
 - Automatic background upload to Firebase Storage
 
 ### 🤖 **Google Gemini AI Integration**
-- **Gemini 2.5 Pro**: Multimodal diagnostics analysis
-- **Gemini 2.5 Flash**: Fast responses and chat
+- **Gemini 3 Pro Preview**: Multimodal diagnostics analysis
+- **Gemini 3 Flash Preview**: Fast responses and chat
 - Context-aware recommendations
 - Price estimation based on market data
 - Natural language car assistant chatbot
@@ -343,14 +343,14 @@ Or use Android Studio's Run button.
 ### **Google Gemini AI**
 
 #### **Models Used**
-- **gemini-2.5-pro**: Multimodal diagnostics (audio, video, comprehensive analysis)
-- **gemini-2.5-flash**: Fast responses, chat assistant
+- **gemini-3-pro-preview**: Multimodal diagnostics (audio, video, comprehensive analysis)
+- **gemini-3-flash-preview**: Fast responses, chat assistant
 
 #### **Configuration**
 ```kotlin
 // Diagnostics Model
 GenerativeModel(
-    modelName = "gemini-2.5-pro",
+    modelName = "gemini-3-pro-preview",
     apiKey = BuildConfig.GEMINI_API_KEY,
     generationConfig = generationConfig {
         temperature = 0.5f  // Factual responses
